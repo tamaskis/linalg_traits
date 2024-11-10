@@ -9,6 +9,13 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0c4b4d0bd25bd0b74681c0ad21497610ce1b7c91b1022cd21c80c6fbdd9476b0"
 
 [[package]]
+name = "linalg-traits"
+version = "0.1.0"
+dependencies = [
+ "numtest",
+]
+
+[[package]]
 name = "num-traits"
 version = "0.2.19"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -24,11 +31,4 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d609a81229853310a0906d33e7e2cdecacf37ab6ac294d2b8ed11fc340ecf9d3"
 dependencies = [
  "num-traits",
-]
-
-[[package]]
-name = "todo-crate-name"
-version = "0.1.0"
-dependencies = [
- "numtest",
 ]
