@@ -36,7 +36,7 @@ fn repeat_elements<T: Vector>(v: &T) -> T {
 let v: Vec<f64> = vec![1.0, 2.0, 3.0];
 
 // Repeat the elements.
-let v_repeated = repeat_elements(&v);
+let v_repeated: Vec<f64> = repeat_elements(&v);
 
 // Check that the elements were properly repeated.
 assert_arrays_equal!(v_repeated, [1.0, 1.0, 2.0, 2.0, 3.0, 3.0]);
