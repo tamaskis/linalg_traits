@@ -5,7 +5,7 @@
 /// In addition to the methods defined by this trait, this trait also forces that the implementor
 /// also support indexing ([`std::ops::Index`]) and mutable indexing ([`std::ops::IndexMut`]).
 pub trait Vector:
-    std::ops::Index<usize, Output = f64> + std::ops::IndexMut<usize, Output = f64>
+    std::ops::Index<usize, Output = f64> + std::ops::IndexMut<usize, Output = f64> + Clone
 {
     /// Create a vector with the specified length, with each element set to 0.
     ///
