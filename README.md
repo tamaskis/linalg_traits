@@ -4,7 +4,7 @@
 [<img alt="crates.io" src="https://img.shields.io/crates/v/linalg-traits.svg?style=for-the-badge&color=fc8d62&logo=rust" height="20">](https://crates.io/crates/linalg-traits)
 [<img alt="docs.rs" src="https://img.shields.io/badge/docs.rs-linalg-traits-66c2a5?style=for-the-badge&labelColor=555555&logo=docs.rs" height="20">](https://docs.rs/linalg-traits)
 
-Traits for generic linear algebra types and operations.
+Traits for generic linear algebra..
 
 ## Documentation
 
@@ -12,10 +12,34 @@ Please see https://docs.rs/linalg-traits.
 
 ## Examples
 
-TODO Simple examples demonstrating the functionality of the package can be included here.
+Let's define a function that takes in a vector and returns a new vector with all the elements repeated twice. Using the [`Vector`] trait, we can write it in a way that makes it independent of what struct we use to represent a vector.
 
 ```rust
-// TODO
+use linalg_traits::Vector;
+use numtest::*;
+
+// Define the function for repeating the elements.
+fn repeat_elements<T: Vector>(v: &T) -> T {
+    // Create a new vector of the same type but with twice the length.
+    let mut v_repeated = T::new_with_length(v.len() * 2);
+
+    // Populate the vector.
+    for i in 0..v.len() {
+        v_repeated[2 * i] = v[i];
+        v_repeated[2 * i + 1] = v[i];
+    }
+
+    v_repeated
+}
+
+// Define the vector to be repeated.
+let v: Vec<f64> = vec![1.0, 2.0, 3.0];
+
+// Repeat the elements.
+let v_repeated = repeat_elements(&v);
+
+// Check that the elements were properly repeated.
+assert_arrays_equal!(v_repeated, [1.0, 1.0, 2.0, 2.0, 3.0, 3.0]);
 ```
 
 #### License

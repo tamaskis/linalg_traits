@@ -24,4 +24,4 @@ jobs:
       - name: Lock minimal  # Generate new lock file using minimum allowed versions of dependencies.
         run: cargo generate-lockfile -Z minimal-versions
       - name: Check minimal  # Check compilation using minimal dependencies.
-        run: cargo check --locked
+        run: cargo check --locked --all-features

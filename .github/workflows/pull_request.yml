@@ -30,11 +30,11 @@ jobs:
       - name: Lint  # Lint using Clippy.
         run: cargo clippy --no-deps --all-features
       - name: Docs  # Ensure that docs can be generated for this crate.
-        run: cargo doc --no-deps
+        run: cargo doc --no-deps --all-features
       - name: Publishing dry run  # Ensure that this crate can be published.
         run: |
           # Run cargo publish --dry-run and capture output.
-          DRY_RUN_OUTPUT=$(cargo publish --dry-run 2>&1)
+          DRY_RUN_OUTPUT=$(cargo publish --dry-run --all-features 2>&1)
 
           # Print out full dry run output.
           echo "$DRY_RUN_OUTPUT"
