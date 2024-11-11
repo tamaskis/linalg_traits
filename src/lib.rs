@@ -4,7 +4,7 @@
 //! [crates-io]: https://img.shields.io/badge/crates.io-fc8d62?style=for-the-badge&labelColor=555555&logo=rust
 //! [docs-rs]: https://img.shields.io/badge/docs.rs-66c2a5?style=for-the-badge&labelColor=555555&logo=docs.rs
 //!
-//! Traits for generic linear algebra..
+//! Traits for generic linear algebra.
 //!
 //! # Purpose
 //!
