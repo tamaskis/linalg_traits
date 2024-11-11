@@ -20,7 +20,7 @@
 //!
 //! | Trait | Implementations on Foreign Types |
 //! | ----- | -------------------------------- |
-//! | [`Vector`] | [`Vec<f64>`], `nalgebra::DVector<f64>`, `nalgebra::SVector<f64, D>` |
+//! | [`Vector`] | [`Vec<f64>`], `nalgebra::DVector<f64>`, `nalgebra::SVector<f64, D>`, `ndarray::Array1` |
 //! | [`Matrix`] | _not yet implemented_ |
 //!
 //! See the [Using with `nalgebra` and `ndarray`](#using-with-nalgebra-and-ndarray) section further

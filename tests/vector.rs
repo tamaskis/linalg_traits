@@ -4,8 +4,12 @@ use numtest::*;
 #[cfg(feature = "with_nalgebra")]
 use nalgebra::{DVector, SVector, Vector1, Vector2, Vector3, Vector4, Vector5, Vector6};
 
+#[cfg(feature = "with_ndarray")]
+use ndarray::Array1;
+
 #[test]
 #[cfg(feature = "with_nalgebra")]
+#[cfg(feature = "with_ndarray")]
 fn test_new_with_length() {
     assert_arrays_equal!(Vec::new_with_length(3), [0.0, 0.0, 0.0]);
     assert_arrays_equal!(DVector::new_with_length(3), [0.0, 0.0, 0.0]);
@@ -17,6 +21,7 @@ fn test_new_with_length() {
     assert_arrays_equal!(Vector4::new_with_length(4), [0.0, 0.0, 0.0, 0.0]);
     assert_arrays_equal!(Vector5::new_with_length(5), [0.0, 0.0, 0.0, 0.0, 0.0]);
     assert_arrays_equal!(Vector6::new_with_length(6), [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]);
+    assert_arrays_equal!(Array1::new_with_length(3), [0.0, 0.0, 0.0]);
 }
 
 #[test]
@@ -81,6 +86,7 @@ fn test_len() {
     assert_eq!(Vector4::new_with_length(4).len(), 4);
     assert_eq!(Vector5::new_with_length(5).len(), 5);
     assert_eq!(Vector6::new_with_length(6).len(), 6);
+    assert_eq!(Array1::new_with_length(3).len(), 3);
 }
 
 #[test]
@@ -97,10 +103,12 @@ fn test_is_empty() {
     assert!(!Vector4::new_with_length(4).is_empty());
     assert!(!Vector5::new_with_length(5).is_empty());
     assert!(!Vector6::new_with_length(6).is_empty());
+    assert!(!Array1::new_with_length(3).is_empty());
 
     // Empty tests.
     assert!(Vec::new_with_length(0).is_empty());
     assert!(DVector::new_with_length(0).is_empty());
     let v_svector: SVector<f64, 0> = SVector::new_with_length(0);
     assert!(v_svector.is_empty());
+    assert!(Array1::new_with_length(0).is_empty());
 }

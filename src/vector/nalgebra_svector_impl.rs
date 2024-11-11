@@ -4,7 +4,6 @@ use crate::vector::vector_trait::Vector;
 use nalgebra::SVector;
 
 #[cfg(feature = "with_nalgebra")]
-// Implementing the Vector trait for a fixed-size vector (SVector)
 impl<const N: usize> Vector for SVector<f64, N> {
     fn new_with_length(len: usize) -> Self {
         assert_eq!(len, N, "Length must match the fixed size of the SVector.");
