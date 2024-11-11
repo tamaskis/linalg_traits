@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.1
+
+1. Implemented the `Vector` trait for `ndarray::Array1<f64>`.
+
 ## 0.1.0
 
 1. Initial definition of the `Vector` trait with `new_with_length`, `len`, and `is_empty` methods.
