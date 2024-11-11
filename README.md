@@ -12,10 +12,11 @@ Please see https://docs.rs/linalg-traits.
 
 ## Examples
 
-Let's define a function that takes in a vector and returns a new vector with all the elements repeated twice. Using the [`Vector`] trait, we can write it in a way that makes it independent of what struct we use to represent a vector.
+Let's define a function that takes in a vector and returns a new vector with all the elements repeated twice. Using the [`Vector`] trait, we can write it in a way that makes it independent of what type we use to represent a vector.
 
 ```rust
 use linalg_traits::Vector;
+use ndarray::{array, Array1};
 use numtest::*;
 
 // Define the function for repeating the elements.
@@ -33,10 +34,10 @@ fn repeat_elements<T: Vector>(v: &T) -> T {
 }
 
 // Define the vector to be repeated.
-let v: Vec<f64> = vec![1.0, 2.0, 3.0];
+let v: Array1<f64> = array![1.0, 2.0, 3.0];
 
 // Repeat the elements.
-let v_repeated: Vec<f64> = repeat_elements(&v);
+let v_repeated: Array1<f64> = repeat_elements(&v);
 
 // Check that the elements were properly repeated.
 assert_arrays_equal!(v_repeated, [1.0, 1.0, 2.0, 2.0, 3.0, 3.0]);

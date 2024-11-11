@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.1.3
+
+1. Added the following methods to the `Vector` trait:
+    * `from_slice`
+    * `as_slice`
+    * `add` / `add_assign`
+    * `sub` / `sub_assign`
+    * `mul` / `mul_assign`
+    * `div` / `div_assign`
+
 ## 0.1.2
 
 1. Added `clone` trait bound to the `Vector` trait.
