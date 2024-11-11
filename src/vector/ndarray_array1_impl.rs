@@ -1,12 +1,13 @@
+use crate::scalar::Scalar;
 use crate::vector::vector_trait::Vector;
 
 #[cfg(feature = "with_ndarray")]
-use ndarray::Array1;
+use ndarray::{Array1, ScalarOperand};
 
 #[cfg(feature = "with_ndarray")]
-impl Vector for Array1<f64> {
+impl<S: Scalar + ScalarOperand> Vector<S> for Array1<S> {
     fn new_with_length(len: usize) -> Self {
-        Array1::<f64>::zeros(len)
+        Array1::<S>::zeros(len)
     }
 
     fn len(&self) -> usize {
@@ -17,11 +18,11 @@ impl Vector for Array1<f64> {
         self.len() == 0
     }
 
-    fn from_slice(slice: &[f64]) -> Self {
+    fn from_slice(slice: &[S]) -> Self {
         Array1::from(slice.to_vec())
     }
 
-    fn as_slice(&self) -> &[f64] {
+    fn as_slice(&self) -> &[S] {
         self.as_slice()
             .expect("The array's data is either not contiguous or not in standard order.")
     }
@@ -33,7 +34,7 @@ impl Vector for Array1<f64> {
     fn add_assign(&mut self, other: &Self) {
         self.assert_same_length(other);
         for (a, b) in self.iter_mut().zip(other.iter()) {
-            *a += b;
+            *a += *b;
         }
     }
 
@@ -44,25 +45,25 @@ impl Vector for Array1<f64> {
     fn sub_assign(&mut self, other: &Self) {
         self.assert_same_length(other);
         for (a, b) in self.iter_mut().zip(other.iter()) {
-            *a -= b;
+            *a -= *b;
         }
     }
 
-    fn mul(&self, scalar: f64) -> Self {
+    fn mul(&self, scalar: S) -> Self {
         self * scalar
     }
 
-    fn mul_assign(&mut self, scalar: f64) {
+    fn mul_assign(&mut self, scalar: S) {
         for a in self.iter_mut() {
             *a *= scalar;
         }
     }
 
-    fn div(&self, scalar: f64) -> Self {
+    fn div(&self, scalar: S) -> Self {
         self / scalar
     }
 
-    fn div_assign(&mut self, scalar: f64) {
+    fn div_assign(&mut self, scalar: S) {
         for a in self.iter_mut() {
             *a /= scalar;
         }

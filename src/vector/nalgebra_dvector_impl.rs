@@ -1,12 +1,13 @@
+use crate::scalar::Scalar;
 use crate::vector::vector_trait::Vector;
 
 #[cfg(feature = "with_nalgebra")]
 use nalgebra::DVector;
 
 #[cfg(feature = "with_nalgebra")]
-impl Vector for DVector<f64> {
-    fn new_with_length(len: usize) -> DVector<f64> {
-        DVector::from_element(len, 0.0)
+impl<S: Scalar> Vector<S> for DVector<S> {
+    fn new_with_length(len: usize) -> DVector<S> {
+        DVector::from_element(len, S::zero())
     }
 
     fn len(&self) -> usize {
@@ -17,7 +18,7 @@ impl Vector for DVector<f64> {
         self.is_empty()
     }
 
-    fn from_slice(slice: &[f64]) -> Self {
+    fn from_slice(slice: &[S]) -> Self {
         let mut result = DVector::new_with_length(slice.len());
         for (i, &item) in slice.iter().enumerate() {
             result[i] = item;
@@ -25,7 +26,7 @@ impl Vector for DVector<f64> {
         result
     }
 
-    fn as_slice(&self) -> &[f64] {
+    fn as_slice(&self) -> &[S] {
         self.as_slice()
     }
 
@@ -36,7 +37,7 @@ impl Vector for DVector<f64> {
     fn add_assign(&mut self, other: &Self) {
         self.assert_same_length(other);
         for (a, b) in self.iter_mut().zip(other.iter()) {
-            *a += b;
+            *a += *b;
         }
     }
 
@@ -47,25 +48,25 @@ impl Vector for DVector<f64> {
     fn sub_assign(&mut self, other: &Self) {
         self.assert_same_length(other);
         for (a, b) in self.iter_mut().zip(other.iter()) {
-            *a -= b;
+            *a -= *b;
         }
     }
 
-    fn mul(&self, scalar: f64) -> Self {
+    fn mul(&self, scalar: S) -> Self {
         self * scalar
     }
 
-    fn mul_assign(&mut self, scalar: f64) {
+    fn mul_assign(&mut self, scalar: S) {
         for a in self.iter_mut() {
             *a *= scalar;
         }
     }
 
-    fn div(&self, scalar: f64) -> Self {
+    fn div(&self, scalar: S) -> Self {
         self / scalar
     }
 
-    fn div_assign(&mut self, scalar: f64) {
+    fn div_assign(&mut self, scalar: S) {
         for a in self.iter_mut() {
             *a /= scalar;
         }

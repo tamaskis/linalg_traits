@@ -1,6 +1,6 @@
 [package]
 name = "linalg-traits"
-version = "0.1.3"
+version = "0.2.0"
 authors = ["Tamas Kis"]
 edition = "2021"
 description = "Traits for generic linear algebra."
@@ -15,6 +15,7 @@ rustdoc-args = [ "--html-in-header", "src/docs-header.html" ]
 features = ["with_nalgebra", "with_ndarray"]
 
 [dependencies]
+num-traits = "0.2.18"
 nalgebra = { version = "0.32.5", optional = true }
 ndarray = { version = "0.15.6", optional = true }
 

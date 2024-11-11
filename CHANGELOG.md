@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.0
+
+1. Added the `Scalar` trait.
+1. Updated the `Vector` trait to be generic over all types that implement the `Scalar` trait.
+
 ## 0.1.3
 
 1. Added the following methods to the `Vector` trait:

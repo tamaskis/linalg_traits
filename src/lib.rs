@@ -17,12 +17,12 @@
 //!
 //! #### Constraints
 //!
-//! 1. **Compatibility with [`Vec<f64>`], `nalgebra` types, and `ndarray` types.**
+//! 1. **Compatibility with [`Vec<f64>`], [`nalgebra`] types, and [`ndarray`] types.**
 //!
 //!     As a result, this crate does not require any operator overloads to be implemented for linear
 //!     alegebra types. Different numerical computing crates may have different implementations for
-//!     operator overloads (e.g. `ndarray` overloads `*` for elementwise multiplication, while
-//!     `nalgebra` overloads `*` for matrix multiplication). This means that anyone writing generic
+//!     operator overloads (e.g. [`ndarray`] overloads `*` for elementwise multiplication, while
+//!     [`nalgebra`] overloads `*` for matrix multiplication). This means that anyone writing generic
 //!     linear algebra code using `linalg-traits` should use the arithmetic methods defined on the
 //!     [`Vector`] and [`Matrix`] traits. <br><br>
 //!
@@ -34,35 +34,36 @@
 //!     types, so to keep [`Vector`] and [`Matrix`] compatible with both statically and
 //!     dynamically-sized linear algebra types, they only require that [`Clone`] be implemented.
 //!
-//! # Traits
+//! # Linear Algebra Traits
 //!
 //! This crate provides the following traits along with their implementations for the following
 //! types:
 //!
 //! | Trait | Implementations on Foreign Types |
 //! | ----- | -------------------------------- |
-//! | [`Vector`] | [`Vec<f64>`], `nalgebra::DVector<f64>`, `nalgebra::SVector<f64, D>`, `ndarray::Array1` |
+//! | [`Scalar`] | [`f64`] and all other types that satisfy its trait bounds. |
+//! | [`Vector`] | [`Vec<S>`] <BR> [`nalgebra::DVector<S>`] <BR> [`nalgebra::SVector<S, D>`] <BR> [`ndarray::Array1<T>`] <BR><BR> Note:<BR>   • `S: Scalar` <BR>   • `T: Scalar + ndarray::ScalarOperand` |
 //! | [`Matrix`] | _not yet implemented_ |
 //!
 //! See the [Using with `nalgebra` and `ndarray`](#using-with-nalgebra-and-ndarray) section further
 //! down on this page for information on using the `linalg-traits` crate with types defined in
-//! `nalgebra` and/or `ndarray`.
+//! [`nalgebra`] and/or [`ndarray`].
 //!
-//! # Examples
+//! # Example
 //!
 //! Let's define a function that takes in a vector and returns a new vector with all the elements
-//! repeated twice. Using the [`Vector`] trait, we can write it in a way that makes it independent
-//! of what type we use to represent a vector.
+//! repeated twice. Using the [`Scalar`] and [`Vector`] traits, we can write it in a way that makes
+//! it independent of what types we use to represent scalars and vectors.
 //!
 //! ```
-//! use linalg_traits::Vector;
+//! use linalg_traits::{Scalar, Vector};
 //! use ndarray::{array, Array1};
 //! use numtest::*;
 //!
 //! // Define the function for repeating the elements.
-//! fn repeat_elements<T: Vector>(v: &T) -> T {
+//! fn repeat_elements<S: Scalar, V: Vector<S>>(v: &V) -> V {
 //!     // Create a new vector of the same type but with twice the length.
-//!     let mut v_repeated = T::new_with_length(v.len() * 2);
+//!     let mut v_repeated = V::new_with_length(v.len() * 2);
 //!
 //!     // Populate the vector.
 //!     for i in 0..v.len() {
@@ -86,9 +87,9 @@
 //! # Using with `nalgebra` and `ndarray`
 //!
 //! `linalg-traits` provides implementations of the [`Vector`] and [`Matrix`] traits for linear
-//! algebra types defined by `nalgebra` and `ndarray`. However, since you may not one to use one or
-//! either of these crates in your project, `linalg-traits` has specifies both `nalgebra` and
-//! `ndarray` as optional dependencies.
+//! algebra types defined by [`nalgebra`] and [`ndarray`]. However, since you may not one to use one or
+//! either of these crates in your project, `linalg-traits` has specifies both [`nalgebra`] and
+//! [`ndarray`] as optional dependencies.
 //!
 //! If you _are_ using either of these crates in your project and want linear algebra types defined
 //! by these crates to be identified as either [`Vector`]s or [`Matrix`]es, you should specify these
@@ -102,25 +103,27 @@
 //! # Additional notes on use cases
 //!
 //! Say I have an ODE solver crate `my-ode-solver`. I want this crate to be compatible with both
-//! `ndarray` and `nalgebra`. In the backend, I implement everything requiring vectors/matrices in
+//! [`ndarray`] and [`nalgebra`]. In the backend, I implement everything requiring vectors/matrices in
 //! `my-ode-solver` using generic types with trait bounds on either [`Vector`] or [`Matrix`] (e.g.
 //! `T: Vector`, `T: Matrix`). Now, any downstream user of `my-ode-solver` can choose whether they
-//! want to use `ndarray` or `nalgebra`. Alternatively, if they have some custom linear algebra
+//! want to use [`ndarray`] or [`nalgebra`]. Alternatively, if they have some custom linear algebra
 //! types, they could implement [`Vector`] and [`Matrix`] for those custom types and use them
 //! directly with `my-ode-solver`.
 //!
 //! This crate is _not_ trying to replace existing APIs in all situations. Continuing the example
 //! from above, `my-ode-solver` will use the methods defined by the traits in `linalg-traits`.
-//! However, if I'm a user of `my-ode-solver` and I'm using it with `ndarray`, in my project I
-//! should still use the APIs defined by `ndarray` (and not those defined by `linalg-traits`).
+//! However, if I'm a user of `my-ode-solver` and I'm using it with [`ndarray`], in my project I
+//! should still use the APIs defined by [`ndarray`] (and not those defined by `linalg-traits`).
 
 // Linter setup.
 #![warn(missing_docs)]
 
 // Linking project modules.
 pub(crate) mod matrix;
+pub(crate) mod scalar;
 pub(crate) mod vector;
 
 // Re-exports.
 pub use crate::matrix::matrix_trait::Matrix;
+pub use crate::scalar::Scalar;
 pub use crate::vector::vector_trait::Vector;
