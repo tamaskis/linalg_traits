@@ -52,8 +52,8 @@
 //! # Examples
 //!
 //! Let's define a function that takes in a vector and returns a new vector with all the elements
-//! repeated twice. Using the [`Vector`] trait, we can write it in a way that makes it independent
-//! of what type we use to represent a vector.
+//! repeated twice. Using the [`Scalar`] and [`Vector`] traits, we can write it in a way that makes
+//! it independent of what types we use to represent scalars and vectors.
 //!
 //! ```
 //! use linalg_traits::{Scalar, Vector};

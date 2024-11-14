@@ -21,6 +21,8 @@ use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Sub, SubAssign};
 ///
 /// `nalgabra::Complex` is does not satisfy the the [`Scalar`] trait because it does not implement
 /// the `PartialOrd` trait.
+///
+/// TODO: make it so addition with f32's also works?
 pub trait Scalar:
     // Arithmetic operators with itself.
     Add<Self, Output = Self>
