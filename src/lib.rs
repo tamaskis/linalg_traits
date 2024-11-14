@@ -41,6 +41,7 @@
 //!
 //! | Trait | Implementations on Foreign Types |
 //! | ----- | -------------------------------- |
+//! | [`Scalar`] | [`f64`] and all other types that satisfy its trait bounds. |
 //! | [`Vector`] | [`Vec<f64>`], `nalgebra::DVector<f64>`, `nalgebra::SVector<f64, D>`, `ndarray::Array1` |
 //! | [`Matrix`] | _not yet implemented_ |
 //!
@@ -51,18 +52,18 @@
 //! # Examples
 //!
 //! Let's define a function that takes in a vector and returns a new vector with all the elements
-//! repeated twice. Using the [`Vector`] trait, we can write it in a way that makes it independent
-//! of what type we use to represent a vector.
+//! repeated twice. Using the [`Scalar`] and [`Vector`] traits, we can write it in a way that makes
+//! it independent of what types we use to represent scalars and vectors.
 //!
 //! ```
-//! use linalg_traits::Vector;
+//! use linalg_traits::{Scalar, Vector};
 //! use ndarray::{array, Array1};
 //! use numtest::*;
 //!
 //! // Define the function for repeating the elements.
-//! fn repeat_elements<T: Vector>(v: &T) -> T {
+//! fn repeat_elements<S: Scalar + 'static, V: Vector<S>>(v: &V) -> V {
 //!     // Create a new vector of the same type but with twice the length.
-//!     let mut v_repeated = T::new_with_length(v.len() * 2);
+//!     let mut v_repeated = V::new_with_length(v.len() * 2);
 //!
 //!     // Populate the vector.
 //!     for i in 0..v.len() {
@@ -119,8 +120,10 @@
 
 // Linking project modules.
 pub(crate) mod matrix;
+pub(crate) mod scalar;
 pub(crate) mod vector;
 
 // Re-exports.
 pub use crate::matrix::matrix_trait::Matrix;
+pub use crate::scalar::Scalar;
 pub use crate::vector::vector_trait::Vector;
