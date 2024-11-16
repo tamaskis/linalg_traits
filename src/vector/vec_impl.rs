@@ -1,7 +1,12 @@
+use crate::matrix::mat_impl::Mat;
 use crate::scalar::Scalar;
 use crate::vector::vector_trait::Vector;
 
 impl<S: Scalar> Vector<S> for Vec<S> {
+    type MatrixNxN = Mat<S>;
+
+    type MatrixMxN<const M: usize> = Mat<S>;
+
     fn new_with_length(len: usize) -> Vec<S> {
         vec![S::zero(); len]
     }

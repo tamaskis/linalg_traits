@@ -2,10 +2,14 @@ use crate::scalar::Scalar;
 use crate::vector::vector_trait::Vector;
 
 #[cfg(feature = "with_ndarray")]
-use ndarray::{Array1, LinalgScalar, ScalarOperand};
+use ndarray::{Array1, Array2, LinalgScalar, ScalarOperand};
 
 #[cfg(feature = "with_ndarray")]
 impl<S: Scalar + ScalarOperand + LinalgScalar> Vector<S> for Array1<S> {
+    type MatrixNxN = Array2<S>;
+
+    type MatrixMxN<const M: usize> = Array2<S>;
+
     fn new_with_length(len: usize) -> Self {
         Array1::<S>::zeros(len)
     }

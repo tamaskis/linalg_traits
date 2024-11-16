@@ -59,7 +59,9 @@ fn test_nalgebra_dvector() {
 }
 
 #[test]
-#[should_panic(expected = "Matrix addition/subtraction dimensions mismatch.")]
+#[should_panic(
+    expected = "Matrix addition/subtraction dimensions mismatch.\n  left: (3, 1)\n right: (2, 1)"
+)]
 #[cfg(feature = "with_nalgebra")]
 fn test_nalgebra_dvector_sub_panic() {
     let x = DVector::from_slice(X);
@@ -69,7 +71,7 @@ fn test_nalgebra_dvector_sub_panic() {
 
 #[test]
 #[should_panic(
-    expected = "Length of the other vector (3) does not match the length of this vector (2)."
+    expected = "Matrix addition/subtraction dimensions mismatch.\n  left: (3, 1)\n right: (2, 1)"
 )]
 #[cfg(feature = "with_nalgebra")]
 fn test_nalgebra_dvector_sub_assign_panic() {

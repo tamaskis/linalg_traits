@@ -2,10 +2,14 @@ use crate::scalar::Scalar;
 use crate::vector::vector_trait::Vector;
 
 #[cfg(feature = "with_nalgebra")]
-use nalgebra::SVector;
+use nalgebra::{SMatrix, SVector};
 
 #[cfg(feature = "with_nalgebra")]
 impl<const N: usize, S: Scalar> Vector<S> for SVector<S, N> {
+    type MatrixNxN = SMatrix<S, N, N>;
+
+    type MatrixMxN<const M: usize> = SMatrix<S, M, N>;
+
     fn new_with_length(len: usize) -> Self {
         assert_eq!(len, N, "Length must match the fixed size of the SVector.");
         SVector::from_element(S::zero())

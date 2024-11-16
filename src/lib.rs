@@ -39,11 +39,11 @@
 //! This crate provides the following traits along with their implementations for the following
 //! types:
 //!
-//! | Trait | Implementations on Foreign Types |
-//! | ----- | -------------------------------- |
-//! | [`Scalar`] | [`f64`] and all other types that satisfy its trait bounds. |
-//! | [`Vector`] | [`Vec<S>`] <BR> [`nalgebra::DVector<S>`] <BR> [`nalgebra::SVector<S, D>`] <BR> [`ndarray::Array1<T>`] <BR><BR> Note:<BR>   • `S: Scalar` <BR>   • `T: Scalar + ndarray::ScalarOperand` + `ndarray::LinalgScalar` |
-//! | [`Matrix`] | _not yet implemented_ |
+//! | Trait | Implementations on Foreign Types | Implementations on Local Types |
+//! | ----- | -------------------------------- | ------------------------------ |
+//! | [`Scalar`] | [`f64`] and all other types that satisfy its trait bounds. | N/A |
+//! | [`Vector`] | [`Vec<S>`] <BR> [`nalgebra::DVector<S>`] <BR> [`nalgebra::SVector<S, N>`] <BR> [`ndarray::Array1<T>`] <BR><BR> Note:<BR>   • `S: Scalar` <BR>   • `T: Scalar + ndarray::ScalarOperand` + `ndarray::LinalgScalar` <BR>   • `N: usize` | N/A |
+//! | [`Matrix`] | [`nalgebra::DMatrix<S>`] <BR> [`nalgebra::SMatrix<S, M, N>`] <BR> [`ndarray::Array2<T>`] <BR><BR> Note:<BR>   • `S: Scalar` <BR>   • `T: Scalar + ndarray::ScalarOperand` + `ndarray::LinalgScalar` <BR>   • `M: usize` <BR>   • `N: usize` | [`Mat<S>`] <BR><BR> Note:<BR>   • `S: Scalar` |
 //!
 //! See the [Using with `nalgebra` and `ndarray`](#using-with-nalgebra-and-ndarray) section further
 //! down on this page for information on using the `linalg-traits` crate with types defined in
@@ -118,12 +118,13 @@
 // Linter setup.
 #![warn(missing_docs)]
 
-// Linking project modules.
+// Module declarations.
 pub(crate) mod matrix;
 pub(crate) mod scalar;
 pub(crate) mod vector;
 
 // Re-exports.
+pub use crate::matrix::mat_impl::Mat;
 pub use crate::matrix::matrix_trait::Matrix;
 pub use crate::scalar::Scalar;
 pub use crate::vector::vector_trait::Vector;
