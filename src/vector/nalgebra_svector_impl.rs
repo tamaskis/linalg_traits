@@ -62,4 +62,8 @@ impl<const N: usize, S: Scalar> Vector<S> for SVector<S, N> {
     fn div_assign(&mut self, scalar: S) {
         *self /= scalar;
     }
+
+    fn dot(&self, other: &Self) -> S {
+        self.dot(other)
+    }
 }

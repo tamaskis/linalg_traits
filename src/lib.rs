@@ -42,7 +42,7 @@
 //! | Trait | Implementations on Foreign Types |
 //! | ----- | -------------------------------- |
 //! | [`Scalar`] | [`f64`] and all other types that satisfy its trait bounds. |
-//! | [`Vector`] | [`Vec<S>`] <BR> [`nalgebra::DVector<S>`] <BR> [`nalgebra::SVector<S, D>`] <BR> [`ndarray::Array1<T>`] <BR><BR> Note:<BR>   • `S: Scalar` <BR>   • `T: Scalar + ndarray::ScalarOperand` |
+//! | [`Vector`] | [`Vec<S>`] <BR> [`nalgebra::DVector<S>`] <BR> [`nalgebra::SVector<S, D>`] <BR> [`ndarray::Array1<T>`] <BR><BR> Note:<BR>   • `S: Scalar` <BR>   • `T: Scalar + ndarray::ScalarOperand` + `ndarray::LinalgScalar` |
 //! | [`Matrix`] | _not yet implemented_ |
 //!
 //! See the [Using with `nalgebra` and `ndarray`](#using-with-nalgebra-and-ndarray) section further

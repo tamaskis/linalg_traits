@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.1.
+
+1. Add the `dot` method to the `Vector` trait.
+
 ## 0.2.0
 
 1. Added the `Scalar` trait.

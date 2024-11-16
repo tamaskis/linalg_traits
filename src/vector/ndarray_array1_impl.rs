@@ -2,10 +2,10 @@ use crate::scalar::Scalar;
 use crate::vector::vector_trait::Vector;
 
 #[cfg(feature = "with_ndarray")]
-use ndarray::{Array1, ScalarOperand};
+use ndarray::{Array1, LinalgScalar, ScalarOperand};
 
 #[cfg(feature = "with_ndarray")]
-impl<S: Scalar + ScalarOperand> Vector<S> for Array1<S> {
+impl<S: Scalar + ScalarOperand + LinalgScalar> Vector<S> for Array1<S> {
     fn new_with_length(len: usize) -> Self {
         Array1::<S>::zeros(len)
     }
@@ -67,5 +67,9 @@ impl<S: Scalar + ScalarOperand> Vector<S> for Array1<S> {
         for a in self.iter_mut() {
             *a /= scalar;
         }
+    }
+
+    fn dot(&self, other: &Self) -> S {
+        Array1::<S>::dot(self, other)
     }
 }
