@@ -1,8 +1,9 @@
+use crate::scalar::Scalar;
 use crate::vector::vector_trait::Vector;
 
-impl Vector for Vec<f64> {
-    fn new_with_length(len: usize) -> Vec<f64> {
-        vec![0.0; len]
+impl<S: Scalar> Vector<S> for Vec<S> {
+    fn new_with_length(len: usize) -> Vec<S> {
+        vec![S::zero(); len]
     }
 
     fn len(&self) -> usize {
@@ -13,53 +14,59 @@ impl Vector for Vec<f64> {
         self.is_empty()
     }
 
-    fn from_slice(slice: &[f64]) -> Vec<f64> {
+    fn from_slice(slice: &[S]) -> Vec<S> {
         slice.to_vec()
     }
 
-    fn as_slice(&self) -> &[f64] {
+    fn as_slice(&self) -> &[S] {
         self.as_slice()
     }
 
     fn add(&self, other: &Self) -> Self {
         self.assert_same_length(other);
-        self.iter().zip(other.iter()).map(|(a, b)| a + b).collect()
+        self.iter()
+            .zip(other.iter())
+            .map(|(a, b)| *a + *b)
+            .collect()
     }
 
     fn add_assign(&mut self, other: &Self) {
         self.assert_same_length(other);
         for (a, b) in self.iter_mut().zip(other.iter()) {
-            *a += b;
+            *a += *b;
         }
     }
 
     fn sub(&self, other: &Self) -> Self {
         self.assert_same_length(other);
-        self.iter().zip(other.iter()).map(|(a, b)| a - b).collect()
+        self.iter()
+            .zip(other.iter())
+            .map(|(a, b)| *a - *b)
+            .collect()
     }
 
     fn sub_assign(&mut self, other: &Self) {
         self.assert_same_length(other);
         for (a, b) in self.iter_mut().zip(other.iter()) {
-            *a -= b;
+            *a -= *b;
         }
     }
 
-    fn mul(&self, scalar: f64) -> Self {
-        self.iter().map(|a| a * scalar).collect()
+    fn mul(&self, scalar: S) -> Self {
+        self.iter().map(|a| *a * scalar).collect()
     }
 
-    fn mul_assign(&mut self, scalar: f64) {
+    fn mul_assign(&mut self, scalar: S) {
         for a in self.iter_mut() {
             *a *= scalar;
         }
     }
 
-    fn div(&self, scalar: f64) -> Self {
-        self.iter().map(|a| a / scalar).collect()
+    fn div(&self, scalar: S) -> Self {
+        self.iter().map(|a| *a / scalar).collect()
     }
 
-    fn div_assign(&mut self, scalar: f64) {
+    fn div_assign(&mut self, scalar: S) {
         for a in self.iter_mut() {
             *a /= scalar;
         }
