@@ -31,11 +31,15 @@ use crate::scalar::Scalar;
 /// ## Warning
 ///
 /// When working with arrays from [`ndarray`], elements of the array must also implement the
-/// [`ndarray::ScalarOperand`] trait in addition to the [`Scalar`] trait. For example, consider the
-/// case where we define the struct `CustomType` and implement the [`Scalar`] trait for
-/// `CustomType`. If we want to be able to pass a [`ndarray::Array1<CustomType>`] into `my_function`
-/// from the example above, then we must also implement the [`ndarray::ScalarOperand`] trait for
-/// `CustomType`.
+/// following traits in addition to the [`Scalar`] trait:
+/// 
+/// * [`ndarray::ScalarOperand`]
+/// * [`ndarray::LinalgScalar`]
+/// 
+/// For example, consider the case where we define the struct `CustomType` and implement the 
+/// [`Scalar`] trait for `CustomType`. If we want to be able to pass a
+/// [`ndarray::Array1<CustomType>`] into `my_function` from the example above, then we must also
+/// implement the [`ndarray::ScalarOperand`] and [`ndarray::LinalgScalar`] traits for `CustomType`.
 pub trait Vector<S: Scalar>:
     Index<usize, Output = S>      // Indexing via square brackets.
     + IndexMut<usize, Output = S> // Index-assignment via square brackets.
@@ -191,4 +195,18 @@ pub trait Vector<S: Scalar>:
     /// * `scalar` - The scalar to divide each element of this vector by.
     fn div_assign(&mut self, scalar: S);
 
+    /// Dot product of two vectors.
+    /// 
+    /// # Arguments
+    /// 
+    /// * `other` - The other vector to take the dot product with.
+    /// 
+    /// # Returns
+    /// 
+    /// Dot product of this vector with the other vector.
+    /// 
+    /// # Panics
+    /// 
+    /// * If the two vectors do not have the same length.
+    fn dot(&self, other: &Self) -> S;
 }

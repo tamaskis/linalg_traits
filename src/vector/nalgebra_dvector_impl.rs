@@ -71,4 +71,8 @@ impl<S: Scalar> Vector<S> for DVector<S> {
             *a /= scalar;
         }
     }
+
+    fn dot(&self, other: &Self) -> S {
+        self.dot(other)
+    }
 }
