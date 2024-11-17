@@ -10,6 +10,16 @@ impl<S: Scalar> Vector<S> for DVector<S> {
 
     type MatrixMxN<const M: usize> = DMatrix<S>;
 
+    type MatrixNxM<const M: usize> = DMatrix<S>;
+
+    fn is_statically_sized() -> bool {
+        false
+    }
+
+    fn is_dynamically_sized() -> bool {
+        true
+    }
+
     fn new_with_length(len: usize) -> DVector<S> {
         DVector::from_element(len, S::zero())
     }

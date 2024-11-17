@@ -10,6 +10,16 @@ impl<S: Scalar + ScalarOperand + LinalgScalar> Vector<S> for Array1<S> {
 
     type MatrixMxN<const M: usize> = Array2<S>;
 
+    type MatrixNxM<const M: usize> = Array2<S>;
+
+    fn is_statically_sized() -> bool {
+        false
+    }
+
+    fn is_dynamically_sized() -> bool {
+        true
+    }
+
     fn new_with_length(len: usize) -> Self {
         Array1::<S>::zeros(len)
     }

@@ -7,6 +7,16 @@ impl<S: Scalar> Vector<S> for Vec<S> {
 
     type MatrixMxN<const M: usize> = Mat<S>;
 
+    type MatrixNxM<const M: usize> = Mat<S>;
+
+    fn is_statically_sized() -> bool {
+        false
+    }
+
+    fn is_dynamically_sized() -> bool {
+        true
+    }
+
     fn new_with_length(len: usize) -> Vec<S> {
         vec![S::zero(); len]
     }

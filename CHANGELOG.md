@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.4.0
+
+1. Added ability to construct matrices of compatible types from vectors, and vectors of compatible types from matrices.
+1. Added methods to both the `Matrix` and `Vector` traits to determine if an instance of a type implementing either trait is statically-sized or dynamically-sized.
+
 ## 0.3.0
 
 1. Initial definition of the `Matrix` trait.

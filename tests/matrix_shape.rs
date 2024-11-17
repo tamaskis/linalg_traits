@@ -7,7 +7,7 @@ use nalgebra::{DMatrix, SMatrix};
 use ndarray::Array2;
 
 #[test]
-fn test_shape_mat() {
+fn test_mat() {
     assert_eq!(
         <Mat<f64> as Matrix<f64>>::new_with_shape(3, 2).shape(),
         (3, 2)
@@ -16,7 +16,7 @@ fn test_shape_mat() {
 
 #[test]
 #[cfg(feature = "with_nalgebra")]
-fn test_shape_nalgebra_dvector() {
+fn test_nalgebra_dmatrix() {
     assert_eq!(
         <DMatrix<f64> as Matrix<f64>>::new_with_shape(3, 2).shape(),
         (3, 2)
@@ -25,7 +25,7 @@ fn test_shape_nalgebra_dvector() {
 
 #[test]
 #[cfg(feature = "with_nalgebra")]
-fn test_shape_nalgebra_svector() {
+fn test_nalgebra_smatrix() {
     assert_eq!(
         <SMatrix<f64, 3, 2> as Matrix<f64>>::new_with_shape(3, 2).shape(),
         (3, 2)
@@ -34,7 +34,7 @@ fn test_shape_nalgebra_svector() {
 
 #[test]
 #[cfg(feature = "with_ndarray")]
-fn test_shape_ndarray_array2() {
+fn test_ndarray_array2() {
     let matrix = <Array2<f64> as Matrix<f64>>::new_with_shape(3, 2);
     assert_eq!(Matrix::shape(&matrix), (3, 2));
 }
