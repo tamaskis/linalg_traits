@@ -1,0 +1,40 @@
+use linalg_traits::{Mat, Matrix};
+
+#[cfg(feature = "with_nalgebra")]
+use nalgebra::{DMatrix, SMatrix};
+
+#[cfg(feature = "with_ndarray")]
+use ndarray::Array2;
+
+#[test]
+fn test_shape_mat() {
+    assert_eq!(
+        <Mat<f64> as Matrix<f64>>::new_with_shape(3, 2).shape(),
+        (3, 2)
+    );
+}
+
+#[test]
+#[cfg(feature = "with_nalgebra")]
+fn test_shape_nalgebra_dvector() {
+    assert_eq!(
+        <DMatrix<f64> as Matrix<f64>>::new_with_shape(3, 2).shape(),
+        (3, 2)
+    );
+}
+
+#[test]
+#[cfg(feature = "with_nalgebra")]
+fn test_shape_nalgebra_svector() {
+    assert_eq!(
+        <SMatrix<f64, 3, 2> as Matrix<f64>>::new_with_shape(3, 2).shape(),
+        (3, 2)
+    );
+}
+
+#[test]
+#[cfg(feature = "with_ndarray")]
+fn test_shape_ndarray_array2() {
+    let matrix = <Array2<f64> as Matrix<f64>>::new_with_shape(3, 2);
+    assert_eq!(Matrix::shape(&matrix), (3, 2));
+}

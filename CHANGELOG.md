@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.3.0
+
+1. Initial definition of the `Matrix` trait.
+1. Defined the `Mat` struct representing an extremely basic/minimal matrix type.
+1. Initial implementation of the `Vector` trait for the following types:
+    * `Mat<S>`
+    * `nalgebra::SMatrix<S, M, N>`
+    * `nalgebra::DMatrix<S>`
+    * `ndarray::Array2<S>`
+
 ## 0.2.1.
 
 1. Add the `dot` method to the `Vector` trait.
@@ -32,5 +42,5 @@
 1. Initial definition of the `Vector` trait with `new_with_length`, `len`, and `is_empty` methods.
 1. Initial implementation of the `Vector` trait for the following types:
     * `Vec<f64>`
-    * `nalgebra::SVector<f64, D>` (and its aliases)
+    * `nalgebra::SVector<f64, N>`
     * `nalgebra::DVector<f64>`

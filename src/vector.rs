@@ -1,4 +1,4 @@
-// Linking project modules.
+// Module declarations.
 pub(crate) mod nalgebra_dvector_impl;
 pub(crate) mod nalgebra_svector_impl;
 pub(crate) mod ndarray_array1_impl;

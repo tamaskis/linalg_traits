@@ -2,10 +2,14 @@ use crate::scalar::Scalar;
 use crate::vector::vector_trait::Vector;
 
 #[cfg(feature = "with_nalgebra")]
-use nalgebra::DVector;
+use nalgebra::{DMatrix, DVector};
 
 #[cfg(feature = "with_nalgebra")]
 impl<S: Scalar> Vector<S> for DVector<S> {
+    type MatrixNxN = DMatrix<S>;
+
+    type MatrixMxN<const M: usize> = DMatrix<S>;
+
     fn new_with_length(len: usize) -> DVector<S> {
         DVector::from_element(len, S::zero())
     }
@@ -35,10 +39,7 @@ impl<S: Scalar> Vector<S> for DVector<S> {
     }
 
     fn add_assign(&mut self, other: &Self) {
-        self.assert_same_length(other);
-        for (a, b) in self.iter_mut().zip(other.iter()) {
-            *a += *b;
-        }
+        *self += other;
     }
 
     fn sub(&self, other: &Self) -> Self {
@@ -46,10 +47,7 @@ impl<S: Scalar> Vector<S> for DVector<S> {
     }
 
     fn sub_assign(&mut self, other: &Self) {
-        self.assert_same_length(other);
-        for (a, b) in self.iter_mut().zip(other.iter()) {
-            *a -= *b;
-        }
+        *self -= other;
     }
 
     fn mul(&self, scalar: S) -> Self {
@@ -57,9 +55,7 @@ impl<S: Scalar> Vector<S> for DVector<S> {
     }
 
     fn mul_assign(&mut self, scalar: S) {
-        for a in self.iter_mut() {
-            *a *= scalar;
-        }
+        *self *= scalar;
     }
 
     fn div(&self, scalar: S) -> Self {
@@ -67,9 +63,7 @@ impl<S: Scalar> Vector<S> for DVector<S> {
     }
 
     fn div_assign(&mut self, scalar: S) {
-        for a in self.iter_mut() {
-            *a /= scalar;
-        }
+        *self /= scalar;
     }
 
     fn dot(&self, other: &Self) -> S {
