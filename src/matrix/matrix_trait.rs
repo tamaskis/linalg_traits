@@ -1,5 +1,6 @@
-use std::ops::{Index, IndexMut};
 use crate::scalar::Scalar;
+use crate::vector::vector_trait::Vector;
+use std::ops::{Index, IndexMut};
 
 /// Trait defining common matrix methods and operations.
 ///
@@ -8,36 +9,36 @@ use crate::scalar::Scalar;
 /// In addition to the methods defined by this trait, this trait also forces that the implementor
 /// also support indexing ([`Index`]) and mutable indexing ([`IndexMut`]) by a 2-element tuple of
 /// [`usize`]s (1st element defining the row index, 2nd element defining the column index).
-/// 
+///
 /// # Using [`Matrix`] as a trait bound
-/// 
+///
 /// Say I want to write a function that is generic over all matrices of [`f64`], e.g. I want it to
 /// be compatible both with [`ndarray::Array2<f64>`] and with [`nalgebra::DVector<f64>`]. I can
 /// define this function as
-/// 
+///
 /// ```ignore
 /// fn my_function<M: Matrix<f64>>(input_vector: &M) -> M { ... }
 /// ```
-/// 
+///
 /// Since the [`Matrix`] trait is generic over types that implement the [`Scalar`] trait, any
 /// function that is generic over [`Matrix`]es can also be made generic over the type of their
 /// elements. In this case, if we want `my_function` to be compatible with vectors of any scalar
 /// type (i.e. types that implement the [`Scalar`] trait), and not just vectors of [`f64`]s, we can
 /// include an additional generic parameter `S`.
-/// 
+///
 /// ```ignore
 /// fn my_function<S: Scalar, V: Vector<S>>(input_vector: &V) -> V { ... }
 /// ```
-/// 
+///
 /// ## Warning
 ///
 /// When working with arrays from [`ndarray`], elements of the array must also implement the
 /// following traits in addition to the [`Scalar`] trait:
-/// 
+///
 /// * [`ndarray::ScalarOperand`]
 /// * [`ndarray::LinalgScalar`]
-/// 
-/// For example, consider the case where we define the struct `CustomType` and implement the 
+///
+/// For example, consider the case where we define the struct `CustomType` and implement the
 /// [`Scalar`] trait for `CustomType`. If we want to be able to pass an
 /// [`ndarray::Array2<CustomType>`] into `my_function` from the example above, then we must also
 /// implement the [`ndarray::ScalarOperand`] and [`ndarray::LinalgScalar`] traits for `CustomType`.
@@ -46,18 +47,141 @@ pub trait Matrix<S: Scalar>:
     + IndexMut<(usize, usize), Output = S>  // Index-assignment via square brackets.
     + Clone                                 // Copying (compatible with dynamically-sized types).
 {
+    // -----------------
+    // Associated types.
+    // -----------------
+
     /// Length-`N` Vector type implementing the [`crate::Vector`] trait that is compatible with this
     /// matrix type. An instance of this matrix type with shape `(M, N)` can be multiplied from the
     /// right by an instance of this vector type with length `N`, resulting in an instance of this
-    /// vector type with length `M`.
-    type VectorN;
+    /// vector type with length `M` (mathematically representing a column vector).
+    type VectorN: Vector<S>;
 
     /// Length-`M` Vector type implementing the [`crate::Vector`] trait that is compatible with this
     /// matrix type. An instance of this matrix type with shape `(M, N)` can be multiplied from the
     /// left by an instance of this vector type with length `M`, resulting in an instance of this
-    /// vector type with length `N`.
-    type VectorM;
+    /// vector type with length `N` (mathematically representing a row vector).
+    type VectorM: Vector<S>;
 
+    // -------------------------------
+    // Default method implementations.
+    // -------------------------------
+
+    /// Create a length-`N` vector that is compatible with this `M x N` matrix.
+    /// 
+    /// # Returns
+    /// 
+    /// Length-`N` vector that is compatible with this `M x N` matrix.
+    /// 
+    /// # Examples
+    /// 
+    /// ## Creating a statically-sized vector compatible with a statically-sized matrix
+    /// 
+    /// ```
+    /// use linalg_traits::Matrix;
+    /// use nalgebra::{SMatrix, SVector};
+    /// 
+    /// // Create a statically-sized 3x2 matrix.
+    /// let mat: SMatrix<f64, 3, 2> = SMatrix::new_with_shape(3, 2);
+    /// 
+    /// // Create a statically-sized length-2 vector.
+    /// let vec: SVector<f64, 2> = mat.new_vector_n();
+    /// assert_eq!(vec.len(), 2);
+    /// ```
+    /// 
+    /// ## Creating a dynamically-sized matrix compatible with a dynamically-sized vector
+    /// 
+    /// ```
+    /// use linalg_traits::Matrix;
+    /// use nalgebra::{DMatrix, DVector};
+    /// 
+    /// // Create a dynamically-sized 3x2 matrix.
+    /// let mat: DMatrix<f64> = DMatrix::new_with_shape(3, 2);
+    /// 
+    /// // Create a dynamically-sized length-2 vector.
+    /// let vec: DVector<f64> = mat.new_vector_n();
+    /// assert_eq!(vec.len(), 2);
+    /// ```
+    fn new_vector_n(&self) -> Self::VectorN {
+        let (_, n) = self.shape();
+        Self::VectorN::new_with_length(n)
+    }
+
+    /// Create a length-`M` vector that is compatible with this `M x N` matrix.
+    /// 
+    /// # Returns
+    /// 
+    /// Length-`M` vector that is compatible with this `M x N` matrix.
+    /// 
+    /// # Examples
+    /// 
+    /// ## Creating a statically-sized vector compatible with a statically-sized matrix
+    /// 
+    /// ```
+    /// use linalg_traits::Matrix;
+    /// use nalgebra::{SMatrix, SVector};
+    /// 
+    /// // Create a statically-sized 3x2 matrix.
+    /// let mat: SMatrix<f64, 3, 2> = SMatrix::new_with_shape(3, 2);
+    /// 
+    /// // Create a statically-sized length-3 vector.
+    /// let vec: SVector<f64, 3> = mat.new_vector_m();
+    /// assert_eq!(vec.len(), 3);
+    /// ```
+    /// 
+    /// ## Creating a dynamically-sized matrix compatible with a dynamically-sized vector
+    /// 
+    /// ```
+    /// use linalg_traits::Matrix;
+    /// use nalgebra::{DMatrix, DVector};
+    /// 
+    /// // Create a dynamically-sized 3x2 matrix.
+    /// let mat: DMatrix<f64> = DMatrix::new_with_shape(3, 2);
+    /// 
+    /// // Create a dynamically-sized length-3 vector.
+    /// let vec: DVector<f64> = mat.new_vector_m();
+    /// assert_eq!(vec.len(), 3);
+    /// ```
+    fn new_vector_m(&self) -> Self::VectorM {
+        let (m,_) = self.shape();
+        Self::VectorM::new_with_length(m)
+    }
+
+    /// Assert that this matrix and another matrix have the same shape. 
+    /// 
+    /// # Arguments
+    /// 
+    /// * `other` - The other matrix whose shape we are comparing with this matrix.
+    /// 
+    /// # Panics
+    /// 
+    /// * If the shape of the other matrix is not equal to the shape of this matrix.
+    fn assert_same_shape(&self, other: &Self) {
+        assert_eq!(
+            self.shape(),
+            other.shape(), 
+            "Matrices have incompatible shapes.",
+        );
+    }
+
+    // -----------------------------
+    // Required method declarations.
+    // -----------------------------
+    
+    /// Determine whether or not the matrix is statically-sized.
+    /// 
+    /// # Returns
+    /// 
+    /// `true` if the matrix is statically-sized, `false` if the matrix is dynamically-sized.
+    fn is_statically_sized() -> bool;
+    
+    /// Determine whether or not the matrix is dynamically-sized.
+    /// 
+    /// # Returns
+    /// 
+    /// `true` if the matrix is dynamically-sized, `false` if the matrix is statically-sized.
+    fn is_dynamically_sized() -> bool;
+    
     /// Determine whether or not the matrix is row-major.
     /// 
     /// # Returns
@@ -147,23 +271,6 @@ pub trait Matrix<S: Scalar>:
     /// can be programmatically determined via the [`Matrix::is_row_major`] and
     /// [`Matrix::is_column_major`] methods.
     fn as_slice(&self) -> &[S];
-
-    /// Assert that this matrix and another matrix have the same shape. 
-    /// 
-    /// # Arguments
-    /// 
-    /// * `other` - The other matrix whose shape we are comparing with this matrix.
-    /// 
-    /// # Panics
-    /// 
-    /// * If the shape of the other matrix is not equal to the shape of this matrix.
-    fn assert_same_shape(&self, other: &Self) {
-        assert_eq!(
-            self.shape(),
-            other.shape(), 
-            "Matrices have incompatible shapes.",
-        );
-    }
 
     /// Matrix addition (elementwise).
     /// 

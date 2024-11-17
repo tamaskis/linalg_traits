@@ -10,6 +10,16 @@ impl<const N: usize, S: Scalar> Vector<S> for SVector<S, N> {
 
     type MatrixMxN<const M: usize> = SMatrix<S, M, N>;
 
+    type MatrixNxM<const M: usize> = SMatrix<S, N, M>;
+
+    fn is_statically_sized() -> bool {
+        true
+    }
+
+    fn is_dynamically_sized() -> bool {
+        false
+    }
+
     fn new_with_length(len: usize) -> Self {
         assert_eq!(len, N, "Length must match the fixed size of the SVector.");
         SVector::from_element(S::zero())

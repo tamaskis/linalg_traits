@@ -13,6 +13,14 @@ where
 
     type VectorN = SVector<S, N>;
 
+    fn is_statically_sized() -> bool {
+        true
+    }
+
+    fn is_dynamically_sized() -> bool {
+        false
+    }
+
     fn is_row_major() -> bool {
         false
     }

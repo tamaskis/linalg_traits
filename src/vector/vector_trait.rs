@@ -1,5 +1,6 @@
 use std::ops::{Index, IndexMut};
 use crate::scalar::Scalar;
+use crate::matrix::matrix_trait::Matrix;
 
 /// Trait defining common vector methods and operations.
 ///
@@ -45,34 +46,261 @@ pub trait Vector<S: Scalar>:
     + IndexMut<usize, Output = S>   // Index-assignment via square brackets.
     + Clone                         // Copying (compatible with dynamically-sized types).
 {
+    // -----------------
+    // Associated types.
+    // -----------------
+
     /// `N x N` matrix type implementing the [`crate::Matrix`] trait that is compatible with this
     /// vector type. An instance of this matrix type with shape `(N, N)` can be multiplied either
     /// from the right or the left by an instance of this vector type with length-`N`, resulting in
     /// another length-`N` vector in either case.
     /// 
-    /// # Note
-    /// 
-    /// 1. When multiplying this `N x N` matrix type from the right by an instance of this vector
-    ///    type with length-`N`, the resulting length-`N` vector mathematically represents a column
-    ///    vector.
-    /// 2. When multiplying this `N x N` matrix type from the left by an instance of this vector
-    ///    type with length-`N`, the resulting length-`N` vector mathematically represents a row
-    ///    vector.
-    type MatrixNxN;
+    /// * When multiplied from the right by a vector, the resulting vector mathematically represents
+    ///   a column vector.
+    /// * When multiplied from the left by a vector, the resulting vector mathematically represents
+    ///   a row vector.
+    type MatrixNxN: Matrix<S>;
     
     /// `M x N` matrix type implementing the [`crate::Matrix`] trait that is compatible with this
-    /// vector type. An instance of this matrix type with shape `(M, N)` can be multiplied either
-    /// from the right by an instance of this vector type with length-`N` (resulting in a length-`M`
-    /// vector), or from the left by an instance of this vector type with length-`M` (resulting in
-    /// alength-`N`) vector.
+    /// vector type. An instance of this matrix type with shape `(M, N)` can be multiplied from the
+    /// right by an instance of this vector type with length-`N`, resulting in a length-`M` vector
+    /// (which mathematically represents a column vector).
     /// 
-    /// 1. When multiplying this `M x N` matrix type from the right by an instance of this vector
-    ///    type with length-`N`, the resulting length-`M` vector mathematically represents a column
-    ///    vector.
-    /// 2. When multiplying this `M x N` matrix type from the left by an instance of this vector
-    ///    type with length-`M`, the resulting length-`N`` vector mathematically represents a row
-    ///    vector.
-    type MatrixMxN<const M: usize>;
+    /// # Note
+    /// 
+    /// * We say that the instance of the type implementing the [`Vector`] trait has length `N`.
+    /// * Therefore, we already know one of the dimensions (`N`) of this `M`-by-`N` matrix.
+    /// * To know the other dimension (`M`) at compile time (to support statically-sized matrices),
+    ///   we need to provide `M` as a const generic.
+    type MatrixMxN<const M: usize>: Matrix<S>;
+
+    /// `N x M` matrix type implementing the [`crate::Matrix`] trait that is compatible with this
+    /// vector type. An instance of this matrix type with shape `(N, M)` can be multiplied from the
+    /// left by an instance of this vector type with length-`N`, resulting in a length-`M` vector
+    /// (which mathematically represents a row vector).
+    /// 
+    /// # Note
+    /// 
+    /// * We say that the instance of the type implementing the [`Vector`] trait has length `N`.
+    /// * Therefore, we already know one of the dimensions (`N`) of this `N`-by-`M` matrix.
+    /// * To know the other dimension (`M`) at compile time (to support statically-sized matrices),
+    ///   we need to provide `M` as a const generic.
+    type MatrixNxM<const M: usize>: Matrix<S>;
+
+    // -------------------------------
+    // Default method implementations.
+    // -------------------------------
+
+    /// Create a `N x N` matrix that is compatible with this length-`N` vector.
+    /// 
+    /// # Returns
+    /// 
+    /// `N x N` matrix that is compatible with this length-`N` vector.
+    /// 
+    /// # Examples
+    /// 
+    /// ## Creating a statically-sized matrix compatible with a statically-sized vector
+    /// 
+    /// ```
+    /// use linalg_traits::Vector;
+    /// use nalgebra::{SMatrix, SVector};
+    /// 
+    /// // Create a statically-sized vector of length-2.
+    /// let vec: SVector<f64, 2> = SVector::new_with_length(2);
+    /// 
+    /// // Create a statically-sized 2x2 matrix.
+    /// let mat: SMatrix<f64, 2, 2> = vec.new_matrix_n_by_n();
+    /// assert_eq!(mat.shape(), (2, 2));
+    /// ```
+    /// 
+    /// ## Creating a dynamically-sized matrix compatible with a dynamically-sized vector
+    /// 
+    /// ```
+    /// use linalg_traits::Vector;
+    /// use nalgebra::{DMatrix, DVector};
+    /// 
+    /// // Create a dynamically-sized vector of length-2.
+    /// let vec: DVector<f64> = DVector::new_with_length(2);
+    /// 
+    /// // Create a dynamically-sized 2x2 matrix.
+    /// let mat: DMatrix<f64> = vec.new_matrix_n_by_n();
+    /// assert_eq!(mat.shape(), (2, 2));
+    /// ```
+    fn new_matrix_n_by_n(&self) -> Self::MatrixNxN {
+        let n = self.len();
+        Self::MatrixNxN::new_with_shape(n, n)
+    }
+
+    /// Create a `M x N` matrix that is compatible with this length-`N` vector.
+    /// 
+    /// # Arguments
+    /// 
+    /// * `m` - Number of rows of the `M x N` matrix. Input as `None` for statically-sized vectors,
+    ///         and as `Some(m)` for dynamically-sized vectors.
+    /// 
+    /// # Returns
+    /// 
+    /// `M x N` matrix that is compatible with this length-`N` vector.
+    /// 
+    /// # Note
+    /// 
+    /// * Dynamically-sized vectors will determine the number of rows (`m`) for the corresponding
+    ///   compatible dynamically-sized matrix through the argument `m`. The const generic parameter,
+    ///   `M`, can be specified as `0` at compile time since it is not used anyways.
+    /// * Statically-sized vectors will determine the number of rows (`m`) for the corresponding
+    ///   compatible statically-sized matrix through the const generic parameter `M`. The argument
+    ///   `m` should be input as `None` at compile time since it is not used anyways.
+    /// 
+    /// # Examples
+    /// 
+    /// ## Creating a statically-sized matrix compatible with a statically-sized vector
+    /// 
+    /// ```
+    /// use linalg_traits::Vector;
+    /// use nalgebra::{SMatrix, SVector};
+    /// 
+    /// // Specify the dimensions.
+    /// const M: usize = 3;
+    /// const N: usize = 2;
+    /// 
+    /// // Create a statically-sized vector of length-2.
+    /// let vec: SVector<f64, N> = SVector::new_with_length(N);
+    /// 
+    /// // Create a statically-sized 3x2 matrix.
+    /// let mat: SMatrix<f64, M, N> = vec.new_matrix_m_by_n::<M>(None);
+    /// assert_eq!(mat.shape(), (M, N));
+    /// ```
+    /// 
+    /// ## Creating a dynamically-sized matrix compatible with a dynamically-sized vector
+    /// 
+    /// ```
+    /// use linalg_traits::Vector;
+    /// use nalgebra::{DMatrix, DVector};
+    /// 
+    /// // Specify the dimensions.
+    /// const M: usize = 3;
+    /// const N: usize = 2;
+    /// 
+    /// // Create a dynamically-sized vector of length-2.
+    /// let vec: DVector<f64> = DVector::new_with_length(N);
+    /// 
+    /// // Create a dynamically-sized 3x2 matrix.
+    /// let mat: DMatrix<f64> = vec.new_matrix_m_by_n::<0>(Some(M));
+    /// assert_eq!(mat.shape(), (M, N));
+    /// ```
+    fn new_matrix_m_by_n<const M: usize>(&self, m: Option<usize>) -> Self::MatrixMxN<M> {
+        let n = self.len();
+        let m = if Self::is_statically_sized() {
+            M
+        } else {
+            m.unwrap()
+        };
+        Self::MatrixMxN::new_with_shape(m, n)
+    }
+
+    /// Create a `N x M` matrix that is compatible with this length-`N` vector.
+    /// 
+    /// # Arguments
+    /// 
+    /// * `m` - Number of columns of the `N x M` matrix. Input as `None` for statically-sized
+    ///         vectors, and as `Some(m)` for dynamically-sized vectors.
+    /// 
+    /// # Returns
+    /// 
+    /// `N x M` matrix that is compatible with this length-`N` vector.
+    /// 
+    /// # Note
+    /// 
+    /// * Dynamically-sized vectors will determine the number of columns (`m`) for the corresponding
+    ///   compatible dynamically-sized matrix through the argument `m`. The const generic parameter,
+    ///   `M`, can be specified as `0` at compile time since it is not used anyways.
+    /// * Statically-sized vectors will determine the number of columns (`m`) for the corresponding
+    ///   compatible statically-sized matrix through the const generic parameter `M`. The argument
+    ///   `m` should be input as `None` at compile time since it is not used anyways.
+    /// 
+    /// # Examples
+    /// 
+    /// ## Creating a statically-sized matrix compatible with a statically-sized vector
+    /// 
+    /// ```
+    /// use linalg_traits::Vector;
+    /// use nalgebra::{SMatrix, SVector};
+    /// 
+    /// // Specify the dimensions.
+    /// const N: usize = 2;
+    /// const M: usize = 3;
+    /// 
+    /// // Create a statically-sized vector of length-2.
+    /// let vec: SVector<f64, N> = SVector::new_with_length(N);
+    /// 
+    /// // Create a statically-sized 2x3 matrix.
+    /// let mat: SMatrix<f64, N, M> = vec.new_matrix_n_by_m::<M>(None);
+    /// assert_eq!(mat.shape(), (N, M));
+    /// ```
+    /// 
+    /// ## Creating a dynamically-sized matrix compatible with a dynamically-sized vector
+    /// 
+    /// ```
+    /// use linalg_traits::Vector;
+    /// use nalgebra::{DMatrix, DVector};
+    /// 
+    /// // Specify the dimensions.
+    /// const N: usize = 2;
+    /// const M: usize = 3;
+    /// 
+    /// // Create a dynamically-sized vector of length-2.
+    /// let vec: DVector<f64> = DVector::new_with_length(N);
+    /// 
+    /// // Create a dynamically-sized 2x3 matrix.
+    /// let mat: DMatrix<f64> = vec.new_matrix_n_by_m::<0>(Some(M));
+    /// assert_eq!(mat.shape(), (N, M));
+    /// ```
+    fn new_matrix_n_by_m<const M: usize>(&self, m: Option<usize>) -> Self::MatrixNxM<M> {
+        let n = self.len();
+        let m = if Self::is_statically_sized() {
+            M
+        } else {
+            m.unwrap()
+        };
+        Self::MatrixNxM::new_with_shape(n, m)
+    }
+
+    /// Assert that this vector and another vector have the same length. 
+    /// 
+    /// # Arguments
+    /// 
+    /// * `other` - The other vector whose length we are comparing with this vector.
+    /// 
+    /// # Panics
+    /// 
+    /// * If the length of the other vector is not equal to the length of this vector.
+    fn assert_same_length(&self, other: &Self) {
+        assert_eq!(
+            self.len(),
+            other.len(), 
+            "Length of the other vector ({}) does not match the length of this vector ({}).",
+            self.len(),
+            other.len()
+        );
+    }
+
+    // -----------------------------
+    // Required method declarations.
+    // -----------------------------
+
+    /// Determine whether or not the vector is statically-sized.
+    /// 
+    /// # Returns
+    /// 
+    /// `true` if the vector is statically-sized, `false` if the vector is dynamically-sized.
+    fn is_statically_sized() -> bool;
+    
+    /// Determine whether or not the vector is dynamically-sized.
+    /// 
+    /// # Returns
+    /// 
+    /// `true` if the vector is dynamically-sized, `false` if the vector is statically-sized.
+    fn is_dynamically_sized() -> bool;
 
     /// Create a vector with the specified length, with each element set to 0.
     ///
@@ -120,25 +348,6 @@ pub trait Vector<S: Scalar>:
     ///
     /// A slice of the vector's elements.
     fn as_slice(&self) -> &[S];
-
-    /// Assert that this vector and another vector have the same length. 
-    /// 
-    /// # Arguments
-    /// 
-    /// * `other` - The other vector whose length we are comparing with this vector.
-    /// 
-    /// # Panics
-    /// 
-    /// * If the length of the other vector is not equal to the length of this vector.
-    fn assert_same_length(&self, other: &Self) {
-        assert_eq!(
-            self.len(),
-            other.len(), 
-            "Length of the other vector ({}) does not match the length of this vector ({}).",
-            self.len(),
-            other.len()
-        );
-    }
 
     /// Vector addition (elementwise).
     /// 
