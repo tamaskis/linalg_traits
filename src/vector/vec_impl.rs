@@ -1,5 +1,3 @@
-//! Implementation of the [`Vector`] trait for [`Vec`].
-
 use crate::matrix::mat_impl::Mat;
 use crate::scalar::Scalar;
 use crate::vector::vector_trait::Vector;

@@ -1,5 +1,3 @@
-//! Implementation of the [`Vector`] trait for [`nalgebra::SVector`].
-
 use crate::scalar::Scalar;
 use crate::vector::vector_trait::Vector;
 

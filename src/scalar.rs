@@ -1,5 +1,3 @@
-//! Definition and implementions of the [`Scalar`] trait.
-
 use num_traits::Zero;
 use std::fmt::Debug;
 use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Sub, SubAssign};
