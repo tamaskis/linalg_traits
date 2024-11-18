@@ -2,7 +2,7 @@ use linalg_traits::Scalar;
 use num_traits::Zero;
 use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Sub, SubAssign};
 
-#[cfg(feature = "with_nalgebra")]
+#[cfg(feature = "nalgebra")]
 use nalgebra::{DMatrix, SMatrix};
 use ndarray::Array2;
 
@@ -234,7 +234,7 @@ fn test_f64() {
 }
 
 #[test]
-#[cfg(feature = "with_nalgebra")]
+#[cfg(feature = "nalgebra")]
 fn test_nalgebra_dmatrix() {
     let mat = DMatrix::<MyType>::from_row_slice(
         2,
@@ -253,7 +253,7 @@ fn test_nalgebra_dmatrix() {
 }
 
 #[test]
-#[cfg(feature = "with_nalgebra")]
+#[cfg(feature = "nalgebra")]
 fn test_nalgebra_smatrix() {
     let mat = SMatrix::<MyType, 2, 2>::from_row_slice(&[
         MyType::new(1.0),
@@ -268,7 +268,7 @@ fn test_nalgebra_smatrix() {
 }
 
 #[test]
-#[cfg(feature = "with_ndarray")]
+#[cfg(feature = "ndarray")]
 fn test_ndarray_array2() {
     let mat = Array2::<MyType>::from_shape_vec(
         (2, 2),

@@ -1,9 +1,9 @@
 use linalg_traits::Vector;
 
-#[cfg(feature = "with_nalgebra")]
+#[cfg(feature = "nalgebra")]
 use nalgebra::{DVector, SVector};
 
-#[cfg(feature = "with_ndarray")]
+#[cfg(feature = "ndarray")]
 use ndarray::Array1;
 
 #[test]
@@ -13,21 +13,21 @@ fn test_mat() {
 }
 
 #[test]
-#[cfg(feature = "with_nalgebra")]
+#[cfg(feature = "nalgebra")]
 fn test_nalgebra_dvector() {
     assert!(DVector::<f64>::is_dynamically_sized());
     assert!(!DVector::<f64>::is_statically_sized());
 }
 
 #[test]
-#[cfg(feature = "with_nalgebra")]
+#[cfg(feature = "nalgebra")]
 fn test_nalgebra_svector() {
     assert!(!SVector::<f64, 3>::is_dynamically_sized());
     assert!(SVector::<f64, 3>::is_statically_sized());
 }
 
 #[test]
-#[cfg(feature = "with_ndarray")]
+#[cfg(feature = "ndarray")]
 fn test_ndarray_array1() {
     assert!(Array1::<f64>::is_dynamically_sized());
     assert!(!Array1::<f64>::is_statically_sized());

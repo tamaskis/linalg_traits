@@ -1,9 +1,9 @@
 use linalg_traits::Vector;
 
-#[cfg(feature = "with_nalgebra")]
+#[cfg(feature = "nalgebra")]
 use nalgebra::{DVector, SVector};
 
-#[cfg(feature = "with_ndarray")]
+#[cfg(feature = "ndarray")]
 use ndarray::Array1;
 
 #[test]
@@ -12,13 +12,13 @@ fn test_len_vec() {
 }
 
 #[test]
-#[cfg(feature = "with_nalgebra")]
+#[cfg(feature = "nalgebra")]
 fn test_len_nalgebra_dvector() {
     assert_eq!(<DVector<f64> as Vector<f64>>::new_with_length(3).len(), 3);
 }
 
 #[test]
-#[cfg(feature = "with_nalgebra")]
+#[cfg(feature = "nalgebra")]
 fn test_len_nalgebra_svector() {
     assert_eq!(
         <SVector<f64, 3> as Vector<f64>>::new_with_length(3).len(),
@@ -27,7 +27,7 @@ fn test_len_nalgebra_svector() {
 }
 
 #[test]
-#[cfg(feature = "with_ndarray")]
+#[cfg(feature = "ndarray")]
 fn test_len_ndarray_array1() {
     assert_eq!(<Array1<f64> as Vector<f64>>::new_with_length(3).len(), 3);
 }

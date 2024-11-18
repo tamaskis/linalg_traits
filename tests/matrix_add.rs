@@ -1,10 +1,10 @@
 use linalg_traits::{Mat, Matrix};
 use numtest::*;
 
-#[cfg(feature = "with_nalgebra")]
+#[cfg(feature = "nalgebra")]
 use nalgebra::{DMatrix, Matrix2};
 
-#[cfg(feature = "with_ndarray")]
+#[cfg(feature = "ndarray")]
 use ndarray::Array2;
 
 // Test conditions.
@@ -45,7 +45,7 @@ fn test_mat_add_assign_panic() {
 }
 
 #[test]
-#[cfg(feature = "with_nalgebra")]
+#[cfg(feature = "nalgebra")]
 fn test_nalgebra_dmatrix() {
     let mut x = DMatrix::from_row_slice(2, 2, X_ROW);
     let y = DMatrix::from_row_slice(2, 2, Y_ROW);
@@ -59,7 +59,7 @@ fn test_nalgebra_dmatrix() {
 #[should_panic(
     expected = "Matrix addition/subtraction dimensions mismatch.\n  left: (2, 2)\n right: (2, 3)"
 )]
-#[cfg(feature = "with_nalgebra")]
+#[cfg(feature = "nalgebra")]
 fn test_nalgebra_dmatrix_add_panic() {
     let x = DMatrix::from_row_slice(2, 2, X_ROW);
     let w = DMatrix::from_row_slice(2, 3, W_ROW);
@@ -70,7 +70,7 @@ fn test_nalgebra_dmatrix_add_panic() {
 #[should_panic(
     expected = "Matrix addition/subtraction dimensions mismatch.\n  left: (2, 2)\n right: (2, 3)"
 )]
-#[cfg(feature = "with_nalgebra")]
+#[cfg(feature = "nalgebra")]
 fn test_nalgebra_dmatrix_add_assign_panic() {
     let mut x = DMatrix::from_row_slice(2, 2, X_ROW);
     let w = DMatrix::from_row_slice(2, 3, W_ROW);
@@ -78,7 +78,7 @@ fn test_nalgebra_dmatrix_add_assign_panic() {
 }
 
 #[test]
-#[cfg(feature = "with_nalgebra")]
+#[cfg(feature = "nalgebra")]
 fn test_nalgebra_smatrix() {
     let mut x = <Matrix2<f64> as Matrix<f64>>::from_row_slice(2, 2, X_ROW);
     let y = <Matrix2<f64> as Matrix<f64>>::from_row_slice(2, 2, Y_ROW);
@@ -89,7 +89,7 @@ fn test_nalgebra_smatrix() {
 }
 
 #[test]
-#[cfg(feature = "with_ndarray")]
+#[cfg(feature = "ndarray")]
 fn test_ndarray_array2() {
     let mut x = Array2::from_row_slice(2, 2, X_ROW);
     let y = Array2::from_row_slice(2, 2, Y_ROW);
@@ -101,7 +101,7 @@ fn test_ndarray_array2() {
 
 #[test]
 #[should_panic(expected = "ShapeError/IncompatibleShape: incompatible shapes")]
-#[cfg(feature = "with_ndarray")]
+#[cfg(feature = "ndarray")]
 fn test_ndarray_array2_add_panic() {
     let x = Array2::from_row_slice(2, 2, X_ROW);
     let w = Array2::from_row_slice(2, 3, W_ROW);
@@ -110,7 +110,7 @@ fn test_ndarray_array2_add_panic() {
 
 #[test]
 #[should_panic(expected = "ndarray: could not broadcast array from shape: [2, 3] to: [2, 2]")]
-#[cfg(feature = "with_ndarray")]
+#[cfg(feature = "ndarray")]
 fn test_ndarray_array2_add_assign_panic() {
     let mut x = Array2::from_row_slice(2, 2, X_ROW);
     let w = Array2::from_row_slice(2, 3, W_ROW);

@@ -1,10 +1,10 @@
 use linalg_traits::{Mat, Matrix};
 use numtest::*;
 
-#[cfg(feature = "with_nalgebra")]
+#[cfg(feature = "nalgebra")]
 use nalgebra::{DMatrix, SMatrix};
 
-#[cfg(feature = "with_ndarray")]
+#[cfg(feature = "ndarray")]
 use ndarray::Array2;
 
 // Slices to use for all tests.
@@ -42,7 +42,7 @@ fn test_mat_panic_2() {
 
 // Note that `nalgebra::DMatrix` is column-major.
 #[test]
-#[cfg(feature = "with_nalgebra")]
+#[cfg(feature = "nalgebra")]
 fn test_nalgebra_dmatrix() {
     // Testing from a row slice.
     let x1 = <DMatrix<f64> as Matrix<f64>>::from_row_slice(2, 3, ROW_SLICE);
@@ -76,7 +76,7 @@ fn test_nalgebra_dmatrix_panic_2() {
 
 // Note that `nalgebra::SMatrix` is column-major.
 #[test]
-#[cfg(feature = "with_nalgebra")]
+#[cfg(feature = "nalgebra")]
 fn test_nalgebra_smatrix() {
     // Testing from a row slice.
     let x1 = <SMatrix<f64, 2, 3> as Matrix<f64>>::from_row_slice(2, 3, ROW_SLICE);
@@ -118,7 +118,7 @@ fn test_nalgebra_smatrix_panic_4() {
 
 // Note that `ndarray::Array2` is row-major.
 #[test]
-#[cfg(feature = "with_ndarray")]
+#[cfg(feature = "ndarray")]
 fn test_ndarray_array2() {
     // Testing from a row slice.
     let x1 = <Array2<f64> as Matrix<f64>>::from_row_slice(2, 3, ROW_SLICE);

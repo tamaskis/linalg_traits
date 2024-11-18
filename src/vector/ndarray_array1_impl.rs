@@ -1,10 +1,10 @@
 use crate::scalar::Scalar;
 use crate::vector::vector_trait::Vector;
 
-#[cfg(feature = "with_ndarray")]
+#[cfg(feature = "ndarray")]
 use ndarray::{Array1, Array2, LinalgScalar, ScalarOperand};
 
-#[cfg(feature = "with_ndarray")]
+#[cfg(feature = "ndarray")]
 impl<S: Scalar + ScalarOperand + LinalgScalar> Vector<S> for Array1<S> {
     type MatrixNxN = Array2<S>;
 

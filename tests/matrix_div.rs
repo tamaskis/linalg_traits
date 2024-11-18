@@ -1,10 +1,10 @@
 use linalg_traits::{Mat, Matrix};
 use numtest::*;
 
-#[cfg(feature = "with_nalgebra")]
+#[cfg(feature = "nalgebra")]
 use nalgebra::{DMatrix, Matrix2};
 
-#[cfg(feature = "with_ndarray")]
+#[cfg(feature = "ndarray")]
 use ndarray::Array2;
 
 // Test conditions.
@@ -25,7 +25,7 @@ fn test_mat() {
 }
 
 #[test]
-#[cfg(feature = "with_nalgebra")]
+#[cfg(feature = "nalgebra")]
 fn test_nalgebra_dmatrix() {
     let mut x = DMatrix::from_row_slice(2, 2, X_ROW);
     let z = x.div(Y);
@@ -35,7 +35,7 @@ fn test_nalgebra_dmatrix() {
 }
 
 #[test]
-#[cfg(feature = "with_nalgebra")]
+#[cfg(feature = "nalgebra")]
 fn test_nalgebra_smatrix() {
     let mut x = <Matrix2<f64> as Matrix<f64>>::from_row_slice(2, 2, X_ROW);
     let z = x.div(Y);
@@ -45,7 +45,7 @@ fn test_nalgebra_smatrix() {
 }
 
 #[test]
-#[cfg(feature = "with_ndarray")]
+#[cfg(feature = "ndarray")]
 fn test_ndarray_array2() {
     let mut x = Array2::from_row_slice(2, 2, X_ROW);
     let z = x.div(Y);

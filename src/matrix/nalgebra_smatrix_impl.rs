@@ -1,10 +1,10 @@
 use crate::matrix::matrix_trait::Matrix;
 use crate::scalar::Scalar;
 
-#[cfg(feature = "with_nalgebra")]
+#[cfg(feature = "nalgebra")]
 use nalgebra::{SMatrix, SVector};
 
-#[cfg(feature = "with_nalgebra")]
+#[cfg(feature = "nalgebra")]
 impl<S, const M: usize, const N: usize> Matrix<S> for SMatrix<S, M, N>
 where
     S: Scalar,
