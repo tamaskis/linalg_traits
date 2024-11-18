@@ -1,9 +1,9 @@
 use linalg_traits::Vector;
 
-#[cfg(feature = "with_nalgebra")]
+#[cfg(feature = "nalgebra")]
 use nalgebra::{DVector, Vector3};
 
-#[cfg(feature = "with_ndarray")]
+#[cfg(feature = "ndarray")]
 use ndarray::Array1;
 
 // Test conditions.
@@ -33,7 +33,7 @@ fn test_vec_panic() {
 }
 
 #[test]
-#[cfg(feature = "with_nalgebra")]
+#[cfg(feature = "nalgebra")]
 fn test_nalgebra_dvector() {
     let x = DVector::from_slice(X);
     let y = DVector::from_slice(Y);
@@ -43,7 +43,7 @@ fn test_nalgebra_dvector() {
 
 #[test]
 #[should_panic(expected = "Dot product dimensions mismatch for shapes (3, 1) and (2, 1)")]
-#[cfg(feature = "with_nalgebra")]
+#[cfg(feature = "nalgebra")]
 fn test_nalgebra_dvector_panic() {
     let x = DVector::from_slice(X);
     let w = DVector::from_slice(W);
@@ -51,7 +51,7 @@ fn test_nalgebra_dvector_panic() {
 }
 
 #[test]
-#[cfg(feature = "with_nalgebra")]
+#[cfg(feature = "nalgebra")]
 fn test_nalgebra_svector() {
     let x = Vector3::from_slice(X);
     let y = Vector3::from_slice(Y);
@@ -61,7 +61,7 @@ fn test_nalgebra_svector() {
 
 #[test]
 #[should_panic(expected = "Length must match the fixed size of the SVector.\n  left: 2\n right: 3")]
-#[cfg(feature = "with_nalgebra")]
+#[cfg(feature = "nalgebra")]
 fn test_nalgebra_svector_panic() {
     let x = Vector3::from_slice(X);
     let w = Vector3::from_slice(W);
@@ -69,7 +69,7 @@ fn test_nalgebra_svector_panic() {
 }
 
 #[test]
-#[cfg(feature = "with_ndarray")]
+#[cfg(feature = "ndarray")]
 fn test_ndarray_array1() {
     let x = Array1::from_slice(X);
     let y = Array1::from_slice(Y);
@@ -79,7 +79,7 @@ fn test_ndarray_array1() {
 
 #[test]
 #[should_panic(expected = "assertion `left == right` failed\n  left: 3\n right: 2")]
-#[cfg(feature = "with_ndarray")]
+#[cfg(feature = "ndarray")]
 fn test_ndarray_array1_panic() {
     let x = Array1::from_slice(X);
     let w = Array1::from_slice(W);

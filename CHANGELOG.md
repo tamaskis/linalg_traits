@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.4.1
+1. Attempt to fix issues with optional dependencies.
+
 ## 0.4.0
 
 1. Added ability to construct matrices of compatible types from vectors, and vectors of compatible types from matrices.

@@ -1,10 +1,10 @@
 use crate::scalar::Scalar;
 use crate::vector::vector_trait::Vector;
 
-#[cfg(feature = "with_nalgebra")]
+#[cfg(feature = "nalgebra")]
 use nalgebra::{SMatrix, SVector};
 
-#[cfg(feature = "with_nalgebra")]
+#[cfg(feature = "nalgebra")]
 impl<const N: usize, S: Scalar> Vector<S> for SVector<S, N> {
     type MatrixNxN = SMatrix<S, N, N>;
 

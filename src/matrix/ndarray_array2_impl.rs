@@ -1,10 +1,10 @@
 use crate::matrix::matrix_trait::Matrix;
 use crate::scalar::Scalar;
 
-#[cfg(feature = "with_ndarray")]
+#[cfg(feature = "ndarray")]
 use ndarray::{Array1, Array2, LinalgScalar, ScalarOperand};
 
-#[cfg(feature = "with_ndarray")]
+#[cfg(feature = "ndarray")]
 impl<S> Matrix<S> for Array2<S>
 where
     S: Scalar + ScalarOperand + LinalgScalar,

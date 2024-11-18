@@ -1,10 +1,10 @@
 use crate::matrix::matrix_trait::Matrix;
 use crate::scalar::Scalar;
 
-#[cfg(feature = "with_nalgebra")]
+#[cfg(feature = "nalgebra")]
 use nalgebra::{DMatrix, DVector};
 
-#[cfg(feature = "with_nalgebra")]
+#[cfg(feature = "nalgebra")]
 impl<S> Matrix<S> for DMatrix<S>
 where
     S: Scalar,

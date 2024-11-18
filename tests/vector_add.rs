@@ -1,10 +1,10 @@
 use linalg_traits::Vector;
 use numtest::*;
 
-#[cfg(feature = "with_nalgebra")]
+#[cfg(feature = "nalgebra")]
 use nalgebra::{DVector, Vector3};
 
-#[cfg(feature = "with_ndarray")]
+#[cfg(feature = "ndarray")]
 use ndarray::Array1;
 
 // Test conditions.
@@ -48,7 +48,7 @@ fn test_vec_add_assign_panic() {
 }
 
 #[test]
-#[cfg(feature = "with_nalgebra")]
+#[cfg(feature = "nalgebra")]
 fn test_nalgebra_dvector() {
     let mut x = DVector::from_slice(X);
     let y = DVector::from_slice(Y);
@@ -62,7 +62,7 @@ fn test_nalgebra_dvector() {
 #[should_panic(
     expected = "Matrix addition/subtraction dimensions mismatch.\n  left: (3, 1)\n right: (2, 1)"
 )]
-#[cfg(feature = "with_nalgebra")]
+#[cfg(feature = "nalgebra")]
 fn test_nalgebra_dvector_add_panic() {
     let x = DVector::from_slice(X);
     let w = DVector::from_slice(W);
@@ -73,7 +73,7 @@ fn test_nalgebra_dvector_add_panic() {
 #[should_panic(
     expected = "Matrix addition/subtraction dimensions mismatch.\n  left: (3, 1)\n right: (2, 1)"
 )]
-#[cfg(feature = "with_nalgebra")]
+#[cfg(feature = "nalgebra")]
 fn test_nalgebra_dvector_add_assign_panic() {
     let mut x = DVector::from_slice(X);
     let w = DVector::from_slice(W);
@@ -81,7 +81,7 @@ fn test_nalgebra_dvector_add_assign_panic() {
 }
 
 #[test]
-#[cfg(feature = "with_nalgebra")]
+#[cfg(feature = "nalgebra")]
 fn test_nalgebra_svector() {
     let mut x = Vector3::from_slice(X);
     let y = Vector3::from_slice(Y);
@@ -92,7 +92,7 @@ fn test_nalgebra_svector() {
 }
 
 #[test]
-#[cfg(feature = "with_ndarray")]
+#[cfg(feature = "ndarray")]
 fn test_ndarray_array1() {
     let mut x = Array1::from_slice(X);
     let y = Array1::from_slice(Y);
@@ -104,7 +104,7 @@ fn test_ndarray_array1() {
 
 #[test]
 #[should_panic(expected = "ShapeError/IncompatibleShape: incompatible shapes")]
-#[cfg(feature = "with_ndarray")]
+#[cfg(feature = "ndarray")]
 fn test_ndarray_array1_add_panic() {
     let x = Array1::from_slice(X);
     let w = Array1::from_slice(W);
@@ -115,7 +115,7 @@ fn test_ndarray_array1_add_panic() {
 #[should_panic(
     expected = "Length of the other vector (3) does not match the length of this vector (2)."
 )]
-#[cfg(feature = "with_ndarray")]
+#[cfg(feature = "ndarray")]
 fn test_ndarray_array1_add_assign_panic() {
     let mut x = Array1::from_slice(X);
     let w = Array1::from_slice(W);

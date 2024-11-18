@@ -1,10 +1,10 @@
 use linalg_traits::Vector;
 use numtest::*;
 
-#[cfg(feature = "with_nalgebra")]
+#[cfg(feature = "nalgebra")]
 use nalgebra::{DVector, SVector};
 
-#[cfg(feature = "with_ndarray")]
+#[cfg(feature = "ndarray")]
 use ndarray::Array1;
 
 // Slice to use for all tests.
@@ -18,7 +18,7 @@ fn test_vec() {
 }
 
 #[test]
-#[cfg(feature = "with_nalgebra")]
+#[cfg(feature = "nalgebra")]
 fn test_nalgebra_dvector() {
     let x = <DVector<f64> as Vector<f64>>::from_slice(X);
     assert_arrays_equal!(x, X);
@@ -26,7 +26,7 @@ fn test_nalgebra_dvector() {
 }
 
 #[test]
-#[cfg(feature = "with_nalgebra")]
+#[cfg(feature = "nalgebra")]
 fn test_nalgebra_svector() {
     let x = <SVector<f64, 3> as Vector<f64>>::from_slice(X);
     assert_arrays_equal!(x, X);
@@ -34,7 +34,7 @@ fn test_nalgebra_svector() {
 }
 
 #[test]
-#[cfg(feature = "with_ndarray")]
+#[cfg(feature = "ndarray")]
 fn test_ndarray_array1() {
     let x = <Array1<f64> as Vector<f64>>::from_slice(X);
     assert_arrays_equal!(x, X);

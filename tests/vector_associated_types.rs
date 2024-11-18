@@ -1,10 +1,10 @@
 use linalg_traits::{Mat, Matrix, Vector};
 use numtest::*;
 
-#[cfg(feature = "with_nalgebra")]
+#[cfg(feature = "nalgebra")]
 use nalgebra::{DMatrix, DVector, SMatrix, SVector};
 
-#[cfg(feature = "with_ndarray")]
+#[cfg(feature = "ndarray")]
 use ndarray::{Array1, Array2};
 
 // Dimensions for all unit tests.
@@ -38,7 +38,7 @@ fn test_mat_from_vec() {
 }
 
 #[test]
-#[cfg(feature = "with_nalgebra")]
+#[cfg(feature = "nalgebra")]
 fn test_nalgebra_dmatrix_from_dvector() {
     // Vector.
     let vec: DVector<f64> = DVector::new_with_length(N);
@@ -65,7 +65,7 @@ fn test_nalgebra_dmatrix_from_dvector() {
 }
 
 #[test]
-#[cfg(feature = "with_nalgebra")]
+#[cfg(feature = "nalgebra")]
 fn test_nalgebra_smatrix_from_svector() {
     // Vector.
     let vec: SVector<f64, N> = SVector::new_with_length(N);
@@ -92,7 +92,7 @@ fn test_nalgebra_smatrix_from_svector() {
 }
 
 #[test]
-#[cfg(feature = "with_ndarray")]
+#[cfg(feature = "ndarray")]
 fn test_ndarray_array2_from_array1() {
     // Vector.
     let vec: Array1<f64> = Array1::new_with_length(N);
