@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.5.0
+
+1. Updated `nalgebra` optional dependency from `0.32.5` to `0.33.0`.
+1. Updated `ndarray` optional dependency from `0.15.6` to `0.16.0`.
+1. Updated `numtest` dev dependency from `0.1.6` to `0.2.0`.
+1. Reverted module visibility updates from version `0.4.2`.
+
 ## 0.4.2
 
 1. Updated visibility of trait implementations on foreign types to be public, instead of just public to this crate.

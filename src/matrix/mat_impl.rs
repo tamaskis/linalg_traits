@@ -1,5 +1,3 @@
-//! Definition of the [`Mat`] type, including its implementation of the [`Matrix`] trait.
-
 use crate::matrix::matrix_trait::Matrix;
 use crate::scalar::Scalar;
 use crate::Vector;

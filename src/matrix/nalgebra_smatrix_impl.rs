@@ -1,5 +1,3 @@
-//! Implementation of the [`Matrix`] trait for [`nalgebra::SMatrix`].
-
 use crate::matrix::matrix_trait::Matrix;
 use crate::scalar::Scalar;
 
