@@ -119,9 +119,9 @@
 #![warn(missing_docs)]
 
 // Module declarations.
-pub(crate) mod matrix;
-pub(crate) mod scalar;
-pub(crate) mod vector;
+pub mod matrix;
+pub mod scalar;
+pub mod vector;
 
 // Re-exports.
 pub use crate::matrix::mat_impl::Mat;

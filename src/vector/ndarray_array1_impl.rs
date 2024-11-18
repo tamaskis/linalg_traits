@@ -1,3 +1,5 @@
+//! Implementation of the [`Vector`] trait for [`ndarray::Array1`].
+
 use crate::scalar::Scalar;
 use crate::vector::vector_trait::Vector;
 

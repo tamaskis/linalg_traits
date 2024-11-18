@@ -1,7 +1,12 @@
 # Changelog
 
+## 0.4.2
+
+1. Updated visibility of trait implementations on foreign types to be public, instead of just public to this crate.
+
 ## 0.4.1
-1. Attempt to fix issues with optional dependencies.
+
+1. Switched from named features to implicit features for optional dependencies.
 
 ## 0.4.0
 
