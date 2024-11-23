@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.0
+
+1. Added specific associated types and methods to the `Vector` trait for constructing compatible dynamically-sized matrices for both statically-sized and dynamically-sized vectors.
+
 ## 0.5.0
 
 1. Updated `nalgebra` optional dependency from `0.32.5` to `0.33.0`.

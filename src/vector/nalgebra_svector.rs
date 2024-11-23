@@ -2,38 +2,43 @@ use crate::scalar::Scalar;
 use crate::vector::vector_trait::Vector;
 
 #[cfg(feature = "nalgebra")]
-use nalgebra::{DMatrix, DVector};
+use nalgebra::{DMatrix, SMatrix, SVector};
 
 #[cfg(feature = "nalgebra")]
-impl<S: Scalar> Vector<S> for DVector<S> {
-    type MatrixNxN = DMatrix<S>;
+impl<const N: usize, S: Scalar> Vector<S> for SVector<S, N> {
+    type MatrixNxN = SMatrix<S, N, N>;
 
-    type MatrixMxN<const M: usize> = DMatrix<S>;
+    type MatrixMxN<const M: usize> = SMatrix<S, M, N>;
 
-    type MatrixNxM<const M: usize> = DMatrix<S>;
+    type DMatrixMxN = DMatrix<S>;
+
+    type MatrixNxM<const M: usize> = SMatrix<S, N, M>;
+
+    type DMatrixNxM = DMatrix<S>;
 
     fn is_statically_sized() -> bool {
-        false
-    }
-
-    fn is_dynamically_sized() -> bool {
         true
     }
 
-    fn new_with_length(len: usize) -> DVector<S> {
-        DVector::from_element(len, S::zero())
+    fn is_dynamically_sized() -> bool {
+        false
+    }
+
+    fn new_with_length(len: usize) -> Self {
+        assert_eq!(len, N, "Length must match the fixed size of the SVector.");
+        SVector::from_element(S::zero())
     }
 
     fn len(&self) -> usize {
-        self.len()
+        N
     }
 
     fn is_empty(&self) -> bool {
-        self.is_empty()
+        false // SVector is never empty because it's fixed size.
     }
 
     fn from_slice(slice: &[S]) -> Self {
-        let mut result = DVector::new_with_length(slice.len());
+        let mut result = SVector::new_with_length(slice.len());
         for (i, &item) in slice.iter().enumerate() {
             result[i] = item;
         }
