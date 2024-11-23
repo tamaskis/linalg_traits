@@ -1,16 +1,17 @@
+use crate::matrix::mat::Mat;
 use crate::scalar::Scalar;
 use crate::vector::vector_trait::Vector;
 
-#[cfg(feature = "ndarray")]
-use ndarray::{Array1, Array2, LinalgScalar, ScalarOperand};
+impl<S: Scalar> Vector<S> for Vec<S> {
+    type MatrixNxN = Mat<S>;
 
-#[cfg(feature = "ndarray")]
-impl<S: Scalar + ScalarOperand + LinalgScalar> Vector<S> for Array1<S> {
-    type MatrixNxN = Array2<S>;
+    type MatrixMxN<const M: usize> = Mat<S>;
 
-    type MatrixMxN<const M: usize> = Array2<S>;
+    type DMatrixMxN = Mat<S>;
 
-    type MatrixNxM<const M: usize> = Array2<S>;
+    type MatrixNxM<const M: usize> = Mat<S>;
+
+    type DMatrixNxM = Mat<S>;
 
     fn is_statically_sized() -> bool {
         false
@@ -20,8 +21,8 @@ impl<S: Scalar + ScalarOperand + LinalgScalar> Vector<S> for Array1<S> {
         true
     }
 
-    fn new_with_length(len: usize) -> Self {
-        Array1::<S>::zeros(len)
+    fn new_with_length(len: usize) -> Vec<S> {
+        vec![S::zero(); len]
     }
 
     fn len(&self) -> usize {
@@ -29,20 +30,23 @@ impl<S: Scalar + ScalarOperand + LinalgScalar> Vector<S> for Array1<S> {
     }
 
     fn is_empty(&self) -> bool {
-        self.len() == 0
+        self.is_empty()
     }
 
-    fn from_slice(slice: &[S]) -> Self {
-        Array1::from(slice.to_vec())
+    fn from_slice(slice: &[S]) -> Vec<S> {
+        slice.to_vec()
     }
 
     fn as_slice(&self) -> &[S] {
         self.as_slice()
-            .expect("The array's data is either not contiguous or not in standard order.")
     }
 
     fn add(&self, other: &Self) -> Self {
-        self + other
+        self.assert_same_length(other);
+        self.iter()
+            .zip(other.iter())
+            .map(|(a, b)| *a + *b)
+            .collect()
     }
 
     fn add_assign(&mut self, other: &Self) {
@@ -53,7 +57,11 @@ impl<S: Scalar + ScalarOperand + LinalgScalar> Vector<S> for Array1<S> {
     }
 
     fn sub(&self, other: &Self) -> Self {
-        self - other
+        self.assert_same_length(other);
+        self.iter()
+            .zip(other.iter())
+            .map(|(a, b)| *a - *b)
+            .collect()
     }
 
     fn sub_assign(&mut self, other: &Self) {
@@ -64,7 +72,7 @@ impl<S: Scalar + ScalarOperand + LinalgScalar> Vector<S> for Array1<S> {
     }
 
     fn mul(&self, scalar: S) -> Self {
-        self * scalar
+        self.iter().map(|a| *a * scalar).collect()
     }
 
     fn mul_assign(&mut self, scalar: S) {
@@ -74,7 +82,7 @@ impl<S: Scalar + ScalarOperand + LinalgScalar> Vector<S> for Array1<S> {
     }
 
     fn div(&self, scalar: S) -> Self {
-        self / scalar
+        self.iter().map(|a| *a / scalar).collect()
     }
 
     fn div_assign(&mut self, scalar: S) {
@@ -84,6 +92,13 @@ impl<S: Scalar + ScalarOperand + LinalgScalar> Vector<S> for Array1<S> {
     }
 
     fn dot(&self, other: &Self) -> S {
-        Array1::<S>::dot(self, other)
+        if self.len() != other.len() {
+            panic!("Cannot evaluate the dot product of vectors with different lengths.");
+        }
+        let mut result = S::zero();
+        for i in 0..self.len() {
+            result += self[i] * other[i];
+        }
+        result
     }
 }

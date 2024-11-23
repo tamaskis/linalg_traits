@@ -1,6 +1,6 @@
 // Module declarations.
-pub(crate) mod nalgebra_dvector_impl;
-pub(crate) mod nalgebra_svector_impl;
-pub(crate) mod ndarray_array1_impl;
-pub(crate) mod vec_impl;
+pub(crate) mod nalgebra_dvector;
+pub(crate) mod nalgebra_svector;
+pub(crate) mod ndarray_array1;
+pub(crate) mod vec;
 pub(crate) mod vector_trait;

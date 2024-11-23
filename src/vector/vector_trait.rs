@@ -59,8 +59,16 @@ pub trait Vector<S: Scalar>:
     ///   a column vector.
     /// * When multiplied from the left by a vector, the resulting vector mathematically represents
     ///   a row vector.
+    /// 
+    /// # Note
+    /// 
+    /// * This associated type could be either statically or dynamically-sized, as long as it is
+    ///   compatible with this vector type.
+    /// * We recommend that statically-sized vectors choose a compatible statically-sized matrix for
+    ///   this associated type, and the dynamically-sized vectors choose a compatible
+    ///   dynamically-sized matrix for this associated type.
     type MatrixNxN: Matrix<S>;
-    
+
     /// `M x N` matrix type implementing the [`crate::Matrix`] trait that is compatible with this
     /// vector type. An instance of this matrix type with shape `(M, N)` can be multiplied from the
     /// right by an instance of this vector type with length-`N`, resulting in a length-`M` vector
@@ -70,9 +78,25 @@ pub trait Vector<S: Scalar>:
     /// 
     /// * We say that the instance of the type implementing the [`Vector`] trait has length `N`.
     /// * Therefore, we already know one of the dimensions (`N`) of this `M`-by-`N` matrix.
-    /// * To know the other dimension (`M`) at compile time (to support statically-sized matrices),
-    ///   we need to provide `M` as a const generic.
+    /// * This associated type could be either statically or dynamically-sized, as long as it is
+    ///   compatible with this vector type.
+    /// * For statically-sized matrices, to know the other dimension (`M`) at compile time, we need
+    ///   to provide `M` as a const generic.
+    /// * For dynamically-sized matrices, the const generic `M` is not used.
     type MatrixMxN<const M: usize>: Matrix<S>;
+    
+    /// Dynamically-sized `M x N` matrix type implementing the [`crate::Matrix`] trait that is
+    /// compatible with this vector type. An instance of this matrix type with shape `(M, N)` can be
+    /// multiplied from the right by an instance of this vector type with length-`N`, resulting in a
+    /// length-`M` vector (which mathematically represents a column vector).
+    /// 
+    /// # Note
+    /// 
+    /// * We say that the instance of the type implementing the [`Vector`] trait has length `N`.
+    /// * Therefore, we already know one of the dimensions (`N`) of this `M`-by-`N` matrix.
+    /// * The other dimension (`M`) is determined at runtime, so this type must be
+    ///   dynamically-sized.
+    type DMatrixMxN: Matrix<S>;
 
     /// `N x M` matrix type implementing the [`crate::Matrix`] trait that is compatible with this
     /// vector type. An instance of this matrix type with shape `(N, M)` can be multiplied from the
@@ -83,15 +107,31 @@ pub trait Vector<S: Scalar>:
     /// 
     /// * We say that the instance of the type implementing the [`Vector`] trait has length `N`.
     /// * Therefore, we already know one of the dimensions (`N`) of this `N`-by-`M` matrix.
-    /// * To know the other dimension (`M`) at compile time (to support statically-sized matrices),
-    ///   we need to provide `M` as a const generic.
+    /// * This associated type could be either statically or dynamically-sized, as long as it is
+    ///   compatible with this vector type.
+    /// * For statically-sized matrices, to know the other dimension (`M`) at compile time, we need
+    ///   to provide `M` as a const generic.
+    /// * For dynamically-sized matrices, the const generic `M` is not used.
     type MatrixNxM<const M: usize>: Matrix<S>;
+
+    /// Dynmically-sized `N x M` matrix type implementing the [`crate::Matrix`] trait that is
+    /// compatible with this vector type. An instance of this matrix type with shape `(N, M)` can be
+    /// multiplied from the left by an instance of this vector type with length-`N`, resulting in a
+    /// length-`M` vector (which mathematically represents a row vector).
+    /// 
+    /// # Note
+    /// 
+    /// * We say that the instance of the type implementing the [`Vector`] trait has length `N`.
+    /// * Therefore, we already know one of the dimensions (`N`) of this `N`-by-`M` matrix.
+    /// * The other dimension (`M`) is determined at runtime, so this type must be
+    ///   dynamically-sized.
+    type DMatrixNxM: Matrix<S>;
 
     // -------------------------------
     // Default method implementations.
     // -------------------------------
 
-    /// Create a `N x N` matrix that is compatible with this length-`N` vector.
+    /// Create an `N x N` matrix that is compatible with this length-`N` vector.
     /// 
     /// # Returns
     /// 
@@ -131,7 +171,7 @@ pub trait Vector<S: Scalar>:
         Self::MatrixNxN::new_with_shape(n, n)
     }
 
-    /// Create a `M x N` matrix that is compatible with this length-`N` vector.
+    /// Create an `M x N` matrix that is compatible with this length-`N` vector.
     /// 
     /// # Arguments
     /// 
@@ -198,7 +238,50 @@ pub trait Vector<S: Scalar>:
         Self::MatrixMxN::new_with_shape(m, n)
     }
 
-    /// Create a `N x M` matrix that is compatible with this length-`N` vector.
+    /// Create a dynamically-sized `M x N` matrix that is compatible with this length-`N` vector.
+    /// 
+    /// # Arguments
+    /// 
+    /// * `m` - Number of rows of the `M x N` matrix.
+    /// 
+    /// # Returns
+    /// 
+    /// Dynamically-sized `M x N` matrix that is compatible with this length-`N` vector.
+    /// 
+    /// # Examples
+    /// 
+    /// ## Creating a dynamically-sized matrix compatible with a statically-sized vector
+    /// 
+    /// ```
+    /// use linalg_traits::Vector;
+    /// use nalgebra::{DMatrix, SVector};
+    /// 
+    /// // Create a statically-sized vector of length-2.
+    /// let vec: SVector<f64, 2> = SVector::new_with_length(2);
+    /// 
+    /// // Create a dynamically-sized 3x2 matrix.
+    /// let mat: DMatrix<f64> = vec.new_dmatrix_m_by_n(3);
+    /// assert_eq!(mat.shape(), (3, 2));
+    /// ```
+    /// 
+    /// ## Creating a dynamically-sized matrix compatible with a dynamically-sized vector
+    /// 
+    /// ```
+    /// use linalg_traits::Vector;
+    /// use nalgebra::{DMatrix, DVector};
+    /// 
+    /// // Create a dynamically-sized vector of length-2.
+    /// let vec: DVector<f64> = DVector::new_with_length(2);
+    /// 
+    /// // Create a dynamically-sized 3x2 matrix.
+    /// let mat: DMatrix<f64> = vec.new_dmatrix_m_by_n(3);
+    /// assert_eq!(mat.shape(), (3, 2));
+    /// ```
+    fn new_dmatrix_m_by_n(&self, m: usize) -> Self::DMatrixMxN {
+        Self::DMatrixMxN::new_with_shape(m, self.len())
+    }
+
+    /// Create an `N x M` matrix that is compatible with this length-`N` vector.
     /// 
     /// # Arguments
     /// 
@@ -263,6 +346,50 @@ pub trait Vector<S: Scalar>:
             m.unwrap()
         };
         Self::MatrixNxM::new_with_shape(n, m)
+    }
+
+    /// Create a dynamically-sized `N x M` matrix that is compatible with this length-`N` vector.
+    /// 
+    /// # Arguments
+    /// 
+    /// * `m` - Number of columns of the `N x M` matrix. Input as `None` for statically-sized
+    ///         vectors, and as `Some(m)` for dynamically-sized vectors.
+    /// 
+    /// # Returns
+    /// 
+    /// Dynamically-sized `N x M` matrix that is compatible with this length-`N` vector.
+    /// 
+    /// # Examples
+    /// 
+    /// ## Creating a dynamically-sized matrix compatible with a statically-sized vector
+    /// 
+    /// ```
+    /// use linalg_traits::Vector;
+    /// use nalgebra::{DMatrix, SVector};
+    /// 
+    /// // Create a statically-sized vector of length-2.
+    /// let vec: SVector<f64, 2> = SVector::new_with_length(2);
+    /// 
+    /// // Create a dynamically-sized 2x3 matrix.
+    /// let mat: DMatrix<f64> = vec.new_dmatrix_n_by_m(3);
+    /// assert_eq!(mat.shape(), (2, 3));
+    /// ```
+    /// 
+    /// ## Creating a dynamically-sized matrix compatible with a dynamically-sized vector
+    /// 
+    /// ```
+    /// use linalg_traits::Vector;
+    /// use nalgebra::{DMatrix, DVector};
+    /// 
+    /// // Create a dynamically-sized vector of length-2.
+    /// let vec: DVector<f64> = DVector::new_with_length(2);
+    /// 
+    /// // Create a dynamically-sized 2x3 matrix.
+    /// let mat: DMatrix<f64> = vec.new_dmatrix_n_by_m(3);
+    /// assert_eq!(mat.shape(), (2, 3));
+    /// ```
+    fn new_dmatrix_n_by_m(&self, m: usize) -> Self::DMatrixNxM {
+        Self::DMatrixNxM::new_with_shape(self.len(), m)
     }
 
     /// Assert that this vector and another vector have the same length. 
