@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.7.0
+
+1. Re-wrote `Scalar` trait as an extension of the `num_traits::Float` trait.
+
 ## 0.6.0
 
 1. Added specific associated types and methods to the `Vector` trait for constructing compatible dynamically-sized matrices for both statically-sized and dynamically-sized vectors.
