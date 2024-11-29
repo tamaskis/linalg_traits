@@ -119,6 +119,8 @@
 #![warn(missing_docs)]
 
 // Module declarations.
+pub(crate) mod deriv;
+pub(crate) mod dual;
 pub(crate) mod matrix;
 pub(crate) mod scalar;
 pub(crate) mod vector;

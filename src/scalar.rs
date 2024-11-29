@@ -1,6 +1,17 @@
+use crate::dual::Dual;
 use num_traits::Float;
 use std::fmt::Debug;
 use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Rem, RemAssign, Sub, SubAssign};
+
+pub trait ToDual {
+    fn to_dual(self) -> Dual;
+}
+
+impl ToDual for f64 {
+    fn to_dual(self) -> Dual {
+        Dual::new(self, 0.0)
+    }
+}
 
 /// Scalar type.
 ///
@@ -54,6 +65,8 @@ pub trait Scalar:
     + MulAssign<f64>
     + DivAssign<f64>
     + RemAssign<f64>
+    // Cast to a dual number for forward-mode automatic differentiation.
+    + ToDual
     // Debug printing.
     + Debug
     // Type must be defined at compile time.
@@ -78,6 +91,7 @@ impl<T> Scalar for T where
         + MulAssign<f64>
         + DivAssign<f64>
         + RemAssign<f64>
+        + ToDual
         + Debug
         + 'static
 {
