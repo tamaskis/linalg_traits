@@ -53,6 +53,7 @@ pub trait Scalar:
     + SubAssign<f64>
     + MulAssign<f64>
     + DivAssign<f64>
+    + RemAssign<f64>
     // Debug printing.
     + Debug
     // Type must be defined at compile time.
