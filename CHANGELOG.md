@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.7.1
+
+1. Added `RemAssign<f64>` trait bound to `linalg_traits::Scalar` trait.
+
 ## 0.7.0
 
 1. Re-wrote `Scalar` trait as an extension of the `num_traits::Float` trait.
