@@ -17,18 +17,20 @@ macro_rules! create_caller {
             // Cast the value to a different concrete type (T -> ConcreteTypeB)
             let temp_value = Dual::new(value.to_f64().unwrap(), 1.0);
 
+            println!("{:?}", temp_value);
+
             // Call the passed-in generic function with a reference to the new concrete type
-            $generic_func(temp_value); // Now using ConcreteTypeB
+            let result = $generic_func(temp_value); // Now using ConcreteTypeB
 
             // Since temp_value is ConcreteTypeB, we need to cast it back to ConcreteTypeA first
-            temp_value.get_dual() // Convert back to ConcreteTypeA
+            result.get_dual() // Convert back to ConcreteTypeA
         }
     };
 }
 
-fn helper1(func: &impl Fn(Dual) -> Dual) -> Box<dyn Fn(Dual) -> Dual + '_> {
-    Box::new(move |x: Dual| func(x))
-}
+// fn helper1(func: &impl Fn(Dual) -> Dual) -> Box<dyn Fn(Dual) -> Dual + '_> {
+//     Box::new(move |x: Dual| func(x))
+// }
 
 // fn helper<S: Scalar>(func: &impl Fn(S) -> S) -> Box<dyn Fn(Dual) -> Dual + '_> {
 //     Box::new(move |x: Dual| func(x))
@@ -64,9 +66,9 @@ mod tests {
         x.powi(2)
     }
 
-    pub fn func2<S: Scalar>(x: S) -> Vec<S> {
-        vec![x.sin(), x.cos()]
-    }
+    // pub fn func2<S: Scalar>(x: S) -> Vec<S> {
+    //     vec![x.sin(), x.cos()]
+    // }
 
     // #[test]
     // fn example() {
@@ -83,6 +85,7 @@ mod tests {
     #[test]
     fn example_3() {
         create_caller!(derivative, func);
+        println!("{:?}", derivative(5.0));
         assert_eq!(derivative(5.0), 10.0);
     }
 }
