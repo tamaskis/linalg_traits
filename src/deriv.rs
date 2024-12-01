@@ -17,8 +17,6 @@ macro_rules! create_caller {
             // Cast the value to a different concrete type (T -> ConcreteTypeB)
             let temp_value = Dual::new(value.to_f64().unwrap(), 1.0);
 
-            println!("{:?}", temp_value);
-
             // Call the passed-in generic function with a reference to the new concrete type
             let result = $generic_func(temp_value); // Now using ConcreteTypeB
 
