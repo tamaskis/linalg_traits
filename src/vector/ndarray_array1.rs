@@ -6,6 +6,8 @@ use ndarray::{Array1, Array2, LinalgScalar, ScalarOperand};
 
 #[cfg(feature = "ndarray")]
 impl<S: Scalar + ScalarOperand + LinalgScalar> Vector<S> for Array1<S> {
+    type Vectorf64 = Array1<f64>;
+
     type MatrixNxN = Array2<S>;
 
     type MatrixMxN<const M: usize> = Array2<S>;

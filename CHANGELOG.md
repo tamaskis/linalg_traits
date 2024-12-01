@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.7.2
+
+1. Added `Vectorf64` associated type to `Vector` trait.
+1. Added `new_vector_f64` method to `Vector` trait.
+
 ## 0.7.1
 
 1. Added `RemAssign<f64>` trait bound to `linalg_traits::Scalar` trait.

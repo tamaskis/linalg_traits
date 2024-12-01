@@ -50,6 +50,10 @@ pub trait Vector<S: Scalar>:
     // Associated types.
     // -----------------
 
+    /// Length-`N` vector type that is of the same "outer" vector type (i.e. the `Vector` part of
+    /// `Vector<S>` where `S: Scalar`), but where the elements are of type [`f64`].
+    type Vectorf64: Vector<f64>;
+
     /// `N x N` matrix type implementing the [`crate::Matrix`] trait that is compatible with this
     /// vector type. An instance of this matrix type with shape `(N, N)` can be multiplied either
     /// from the right or the left by an instance of this vector type with length-`N`, resulting in
@@ -131,6 +135,17 @@ pub trait Vector<S: Scalar>:
     // Default method implementations.
     // -------------------------------
 
+    /// Given an instance of a vector, create a new vector of the same type and length, but where
+    /// each element of the vector is an [`f64`] initialized to `0.0`.
+    /// 
+    /// # Returns
+    /// 
+    /// New vector of same type and length, but where each element of the vector is an [`f64`]
+    /// initialized to `0.0`.
+    fn new_vector_f64(&self) -> Self::Vectorf64 {
+        Self::Vectorf64::new_with_length(self.len())
+    }
+    
     /// Create an `N x N` matrix that is compatible with this length-`N` vector.
     /// 
     /// # Returns
@@ -443,7 +458,7 @@ pub trait Vector<S: Scalar>:
     /// 
     /// * If `len` does not match the length of the vector (for statically-sized vectors only).
     fn new_with_length(len: usize) -> Self;
-
+    
     /// Get the length of the vector.
     ///
     /// # Returns
