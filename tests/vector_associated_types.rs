@@ -2,14 +2,39 @@ use linalg_traits::{Mat, Matrix, Vector};
 use numtest::*;
 
 #[cfg(feature = "nalgebra")]
-use nalgebra::{DMatrix, DVector, SMatrix, SVector};
+use nalgebra::{dvector, DMatrix, DVector, SMatrix, SVector};
 
 #[cfg(feature = "ndarray")]
-use ndarray::{Array1, Array2};
+use ndarray::{array, Array1, Array2};
 
 // Dimensions for all unit tests.
 const M: usize = 3;
 const N: usize = 2;
+
+#[test]
+#[cfg(feature = "nalgebra")]
+#[cfg(feature = "ndarray")]
+fn test_new_vector_f64() {
+    // Vector<f64> from Vector<f64>.
+    let vec: Vec<f64> = vec![1.0, 2.0, 3.0];
+    let vec_f64: Vec<f64> = vec.new_vector_f64();
+    assert_arrays_equal!(vec_f64, [0.0, 0.0, 0.0]);
+
+    // DVector<f64> from DVector<f64>.
+    let vec: DVector<f64> = dvector![1.0, 2.0, 3.0];
+    let vec_f64: DVector<f64> = vec.new_vector_f64();
+    assert_arrays_equal!(vec_f64, [0.0, 0.0, 0.0]);
+
+    // SVector<f64, 3> from SVector<f64, 3>.
+    let vec: SVector<f64, 3> = SVector::from_slice(&[1.0, 2.0, 3.0]);
+    let vec_f64: SVector<f64, 3> = vec.new_vector_f64();
+    assert_arrays_equal!(vec_f64, [0.0, 0.0, 0.0]);
+
+    // Array1<f64> from Array1<f64>.
+    let vec: Array1<f64> = array![1.0, 2.0, 3.0];
+    let vec_f64: Array1<f64> = vec.new_vector_f64();
+    assert_arrays_equal!(vec_f64, [0.0, 0.0, 0.0]);
+}
 
 #[test]
 fn test_mat_from_vec() {
