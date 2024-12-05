@@ -14,6 +14,8 @@ impl<S: Scalar + ScalarOperand + LinalgScalar> Vector<S> for Array1<S> {
 
     type DMatrixMxN = Array2<S>;
 
+    type DMatrixMxNf64 = Array2<f64>;
+
     type MatrixNxM<const M: usize> = Array2<S>;
 
     type DMatrixNxM = Array2<S>;

@@ -102,6 +102,10 @@ pub trait Vector<S: Scalar>:
     ///   dynamically-sized.
     type DMatrixMxN: Matrix<S>;
 
+    /// Dynamically-sized `M x N` matrix type of the same "outer" type as
+    /// [`crate::Vector::DMatrixMxN`], but with elements of type [`f64`].
+    type DMatrixMxNf64: Matrix<f64>;
+
     /// `N x M` matrix type implementing the [`crate::Matrix`] trait that is compatible with this
     /// vector type. An instance of this matrix type with shape `(N, M)` can be multiplied from the
     /// left by an instance of this vector type with length-`N`, resulting in a length-`M` vector
@@ -143,6 +147,17 @@ pub trait Vector<S: Scalar>:
     /// New vector of same type and length, but where each element of the vector is an [`f64`]
     /// initialized to `0.0`.
     fn new_vector_f64(&self) -> Self::Vectorf64 {
+        Self::Vectorf64::new_with_length(self.len())
+    }
+
+    /// Given an instance of a vector, create a new vector of the same type and length, but where
+    /// each element of the vector is an [`f64`] initialized to `0.0`.
+    /// 
+    /// # Returns
+    /// 
+    /// New vector of same type and length, but where each element of the vector is an [`f64`]
+    /// initialized to `0.0`.
+    fn new_matrix_m_by_n_f64(&self) -> Self::Vectorf64 {
         Self::Vectorf64::new_with_length(self.len())
     }
     
@@ -294,6 +309,20 @@ pub trait Vector<S: Scalar>:
     /// ```
     fn new_dmatrix_m_by_n(&self, m: usize) -> Self::DMatrixMxN {
         Self::DMatrixMxN::new_with_shape(m, self.len())
+    }
+
+    /// Create a dynamically-sized `M x N` matrix (where this vector is length-`N`) filled with
+    /// `0.0_f64`.
+    /// 
+    /// # Arguments
+    /// 
+    /// * `m` - Number of rows of the `M x N` matrix.
+    /// 
+    /// # Returns
+    /// 
+    /// Dynamically-sized `M x N` matrix filled with `0.0_f64`.
+    fn new_dmatrix_m_by_n_f64(&self, m: usize) -> Self::DMatrixMxNf64 {
+        Self::DMatrixMxNf64::new_with_shape(m, self.len())
     }
 
     /// Create an `N x M` matrix that is compatible with this length-`N` vector.

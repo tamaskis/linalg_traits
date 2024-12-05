@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.7.3
+
+1. Added `DMatrixMxNf64` associated type to `Vector` trait.
+1. Added `new_dmatrix_m_by_n_f64` method to `Vector` trait.
+
 ## 0.7.2
 
 1. Added `Vectorf64` associated type to `Vector` trait.
