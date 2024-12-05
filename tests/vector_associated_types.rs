@@ -46,6 +46,7 @@ fn test_mat_from_vec() {
     let mat_m_by_n: Mat<f64> = vec.new_matrix_m_by_n::<0>(Some(M));
     let mat_n_by_m: Mat<f64> = vec.new_matrix_n_by_m::<0>(Some(M));
     let mat_m_by_n_dynamic: Mat<f64> = vec.new_dmatrix_m_by_n(M);
+    let mat_m_by_n_dynamic_f64: Mat<f64> = vec.new_dmatrix_m_by_n_f64(M);
     let mat_n_by_m_dynamic: Mat<f64> = vec.new_dmatrix_n_by_m(M);
 
     // Expected matrices.
@@ -53,6 +54,7 @@ fn test_mat_from_vec() {
     let mat_m_by_n_exp: Mat<f64> = Mat::new_with_shape(M, N);
     let mat_n_by_m_exp: Mat<f64> = Mat::new_with_shape(N, M);
     let mat_m_by_n_dynamic_exp: Mat<f64> = Mat::new_with_shape(M, N);
+    let mat_m_by_n_dynamic_f64_exp: Mat<f64> = Mat::new_with_shape(M, N);
     let mat_n_by_m_dynamic_exp: Mat<f64> = Mat::new_with_shape(N, M);
 
     // Check equality of elements between actual and expected matrices.
@@ -60,6 +62,7 @@ fn test_mat_from_vec() {
     assert_arrays_equal!(mat_m_by_n, mat_m_by_n_exp);
     assert_arrays_equal!(mat_n_by_m, mat_n_by_m_exp);
     assert_arrays_equal!(mat_m_by_n_dynamic, mat_m_by_n_dynamic_exp);
+    assert_arrays_equal!(mat_m_by_n_dynamic_f64, mat_m_by_n_dynamic_f64_exp);
     assert_arrays_equal!(mat_n_by_m_dynamic, mat_n_by_m_dynamic_exp);
 
     // Check the shapes of the actual matrices.
@@ -67,6 +70,7 @@ fn test_mat_from_vec() {
     assert_eq!(mat_m_by_n.shape(), (M, N));
     assert_eq!(mat_n_by_m.shape(), (N, M));
     assert_eq!(mat_m_by_n_dynamic.shape(), (M, N));
+    assert_eq!(mat_m_by_n_dynamic_f64.shape(), (M, N));
     assert_eq!(mat_n_by_m_dynamic.shape(), (N, M));
 }
 
@@ -81,6 +85,7 @@ fn test_nalgebra_dmatrix_from_dvector() {
     let mat_m_by_n: DMatrix<f64> = vec.new_matrix_m_by_n::<0>(Some(M));
     let mat_n_by_m: DMatrix<f64> = vec.new_matrix_n_by_m::<0>(Some(M));
     let mat_m_by_n_dynamic: DMatrix<f64> = vec.new_dmatrix_m_by_n(M);
+    let mat_m_by_n_dynamic_f64: DMatrix<f64> = vec.new_dmatrix_m_by_n_f64(M);
     let mat_n_by_m_dynamic: DMatrix<f64> = vec.new_dmatrix_n_by_m(M);
 
     // Expected matrices.
@@ -88,6 +93,7 @@ fn test_nalgebra_dmatrix_from_dvector() {
     let mat_m_by_n_exp: DMatrix<f64> = DMatrix::new_with_shape(M, N);
     let mat_n_by_m_exp: DMatrix<f64> = DMatrix::new_with_shape(N, M);
     let mat_m_by_n_dynamic_exp: DMatrix<f64> = DMatrix::new_with_shape(M, N);
+    let mat_m_by_n_dynamic_f64_exp: DMatrix<f64> = DMatrix::new_with_shape(M, N);
     let mat_n_by_m_dynamic_exp: DMatrix<f64> = DMatrix::new_with_shape(N, M);
 
     // Check equality of elements between actual and expected matrices.
@@ -95,6 +101,7 @@ fn test_nalgebra_dmatrix_from_dvector() {
     assert_arrays_equal!(mat_m_by_n, mat_m_by_n_exp);
     assert_arrays_equal!(mat_n_by_m, mat_n_by_m_exp);
     assert_arrays_equal!(mat_m_by_n_dynamic, mat_m_by_n_dynamic_exp);
+    assert_arrays_equal!(mat_m_by_n_dynamic_f64, mat_m_by_n_dynamic_f64_exp);
     assert_arrays_equal!(mat_n_by_m_dynamic, mat_n_by_m_dynamic_exp);
 
     // Check the shapes of the actual matrices.
@@ -102,6 +109,7 @@ fn test_nalgebra_dmatrix_from_dvector() {
     assert_eq!(mat_m_by_n.shape(), (M, N));
     assert_eq!(mat_n_by_m.shape(), (N, M));
     assert_eq!(mat_m_by_n_dynamic.shape(), (M, N));
+    assert_eq!(mat_m_by_n_dynamic_f64.shape(), (M, N));
     assert_eq!(mat_n_by_m_dynamic.shape(), (N, M));
 }
 
@@ -116,6 +124,7 @@ fn test_nalgebra_smatrix_from_svector() {
     let mat_m_by_n: SMatrix<f64, M, N> = vec.new_matrix_m_by_n::<M>(None);
     let mat_n_by_m: SMatrix<f64, N, M> = vec.new_matrix_n_by_m::<M>(None);
     let mat_m_by_n_dynamic: DMatrix<f64> = vec.new_dmatrix_m_by_n(M);
+    let mat_m_by_n_dynamic_f64: DMatrix<f64> = vec.new_dmatrix_m_by_n_f64(M);
     let mat_n_by_m_dynamic: DMatrix<f64> = vec.new_dmatrix_n_by_m(M);
 
     // Expected matrices.
@@ -123,6 +132,7 @@ fn test_nalgebra_smatrix_from_svector() {
     let mat_m_by_n_exp: SMatrix<f64, M, N> = SMatrix::new_with_shape(M, N);
     let mat_n_by_m_exp: SMatrix<f64, N, M> = SMatrix::new_with_shape(N, M);
     let mat_m_by_n_dynamic_exp: DMatrix<f64> = DMatrix::new_with_shape(M, N);
+    let mat_m_by_n_dynamic_f64_exp: DMatrix<f64> = DMatrix::new_with_shape(M, N);
     let mat_n_by_m_dynamic_exp: DMatrix<f64> = DMatrix::new_with_shape(N, M);
 
     // Check equality of elements between actual and expected matrices.
@@ -130,6 +140,7 @@ fn test_nalgebra_smatrix_from_svector() {
     assert_arrays_equal!(mat_m_by_n, mat_m_by_n_exp);
     assert_arrays_equal!(mat_n_by_m, mat_n_by_m_exp);
     assert_arrays_equal!(mat_m_by_n_dynamic, mat_m_by_n_dynamic_exp);
+    assert_arrays_equal!(mat_m_by_n_dynamic_f64, mat_m_by_n_dynamic_f64_exp);
     assert_arrays_equal!(mat_n_by_m_dynamic, mat_n_by_m_dynamic_exp);
 
     // Check the shapes of the actual matrices.
@@ -137,6 +148,7 @@ fn test_nalgebra_smatrix_from_svector() {
     assert_eq!(mat_m_by_n.shape(), (M, N));
     assert_eq!(mat_n_by_m.shape(), (N, M));
     assert_eq!(mat_m_by_n_dynamic.shape(), (M, N));
+    assert_eq!(mat_m_by_n_dynamic_f64.shape(), (M, N));
     assert_eq!(mat_n_by_m_dynamic.shape(), (N, M));
 }
 
@@ -151,6 +163,7 @@ fn test_ndarray_array2_from_array1() {
     let mat_m_by_n: Array2<f64> = vec.new_matrix_m_by_n::<0>(Some(M));
     let mat_n_by_m: Array2<f64> = vec.new_matrix_n_by_m::<0>(Some(M));
     let mat_m_by_n_dynamic: Array2<f64> = vec.new_dmatrix_m_by_n(M);
+    let mat_m_by_n_dynamic_f64: Array2<f64> = vec.new_dmatrix_m_by_n_f64(M);
     let mat_n_by_m_dynamic: Array2<f64> = vec.new_dmatrix_n_by_m(M);
 
     // Expected matrices.
@@ -158,6 +171,7 @@ fn test_ndarray_array2_from_array1() {
     let mat_m_by_n_exp: Array2<f64> = Array2::new_with_shape(M, N);
     let mat_n_by_m_exp: Array2<f64> = Array2::new_with_shape(N, M);
     let mat_m_by_n_dynamic_exp: Array2<f64> = Array2::new_with_shape(M, N);
+    let mat_m_by_n_dynamic_f64_exp: Array2<f64> = Array2::new_with_shape(M, N);
     let mat_n_by_m_dynamic_exp: Array2<f64> = Array2::new_with_shape(N, M);
 
     // Check equality of elements between actual and expected matrices.
@@ -165,6 +179,7 @@ fn test_ndarray_array2_from_array1() {
     assert_arrays_equal!(mat_m_by_n, mat_m_by_n_exp);
     assert_arrays_equal!(mat_n_by_m, mat_n_by_m_exp);
     assert_arrays_equal!(mat_m_by_n_dynamic, mat_m_by_n_dynamic_exp);
+    assert_arrays_equal!(mat_m_by_n_dynamic_f64, mat_m_by_n_dynamic_f64_exp);
     assert_arrays_equal!(mat_n_by_m_dynamic, mat_n_by_m_dynamic_exp);
 
     // Check the shapes of the actual matrices.
@@ -172,5 +187,6 @@ fn test_ndarray_array2_from_array1() {
     assert_eq!(Matrix::shape(&mat_m_by_n), (M, N));
     assert_eq!(Matrix::shape(&mat_n_by_m), (N, M));
     assert_eq!(Matrix::shape(&mat_m_by_n_dynamic), (M, N));
+    assert_eq!(Matrix::shape(&mat_m_by_n_dynamic_f64), (M, N));
     assert_eq!(Matrix::shape(&mat_n_by_m_dynamic), (N, M));
 }

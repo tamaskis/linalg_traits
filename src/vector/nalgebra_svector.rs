@@ -14,6 +14,8 @@ impl<const N: usize, S: Scalar> Vector<S> for SVector<S, N> {
 
     type DMatrixMxN = DMatrix<S>;
 
+    type DMatrixMxNf64 = DMatrix<f64>;
+
     type MatrixNxM<const M: usize> = SMatrix<S, N, M>;
 
     type DMatrixNxM = DMatrix<S>;

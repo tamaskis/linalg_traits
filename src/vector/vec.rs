@@ -11,6 +11,8 @@ impl<S: Scalar> Vector<S> for Vec<S> {
 
     type DMatrixMxN = Mat<S>;
 
+    type DMatrixMxNf64 = Mat<f64>;
+
     type MatrixNxM<const M: usize> = Mat<S>;
 
     type DMatrixNxM = Mat<S>;
