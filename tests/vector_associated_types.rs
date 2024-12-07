@@ -1,4 +1,4 @@
-use linalg_traits::{Mat, Matrix, Vector};
+use linalg_traits::{Mat, Matrix, Scalar, Vector};
 use numtest::*;
 
 #[cfg(feature = "nalgebra")]
@@ -14,8 +14,39 @@ const N: usize = 2;
 #[test]
 #[cfg(feature = "nalgebra")]
 #[cfg(feature = "ndarray")]
+fn test_generic_vector() {
+    // Helper function.
+    fn generic_vector_test_helper<S: Scalar, V: Vector<S>>(x: V) -> V::GenericVector<f64> {
+        V::GenericVector::<f64>::new_with_length(x.len())
+    }
+
+    // Vec<f64> from Vec<f64>.
+    let vec_generic: Vec<f64> = generic_vector_test_helper(Vec::<f64>::new_with_length(3));
+    let vec_generic_exp: Vec<f64> = vec![0.0, 0.0, 0.0];
+    assert_arrays_equal!(vec_generic, vec_generic_exp);
+
+    // DVector<f64> from DVector<f64>.
+    let vec_generic: DVector<f64> = generic_vector_test_helper(DVector::<f64>::new_with_length(3));
+    let vec_generic_exp: DVector<f64> = dvector![0.0, 0.0, 0.0];
+    assert_arrays_equal!(vec_generic, vec_generic_exp);
+
+    // SVector<f64, 3> from SVector<f64, 3>.
+    let vec_generic: SVector<f64, 3> =
+        generic_vector_test_helper(SVector::<f64, 3>::new_with_length(3));
+    let vec_generic_exp: SVector<f64, 3> = SVector::from_row_slice(&[0.0, 0.0, 0.0]);
+    assert_arrays_equal!(vec_generic, vec_generic_exp);
+
+    // Vec<f64> from Array1<f64>.
+    let vec_generic: Vec<f64> = generic_vector_test_helper(Array1::<f64>::new_with_length(3));
+    let vec_generic_exp: Vec<f64> = vec![0.0, 0.0, 0.0];
+    assert_arrays_equal!(vec_generic, vec_generic_exp);
+}
+
+#[test]
+#[cfg(feature = "nalgebra")]
+#[cfg(feature = "ndarray")]
 fn test_new_vector_f64() {
-    // Vector<f64> from Vector<f64>.
+    // Vec<f64> from Vec<f64>.
     let vec: Vec<f64> = vec![1.0, 2.0, 3.0];
     let vec_f64: Vec<f64> = vec.new_vector_f64();
     assert_arrays_equal!(vec_f64, [0.0, 0.0, 0.0]);

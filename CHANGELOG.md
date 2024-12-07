@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.7.4.
+
+1. Added `GenericVector` associated type to `Vector` trait.
+
 ## 0.7.3
 
 1. Added `DMatrixMxNf64` associated type to `Vector` trait.

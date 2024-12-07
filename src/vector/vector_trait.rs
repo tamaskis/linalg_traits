@@ -50,6 +50,18 @@ pub trait Vector<S: Scalar>:
     // Associated types.
     // -----------------
 
+    /// Dynamically-sized vector type that is of the same "outer" vector type (i.e. the `Vector`
+    /// part of `Vector<S>` where `S: Scalar`), but where the element type can be any other type
+    /// that implements the [`crate::Scalar`] trait.
+    /// 
+    /// # Note
+    /// 
+    /// For [`ndarray::Array1`], we define this associated type as a [`Vec`]. This is because
+    /// elements of an [`ndarray::Array1`] must also implement [`ndarray::ScalarOperand`] and
+    /// [`ndarray::LinalgScalar`], but we cannot apply these trait bounds in the definition of this
+    /// associated type if we wish to keep [`crate::Vector`] independent of any external crate.
+    type GenericVector<T: Scalar>: Vector<T>;
+
     /// Length-`N` vector type that is of the same "outer" vector type (i.e. the `Vector` part of
     /// `Vector<S>` where `S: Scalar`), but where the elements are of type [`f64`].
     type Vectorf64: Vector<f64>;

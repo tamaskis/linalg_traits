@@ -3,6 +3,8 @@ use crate::scalar::Scalar;
 use crate::vector::vector_trait::Vector;
 
 impl<S: Scalar> Vector<S> for Vec<S> {
+    type GenericVector<T: Scalar> = Vec<T>;
+
     type Vectorf64 = Vec<f64>;
 
     type MatrixNxN = Mat<S>;

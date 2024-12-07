@@ -6,6 +6,8 @@ use nalgebra::{DMatrix, SMatrix, SVector};
 
 #[cfg(feature = "nalgebra")]
 impl<const N: usize, S: Scalar> Vector<S> for SVector<S, N> {
+    type GenericVector<T: Scalar> = SVector<T, N>;
+
     type Vectorf64 = SVector<f64, N>;
 
     type MatrixNxN = SMatrix<S, N, N>;
