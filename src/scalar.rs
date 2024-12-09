@@ -59,6 +59,18 @@ pub trait Scalar:
     // Type must be defined at compile time.
     + 'static
 {
+    /// Construct an instance of this scalar from an [`f64`].
+    /// 
+    /// # Arguments
+    /// 
+    /// * `x` - An [`f64`].
+    /// 
+    /// # Return
+    /// 
+    /// An instance of this scalar type constructed from an [`f64`].
+    fn new(x: f64) -> Self {
+        Self::from(x).unwrap()
+    }
 }
 
 impl<T> Scalar for T where

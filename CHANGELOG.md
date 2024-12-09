@@ -1,6 +1,10 @@
 # Changelog
 
-## 0.7.4.
+## 0.7.5
+
+1. Added `new` method to `Scalar` trait for constructing a `Scalar` from an `f64`.
+
+## 0.7.4
 
 1. Added `GenericVector` associated type to `Vector` trait.
 
