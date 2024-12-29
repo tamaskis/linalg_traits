@@ -1,5 +1,6 @@
 use crate::scalar::Scalar;
 use crate::vector::vector_trait::Vector;
+use std::fmt::Debug;
 use std::ops::{Index, IndexMut};
 
 /// Trait defining common matrix methods and operations.
@@ -46,6 +47,8 @@ pub trait Matrix<S: Scalar>:
     Index<(usize, usize), Output = S>       // Indexing via square brackets.
     + IndexMut<(usize, usize), Output = S>  // Index-assignment via square brackets.
     + Clone                                 // Copying (compatible with dynamically-sized types).
+    + Debug                                 // Debug printing.
+    + PartialEq                             // Equality comparisons.
 {
     // -----------------
     // Associated types.
