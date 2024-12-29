@@ -17,7 +17,7 @@ use std::ops::{Index, IndexMut};
 ///
 /// Rust does not have a matrix type in the `std` library, and users of this crate may not want to
 /// have dependencies such as [`nalgebra`] and/or [`ndarray`].
-#[derive(Clone)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct Mat<S>
 where
     S: Scalar,

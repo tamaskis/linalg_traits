@@ -1,4 +1,5 @@
 use std::ops::{Index, IndexMut};
+use std::fmt::Debug;
 use crate::scalar::Scalar;
 use crate::matrix::matrix_trait::Matrix;
 
@@ -45,6 +46,8 @@ pub trait Vector<S: Scalar>:
     Index<usize, Output = S>        // Indexing via square brackets.
     + IndexMut<usize, Output = S>   // Index-assignment via square brackets.
     + Clone                         // Copying (compatible with dynamically-sized types).
+    + Debug                         // Debug printing.
+    + PartialEq                     // Equality comparisons.
 {
     // -----------------
     // Associated types.

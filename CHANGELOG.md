@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.8.0
+
+1. The `Vector` and `Matrix` traits now also require that types implementing them also implement `Debug` and `PartialEq`.
+
 ## 0.7.5
 
 1. Added `new` method to `Scalar` trait for constructing a `Scalar` from an `f64`.
