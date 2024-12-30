@@ -8,7 +8,11 @@ use ndarray::{Array1, Array2, LinalgScalar, ScalarOperand};
 impl<S: Scalar + ScalarOperand + LinalgScalar> Vector<S> for Array1<S> {
     // Cannot apply ScalarOperand + LinalgScalar trait bounds on T because it would be more
     // restrictive than the trait definition.
-    type GenericVector<T: Scalar> = Vec<T>;
+    type VectorT<T: Scalar> = Vec<T>;
+
+    // Cannot apply ScalarOperand + LinalgScalar trait bounds on T because it would be more
+    // restrictive than the trait definition.
+    type DVectorT<T: Scalar> = Vec<T>;
 
     type Vectorf64 = Array1<f64>;
 

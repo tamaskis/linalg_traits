@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.9.0
+
+1. Renamed the `Vector::VectorT` associated type to `Vector::VectorT`.
+1. Added `DVectorT` associated type to `Vector` trait.
+
 ## 0.8.0
 
 1. The `Vector` and `Matrix` traits now also require that types implementing them also implement `Debug` and `PartialEq`.

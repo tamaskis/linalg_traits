@@ -2,11 +2,13 @@ use crate::scalar::Scalar;
 use crate::vector::vector_trait::Vector;
 
 #[cfg(feature = "nalgebra")]
-use nalgebra::{DMatrix, SMatrix, SVector};
+use nalgebra::{DMatrix, DVector, SMatrix, SVector};
 
 #[cfg(feature = "nalgebra")]
 impl<const N: usize, S: Scalar> Vector<S> for SVector<S, N> {
-    type GenericVector<T: Scalar> = SVector<T, N>;
+    type VectorT<T: Scalar> = SVector<T, N>;
+
+    type DVectorT<T: Scalar> = DVector<T>;
 
     type Vectorf64 = SVector<f64, N>;
 
