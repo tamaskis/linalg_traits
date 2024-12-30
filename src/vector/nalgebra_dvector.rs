@@ -6,7 +6,9 @@ use nalgebra::{DMatrix, DVector};
 
 #[cfg(feature = "nalgebra")]
 impl<S: Scalar> Vector<S> for DVector<S> {
-    type GenericVector<T: Scalar> = DVector<T>;
+    type VectorT<T: Scalar> = DVector<T>;
+
+    type DVectorT<T: Scalar> = DVector<T>;
 
     type Vectorf64 = DVector<f64>;
 
