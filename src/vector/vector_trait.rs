@@ -88,6 +88,10 @@ pub trait Vector<S: Scalar>:
     /// `Vector<S>` where `S: Scalar`), but where the elements are of type [`f64`].
     type Vectorf64: Vector<f64>;
 
+    /// Dynamically-sized vector type that is compatible with this "outer" vector type (i.e. the
+    /// `Vector` part of `Vector<S>` where `S: Scalar`), but where the elements are of type [`f64`].
+    type DVectorf64: Vector<f64>;
+
     /// `N x N` matrix type implementing the [`crate::Matrix`] trait that is compatible with this
     /// vector type. An instance of this matrix type with shape `(N, N)` can be multiplied either
     /// from the right or the left by an instance of this vector type with length-`N`, resulting in

@@ -74,6 +74,36 @@ fn test_dvector_t() {
 #[test]
 #[cfg(feature = "nalgebra")]
 #[cfg(feature = "ndarray")]
+fn test_dvector_f64() {
+    // Helper function.
+    fn dvector_f64_test_helper<S: Scalar, V: Vector<S>>(x: V) -> V::DVectorf64 {
+        V::DVectorf64::new_with_length(x.len())
+    }
+
+    // Vec<f64> from Vec<f64>.
+    let vec_generic: Vec<f64> = dvector_f64_test_helper(Vec::<f64>::new_with_length(3));
+    let vec_generic_exp: Vec<f64> = vec![0.0, 0.0, 0.0];
+    assert_arrays_equal!(vec_generic, vec_generic_exp);
+
+    // DVector<f64> from DVector<f64>.
+    let vec_generic: DVector<f64> = dvector_f64_test_helper(DVector::<f64>::new_with_length(3));
+    let vec_generic_exp: DVector<f64> = dvector![0.0, 0.0, 0.0];
+    assert_arrays_equal!(vec_generic, vec_generic_exp);
+
+    // SVector<f64, 3> from SVector<f64, 3>.
+    let vec_generic: DVector<f64> = dvector_f64_test_helper(SVector::<f64, 3>::new_with_length(3));
+    let vec_generic_exp: DVector<f64> = DVector::from_row_slice(&[0.0, 0.0, 0.0]);
+    assert_arrays_equal!(vec_generic, vec_generic_exp);
+
+    // Array1<f64> from Array1<f64>.
+    let vec_generic: Array1<f64> = dvector_f64_test_helper(Array1::<f64>::new_with_length(3));
+    let vec_generic_exp: Array1<f64> = array![0.0, 0.0, 0.0];
+    assert_arrays_equal!(vec_generic, vec_generic_exp);
+}
+
+#[test]
+#[cfg(feature = "nalgebra")]
+#[cfg(feature = "ndarray")]
 fn test_new_vector_f64() {
     // Vec<f64> from Vec<f64>.
     let vec: Vec<f64> = vec![1.0, 2.0, 3.0];

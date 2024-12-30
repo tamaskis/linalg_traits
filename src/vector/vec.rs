@@ -9,6 +9,8 @@ impl<S: Scalar> Vector<S> for Vec<S> {
 
     type Vectorf64 = Vec<f64>;
 
+    type DVectorf64 = Vec<f64>;
+
     type MatrixNxN = Mat<S>;
 
     type MatrixMxN<const M: usize> = Mat<S>;
