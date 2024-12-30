@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.9.1
+
+1. Added `DVectorf64` associated type to `Vector` trait.
+
 ## 0.9.0
 
 1. Renamed the `Vector::VectorT` associated type to `Vector::VectorT`.

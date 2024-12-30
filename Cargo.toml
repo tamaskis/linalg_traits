@@ -1,6 +1,6 @@
 [package]
 name = "linalg-traits"
-version = "0.9.0"
+version = "0.9.1"
 authors = ["Tamas Kis"]
 edition = "2021"
 description = "Traits for generic linear algebra."
