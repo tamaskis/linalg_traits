@@ -6,6 +6,9 @@ use nalgebra::{DVector, SVector};
 #[cfg(feature = "ndarray")]
 use ndarray::Array1;
 
+#[cfg(feature = "faer")]
+use faer::Mat as FMat;
+
 #[test]
 fn test_mat() {
     assert!(Vec::<f64>::is_dynamically_sized());
@@ -31,4 +34,11 @@ fn test_nalgebra_svector() {
 fn test_ndarray_array1() {
     assert!(Array1::<f64>::is_dynamically_sized());
     assert!(!Array1::<f64>::is_statically_sized());
+}
+
+#[test]
+#[cfg(feature = "faer")]
+fn test_faer_mat() {
+    assert!(FMat::<f64>::is_dynamically_sized());
+    assert!(!FMat::<f64>::is_statically_sized());
 }

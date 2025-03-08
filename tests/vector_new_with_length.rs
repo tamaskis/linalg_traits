@@ -7,6 +7,9 @@ use nalgebra::{DVector, SVector};
 #[cfg(feature = "ndarray")]
 use ndarray::Array1;
 
+#[cfg(feature = "faer")]
+use faer::Mat as FMat;
+
 #[test]
 fn test_vec() {
     assert_arrays_equal!(
@@ -47,4 +50,10 @@ fn test_ndarray_array1() {
         <Array1<f64> as Vector<f64>>::new_with_length(3),
         [0.0, 0.0, 0.0]
     );
+}
+
+#[test]
+#[cfg(feature = "faer")]
+fn test_faer_mat() {
+    assert_arrays_equal!(FMat::<f64>::new_with_length(3).as_slice(), [0.0, 0.0, 0.0]);
 }

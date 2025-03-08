@@ -7,8 +7,11 @@ use nalgebra::{DMatrix, SMatrix};
 #[cfg(feature = "ndarray")]
 use ndarray::Array2;
 
+#[cfg(feature = "faer")]
+use faer::Mat as FMat;
+
 #[test]
-fn test_vec() {
+fn test_mat() {
     assert_arrays_equal!(
         <Mat<f64> as Matrix<f64>>::new_with_shape(3, 2),
         [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
@@ -66,6 +69,15 @@ fn test_nalgebra_smatrix_panic_4() {
 fn test_ndarray_array2() {
     assert_arrays_equal!(
         <Array2<f64> as Matrix<f64>>::new_with_shape(3, 2),
+        [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+    );
+}
+
+#[test]
+#[cfg(feature = "faer")]
+fn test_faer_mat() {
+    assert_arrays_equal!(
+        FMat::<f64>::new_with_shape(3, 2).as_slice(),
         [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
     );
 }

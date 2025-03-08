@@ -30,6 +30,14 @@ impl<S: Scalar + ScalarOperand + LinalgScalar> Vector<S> for Array1<S> {
 
     type DMatrixNxM = Array2<S>;
 
+    fn vget(&self, idx: usize) -> S {
+        self[idx]
+    }
+
+    fn vset(&mut self, idx: usize, value: S) {
+        self[idx] = value;
+    }
+
     fn is_statically_sized() -> bool {
         false
     }

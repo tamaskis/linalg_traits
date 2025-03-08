@@ -1,9 +1,10 @@
 use crate::scalar::Scalar;
 use crate::vector::vector_trait::Vector;
 use std::fmt::Debug;
+use std::borrow::Cow;
 use std::ops::{Index, IndexMut};
 
-/// Trait defining common matrix methods and operations.
+/// Trait defining a generic matrix type.
 ///
 /// # Note
 ///
@@ -239,7 +240,7 @@ pub trait Matrix<S: Scalar>:
     /// # Panics
     /// 
     /// * If `rows` does not match the number of rows in the matrix (for statically-sized matrices
-    ///   only)
+    ///   only).
     fn from_row_slice(rows: usize, cols: usize, slice: &[S]) -> Self;
 
     /// Create a matrix from a slice of scalars arranged in column-major order.
@@ -257,7 +258,7 @@ pub trait Matrix<S: Scalar>:
     /// # Panics
     /// 
     /// * If `rows` does not match the number of rows in the matrix (for statically-sized matrices
-    ///   only)/
+    ///   only).
     /// * If the slice length is not compatible with the shape of the matrix (for dynamically-sized
     ///   matrices only).
     fn from_col_slice(rows: usize, cols: usize, slice: &[S]) -> Self;
@@ -268,12 +269,26 @@ pub trait Matrix<S: Scalar>:
     ///
     /// A slice of the matrix's elements.
     /// 
-    /// # Note
+    /// # Warning
     /// 
     /// The order of the elements depends on whether the matrix is row-major or column-major. This
     /// can be programmatically determined via the [`Matrix::is_row_major`] and
     /// [`Matrix::is_column_major`] methods.
-    fn as_slice(&self) -> &[S];
+    /// 
+    /// # Note
+    /// 
+    /// The slice is returned as a `Cow<[S]>` instead of a `&[S]`. This is because some matrix
+    /// implementations do NOT store data contiguously; for example, the columns of [`faer::Mat`]
+    /// are generally NOT contiguous in memory.
+    /// 
+    /// When the data is not contiguous in memory, this method will first build a vector where the
+    /// data is contiguous. Since this vector is a temporary variable, we cannot return a reference
+    /// to its data (e.g. a `&[S]`) since it will be dropped when the method scope ends. In these
+    /// cases, this method will clone the data when returning it in a `Cow<[S]>`.
+    /// 
+    /// When the data _is_ contiguous in memory, this method will build the [`Cow`] directly from
+    /// a slice of the data. In this case, the data is borrowed, and no cloning occurs.
+    fn as_slice(&self) -> Cow<[S]>;
 
     /// Matrix addition (elementwise).
     /// 

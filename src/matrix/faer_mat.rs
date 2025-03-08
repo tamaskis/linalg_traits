@@ -2,17 +2,18 @@ use crate::matrix::matrix_trait::Matrix;
 use crate::scalar::Scalar;
 use std::borrow::Cow;
 
-#[cfg(feature = "ndarray")]
-use ndarray::{Array1, Array2, LinalgScalar, ScalarOperand};
+#[cfg(feature = "faer")]
+use faer::{Mat, Scale};
+use faer_traits::RealField;
 
-#[cfg(feature = "ndarray")]
-impl<S> Matrix<S> for Array2<S>
+#[cfg(feature = "faer")]
+impl<S> Matrix<S> for Mat<S>
 where
-    S: Scalar + ScalarOperand + LinalgScalar,
+    S: Scalar + RealField,
 {
-    type VectorM = Array1<S>;
+    type VectorM = Mat<S>;
 
-    type VectorN = Array1<S>;
+    type VectorN = Mat<S>;
 
     fn is_statically_sized() -> bool {
         false
@@ -23,15 +24,15 @@ where
     }
 
     fn is_row_major() -> bool {
-        true
-    }
-
-    fn is_column_major() -> bool {
         false
     }
 
+    fn is_column_major() -> bool {
+        true
+    }
+
     fn new_with_shape(rows: usize, cols: usize) -> Self {
-        Array2::zeros((rows, cols))
+        Mat::<S>::zeros(rows, cols)
     }
 
     fn shape(&self) -> (usize, usize) {
@@ -47,8 +48,7 @@ where
             rows,
             cols,
         );
-        Array2::from_shape_vec((rows, cols), slice.to_vec())
-            .expect("Failed to create Array2 from slice")
+        Mat::<S>::from_fn(rows, cols, |i, j| slice[i * cols + j])
     }
 
     fn from_col_slice(rows: usize, cols: usize, slice: &[S]) -> Self {
@@ -60,17 +60,15 @@ where
             rows,
             cols,
         );
-        let mut data = Vec::with_capacity(rows * cols);
-        for row in 0..rows {
-            for col in 0..cols {
-                data.push(slice[row + col * rows]);
-            }
-        }
-        Array2::from_shape_vec((rows, cols), data).unwrap()
+        Mat::<S>::from_fn(rows, cols, |i, j| slice[i + j * rows])
     }
 
     fn as_slice(&self) -> Cow<[S]> {
-        Cow::from(Self::as_slice(self).unwrap())
+        let mut slice_vec = Vec::<S>::with_capacity(self.nrows() * self.ncols());
+        for i in 0..self.ncols() {
+            slice_vec.extend_from_slice(self.col_as_slice(i));
+        }
+        Cow::from(slice_vec)
     }
 
     fn add(&self, other: &Self) -> Self {
@@ -90,18 +88,18 @@ where
     }
 
     fn mul(&self, scalar: S) -> Self {
-        self * scalar
+        self * Scale(scalar)
     }
 
     fn mul_assign(&mut self, scalar: S) {
-        *self *= scalar;
+        *self *= Scale(scalar)
     }
 
     fn div(&self, scalar: S) -> Self {
-        self / scalar
+        self / Scale(scalar)
     }
 
     fn div_assign(&mut self, scalar: S) {
-        *self /= scalar;
+        *self /= Scale(scalar)
     }
 }

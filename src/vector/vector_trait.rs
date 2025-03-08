@@ -1,14 +1,8 @@
-use std::ops::{Index, IndexMut};
 use std::fmt::Debug;
 use crate::scalar::Scalar;
 use crate::matrix::matrix_trait::Matrix;
 
-/// Trait defining common vector methods and operations.
-///
-/// # Note
-///
-/// In addition to the methods defined by this trait, this trait also forces that the implementor
-/// also support indexing ([`Index`]) and mutable indexing ([`IndexMut`]).
+/// Trait defining a generic vector type.
 /// 
 /// # Using [`Vector`] as a trait bound
 /// 
@@ -43,16 +37,13 @@ use crate::matrix::matrix_trait::Matrix;
 /// [`ndarray::Array2<CustomType>`] into `my_function` from the example above, then we must also
 /// implement the [`ndarray::ScalarOperand`] and [`ndarray::LinalgScalar`] traits for `CustomType`.
 pub trait Vector<S: Scalar>:
-    Index<usize, Output = S>        // Indexing via square brackets.
-    + IndexMut<usize, Output = S>   // Index-assignment via square brackets.
-    + Clone                         // Copying (compatible with dynamically-sized types).
-    + Debug                         // Debug printing.
-    + PartialEq                     // Equality comparisons.
+    Clone       // Copying (compatible with dynamically-sized types).
+    + Debug     // Debug printing.
+    + PartialEq // Equality comparisons.
 {
     // -----------------
     // Associated types.
     // -----------------
-
 
     /// Vector type that is of the same "outer" vector type (i.e. the `Vector` part of `Vector<S>`
     /// where `S: Scalar`), but where the element type can be any other type that implements the
@@ -65,9 +56,11 @@ pub trait Vector<S: Scalar>:
     /// * We recommend that statically-sized vectors choose a compatible statically-sized matrix for
     ///   this associated type, and the dynamically-sized vectors choose a compatible
     ///   dynamically-sized matrix for this associated type.
-    /// * For [`ndarray::Array1`], we define this associated type as a [`Vec`]. This is because
-    ///   elements of an [`ndarray::Array1`] must also implement [`ndarray::ScalarOperand`] and
-    ///   [`ndarray::LinalgScalar`], but we cannot apply these trait bounds in the definition of
+    /// * For [`ndarray::Array1`] and [`faer::Mat`], we define this associated type as a [`Vec`].
+    ///   This is because the elements of these structs must also implement additional traits 
+    ///   ([`ndarray::Array1`] must also implement [`ndarray::ScalarOperand`] and
+    ///   [`ndarray::LinalgScalar`], while [`faer::Mat`] must also implement
+    ///   [`faer_traits::RealField`]) but we cannot apply these trait bounds in the definition of
     ///   this associated type if we wish to keep [`crate::Vector`] independent of any external
     ///   crate.
     type VectorT<T: Scalar>: Vector<T>;
@@ -78,9 +71,11 @@ pub trait Vector<S: Scalar>:
     /// 
     /// # Note
     /// 
-    /// For [`ndarray::Array1`], we define this associated type as a [`Vec`]. This is because
-    /// elements of an [`ndarray::Array1`] must also implement [`ndarray::ScalarOperand`] and
-    /// [`ndarray::LinalgScalar`], but we cannot apply these trait bounds in the definition of this
+    /// For [`ndarray::Array1`] and [`faer::Mat`], we define this associated type as a [`Vec`]. This
+    /// is because the elements of these structs must also implement additional traits 
+    /// ([`ndarray::Array1`] must also implement [`ndarray::ScalarOperand`] and
+    /// [`ndarray::LinalgScalar`], while [`faer::Mat`] must also implement
+    /// [`faer_traits::RealField`]) but we cannot apply these trait bounds in the definition of this
     /// associated type if we wish to keep [`crate::Vector`] independent of any external crate.
     type DVectorT<T: Scalar>: Vector<T>;
 
@@ -496,6 +491,33 @@ pub trait Vector<S: Scalar>:
     // -----------------------------
     // Required method declarations.
     // -----------------------------
+
+    /// Return the element at the specified index.
+    ///
+    /// # Arguments
+    ///
+    /// * `idx` - The index of the element to retrieve.
+    ///
+    /// # Returns
+    ///
+    /// The value at the specified index.
+    ///
+    /// # Panics
+    ///
+    /// * If `idx` is out of bounds.
+    fn vget(&self, idx: usize) -> S;
+
+    /// Set the element at the specified index to the specified value.
+    ///
+    /// # Arguments
+    ///
+    /// * `idx` - The index of the element to modify.
+    /// * `value` - The new value to assign at the specified index.
+    ///
+    /// # Panics
+    ///
+    /// * If `idx` is out of bounds.
+    fn vset(&mut self, idx: usize, value: S);
 
     /// Determine whether or not the vector is statically-sized.
     /// 

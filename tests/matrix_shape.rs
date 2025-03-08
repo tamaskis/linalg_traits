@@ -6,6 +6,9 @@ use nalgebra::{DMatrix, SMatrix};
 #[cfg(feature = "ndarray")]
 use ndarray::Array2;
 
+#[cfg(feature = "faer")]
+use faer::Mat as FMat;
+
 #[test]
 fn test_mat() {
     assert_eq!(
@@ -37,4 +40,10 @@ fn test_nalgebra_smatrix() {
 fn test_ndarray_array2() {
     let matrix = <Array2<f64> as Matrix<f64>>::new_with_shape(3, 2);
     assert_eq!(Matrix::shape(&matrix), (3, 2));
+}
+
+#[test]
+#[cfg(feature = "faer")]
+fn test_fmat() {
+    assert_eq!(FMat::<f64>::new_with_shape(3, 2).shape(), (3, 2));
 }

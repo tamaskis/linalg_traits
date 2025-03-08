@@ -23,6 +23,14 @@ impl<S: Scalar> Vector<S> for Vec<S> {
 
     type DMatrixNxM = Mat<S>;
 
+    fn vget(&self, idx: usize) -> S {
+        self[idx]
+    }
+
+    fn vset(&mut self, idx: usize, value: S) {
+        self[idx] = value;
+    }
+
     fn is_statically_sized() -> bool {
         false
     }

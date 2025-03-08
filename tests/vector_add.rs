@@ -7,6 +7,9 @@ use nalgebra::{DVector, Vector3};
 #[cfg(feature = "ndarray")]
 use ndarray::Array1;
 
+#[cfg(feature = "faer")]
+use faer::Mat as FMat;
+
 // Test conditions.
 static X: &[f64; 3] = &[1.0, 2.0, 3.0];
 static Y: &[f64; 3] = &[4.0, 5.0, 6.0];
@@ -119,5 +122,34 @@ fn test_ndarray_array1_add_panic() {
 fn test_ndarray_array1_add_assign_panic() {
     let mut x = Array1::from_slice(X);
     let w = Array1::from_slice(W);
+    x.add_assign(&w);
+}
+
+#[test]
+#[cfg(feature = "faer")]
+fn test_faer_mat() {
+    let mut x = FMat::from_slice(X);
+    let y = FMat::from_slice(Y);
+    let z = x.add(&y);
+    x.add_assign(&y);
+    assert_arrays_equal!(z.as_slice(), Z);
+    assert_arrays_equal!(x.as_slice(), Z);
+}
+
+#[test]
+#[should_panic(expected = "Assertion failed: lhs.nrows() == rhs.nrows()")]
+#[cfg(feature = "faer")]
+fn test_faer_mat_add_panic() {
+    let x = FMat::from_slice(X);
+    let w = FMat::from_slice(W);
+    let _ = x.add(&w);
+}
+
+#[test]
+#[should_panic(expected = "Assertion failed: Head :: nrows(& head) == Tail :: nrows(& tail)")]
+#[cfg(feature = "faer")]
+fn test_faer_mat_add_assign_panic() {
+    let mut x = FMat::from_slice(X);
+    let w = FMat::from_slice(W);
     x.add_assign(&w);
 }

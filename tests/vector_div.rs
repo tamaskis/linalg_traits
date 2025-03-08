@@ -7,6 +7,9 @@ use nalgebra::{DVector, Vector3};
 #[cfg(feature = "ndarray")]
 use ndarray::Array1;
 
+#[cfg(feature = "faer")]
+use faer::Mat as FMat;
+
 // Test conditions.
 static X: &[f64; 3] = &[100.0, 200.0, 300.0];
 static Y: f64 = 10.0;
@@ -51,4 +54,14 @@ fn test_ndarray_array1() {
     x.div_assign(Y);
     assert_arrays_equal!(z, Z);
     assert_arrays_equal!(x, Z);
+}
+
+#[test]
+#[cfg(feature = "faer")]
+fn test_faer_mat() {
+    let mut x = FMat::from_slice(X);
+    let z = x.div(Y);
+    x.div_assign(Y);
+    assert_arrays_equal!(z.as_slice(), Z);
+    assert_arrays_equal!(x.as_slice(), Z);
 }
