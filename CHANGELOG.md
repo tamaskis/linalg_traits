@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.11.0
+
+1. Fixed issue with `faer` feature flags.
+
 ## 0.10.0
 
 1. Implementation of `Vector` and `Matrix` traits for the `faer::Mat` struct.
