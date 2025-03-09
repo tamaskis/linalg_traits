@@ -3,9 +3,12 @@ use crate::vector::vector_trait::Vector;
 
 #[cfg(feature = "faer")]
 use faer::{Mat, Scale};
+
+#[cfg(feature = "faer-traits")]
 use faer_traits::RealField;
 
 #[cfg(feature = "faer")]
+#[cfg(feature = "faer-traits")]
 impl<S: Scalar + RealField> Vector<S> for Mat<S> {
     // Cannot apply RealField trait bound on T because it would be more restrictive than the trait
     // definition.

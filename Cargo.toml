@@ -1,6 +1,6 @@
 [package]
 name = "linalg-traits"
-version = "0.10.0"
+version = "0.11.0"
 authors = ["Tamas Kis"]
 edition = "2021"
 description = "Traits for generic linear algebra."
@@ -9,9 +9,6 @@ repository = "https://github.com/tamaskis/linalg_traits"
 license = "MIT OR Apache-2.0"
 
 exclude = ["Cargo.lock", ".github/", ".vscode/", ".gitignore"]
-
-[features]
-faer = ["dep:faer", "dep:faer-traits"]
 
 [dependencies]
 num-traits = "0.2.19"
@@ -25,4 +22,4 @@ numtest = "0.2.2"
 
 [package.metadata.docs.rs]
 rustdoc-args = [ "--html-in-header", "src/docs-header.html" ]
-features = ["faer", "nalgebra", "ndarray"]
+features = ["faer", "faer-traits", "nalgebra", "ndarray"]

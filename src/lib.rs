@@ -97,8 +97,10 @@
 //!
 //! ```toml
 //! [dependencies]
-//! linalg-traits = { version = "x.y.z", features = ["nalgebra", "ndarray", "faer"] }
+//! linalg-traits = { version = "x.y.z", features = ["nalgebra", "ndarray", "faer", "faer-traits"] }
 //! ```
+//!
+//! Note that the `faer-traits` feature is also required when using [`faer`].
 //!
 //! # Additional notes on use cases
 //!

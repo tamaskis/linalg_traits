@@ -4,9 +4,12 @@ use std::borrow::Cow;
 
 #[cfg(feature = "faer")]
 use faer::{Mat, Scale};
+
+#[cfg(feature = "faer-traits")]
 use faer_traits::RealField;
 
 #[cfg(feature = "faer")]
+#[cfg(feature = "faer-traits")]
 impl<S> Matrix<S> for Mat<S>
 where
     S: Scalar + RealField,
