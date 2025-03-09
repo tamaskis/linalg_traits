@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.11.1
+
+1. Added `as_row_slice` and `as_col_slice` methods to the `Matrix` trait.
+
 ## 0.11.0
 
 1. Fixed issue with `faer` feature flags.
