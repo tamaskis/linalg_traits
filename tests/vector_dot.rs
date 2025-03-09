@@ -6,6 +6,9 @@ use nalgebra::{DVector, Vector3};
 #[cfg(feature = "ndarray")]
 use ndarray::Array1;
 
+#[cfg(feature = "faer")]
+use faer::Mat as FMat;
+
 // Test conditions.
 static X: &[f64; 3] = &[1.0, 2.0, 3.0];
 static Y: &[f64; 3] = &[4.0, 5.0, 6.0];
@@ -83,5 +86,25 @@ fn test_ndarray_array1() {
 fn test_ndarray_array1_panic() {
     let x = Array1::from_slice(X);
     let w = Array1::from_slice(W);
+    let _ = x.dot(&w);
+}
+
+#[test]
+#[cfg(feature = "faer")]
+fn test_faer_mat() {
+    let x = FMat::from_slice(X);
+    let y = FMat::from_slice(Y);
+    let z = x.dot(&y);
+    assert_eq!(z, Z);
+}
+
+#[test]
+#[should_panic(
+    expected = "assertion `left == right` failed: Length of the other vector (3) does not match the length of this vector (2)"
+)]
+#[cfg(feature = "faer")]
+fn test_faer_mat_panic() {
+    let x = FMat::from_slice(X);
+    let w = FMat::from_slice(W);
     let _ = x.dot(&w);
 }

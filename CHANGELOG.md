@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.10.0
+
+1. Implementation of `Vector` and `Matrix` traits for the `faer::Mat` struct.
+1. No longer require implementations of `Index` and `IndexMut` for `Vector` trait.
+1. `Vector` trait now defines the `vget` ("vector get") and `vset` ("vector set") methods for accessing and setting elements of the vector (replaces `Index` and `IndexMut`).
+1. `Matrix::as_slice` now returns a `Cow<[S]>` instead of a `&[S]`.
+    * This provides support for matrix types with non-contiguous data storage (e.g. `faer::Mat`).
+1. Added `faer` optional dependency at `0.21.7`.
+1. Updated `nalgebra` optional dependency from `0.33.0` to `0.33.2`.
+1. Updated `ndarray` optional dependency from `0.16.0` to `0.16.1`.
+1. Updated `num-traits` dependency from `0.2.18` to `0.2.19`.
+1. Updated `numtest` dev dependency from `0.2.1` to `0.2.2`.
+
 ## 0.9.1
 
 1. Added `DVectorf64` associated type to `Vector` trait.

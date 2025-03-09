@@ -6,6 +6,9 @@ use nalgebra::{DVector, SVector};
 #[cfg(feature = "ndarray")]
 use ndarray::Array1;
 
+#[cfg(feature = "faer")]
+use faer::Mat as FMat;
+
 #[test]
 fn test_vec() {
     assert!(<Vec<f64> as Vector<f64>>::new_with_length(0).is_empty());
@@ -31,4 +34,11 @@ fn test_nalgebra_svector() {
 fn test_ndarray_array1() {
     assert!(<Array1<f64> as Vector<f64>>::new_with_length(0).is_empty());
     assert!(!<Array1<f64> as Vector<f64>>::new_with_length(3).is_empty());
+}
+
+#[test]
+#[cfg(feature = "faer")]
+fn test_faer_mat() {
+    assert!(FMat::<f64>::new_with_length(0).is_empty());
+    assert!(!FMat::<f64>::new_with_length(3).is_empty());
 }

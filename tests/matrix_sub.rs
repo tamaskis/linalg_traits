@@ -7,6 +7,9 @@ use nalgebra::{DMatrix, Matrix2};
 #[cfg(feature = "ndarray")]
 use ndarray::Array2;
 
+#[cfg(feature = "faer")]
+use faer::Mat as FMat;
+
 // Test conditions.
 static X_ROW: &[f64; 4] = &[1.0, 2.0, 3.0, 4.0];
 static Y_ROW: &[f64; 4] = &[10.0, 7.0, 4.0, 1.0];
@@ -29,7 +32,7 @@ fn test_mat() {
 }
 
 #[test]
-#[should_panic(expected = " Matrices have incompatible shapes.\n  left: (2, 2)\n right: (2, 3)")]
+#[should_panic(expected = "Matrices have incompatible shapes.\n  left: (2, 2)\n right: (2, 3)")]
 fn test_mat_sub_panic() {
     let x = Mat::from_row_slice(2, 2, X_ROW);
     let w = Mat::from_row_slice(2, 3, W_ROW);
@@ -37,7 +40,7 @@ fn test_mat_sub_panic() {
 }
 
 #[test]
-#[should_panic(expected = " Matrices have incompatible shapes.\n  left: (2, 2)\n right: (2, 3)")]
+#[should_panic(expected = "Matrices have incompatible shapes.\n  left: (2, 2)\n right: (2, 3)")]
 fn test_mat_sub_assign_panic() {
     let mut x = Mat::from_row_slice(2, 2, X_ROW);
     let w = Mat::from_row_slice(2, 3, W_ROW);
@@ -114,5 +117,34 @@ fn test_ndarray_array2_sub_panic() {
 fn test_ndarray_array2_sub_assign_panic() {
     let mut x = Array2::from_row_slice(2, 2, X_ROW);
     let w = Array2::from_row_slice(2, 3, W_ROW);
+    x.sub_assign(&w);
+}
+
+#[test]
+#[cfg(feature = "faer")]
+fn test_faer_mat() {
+    let mut x = FMat::from_row_slice(2, 2, X_ROW);
+    let y = FMat::from_row_slice(2, 2, Y_ROW);
+    let z = x.sub(&y);
+    x.sub_assign(&y);
+    assert_arrays_equal!(z.as_slice(), Z_COL);
+    assert_arrays_equal!(x.as_slice(), Z_COL);
+}
+
+#[test]
+#[should_panic(expected = "Assertion failed: lhs.ncols() == rhs.ncols()")]
+#[cfg(feature = "faer")]
+fn test_faer_mat_sub_panic() {
+    let x = FMat::from_row_slice(2, 2, X_ROW);
+    let w = FMat::from_row_slice(2, 3, W_ROW);
+    let _ = x.sub(&w);
+}
+
+#[test]
+#[should_panic(expected = "Assertion failed: Head :: ncols(& head) == Tail :: ncols(& tail)")]
+#[cfg(feature = "faer")]
+fn test_faer_mat_sub_assign_panic() {
+    let mut x = FMat::from_row_slice(2, 2, X_ROW);
+    let w = FMat::from_row_slice(2, 3, W_ROW);
     x.sub_assign(&w);
 }

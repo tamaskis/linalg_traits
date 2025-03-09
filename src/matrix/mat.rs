@@ -1,6 +1,7 @@
 use crate::matrix::matrix_trait::Matrix;
 use crate::scalar::Scalar;
 use crate::Vector;
+use std::borrow::Cow;
 use std::iter::Iterator;
 use std::ops::{Index, IndexMut};
 
@@ -11,12 +12,11 @@ use std::ops::{Index, IndexMut};
 /// * The underlying data structure is a [`Vec<S>`].
 /// * This matrix implementation is row-major; the elements of the matrix are stored row-by-row
 ///   in a one-dimensional "flat" data structure (in this case a [`Vec<S>`]).
-///   `Vec<S>` row by row.
 ///
 /// # Motivation
 ///
 /// Rust does not have a matrix type in the `std` library, and users of this crate may not want to
-/// have dependencies such as [`nalgebra`] and/or [`ndarray`].
+/// have dependencies such as [`nalgebra`], [`ndarray`], and/or [`faer`].
 #[derive(Clone, Debug, PartialEq)]
 pub struct Mat<S>
 where
@@ -152,8 +152,8 @@ where
         Mat { data, rows, cols }
     }
 
-    fn as_slice(&self) -> &[S] {
-        self.data.as_slice()
+    fn as_slice(&self) -> Cow<[S]> {
+        Cow::from(self.data.as_slice())
     }
 
     fn add(&self, other: &Self) -> Self {

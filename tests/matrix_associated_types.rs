@@ -7,6 +7,9 @@ use nalgebra::{DMatrix, DVector, SMatrix, SVector};
 #[cfg(feature = "ndarray")]
 use ndarray::{Array1, Array2};
 
+#[cfg(feature = "faer")]
+use faer::Mat as FMat;
+
 // Dimensions for all unit tests.
 const M: usize = 3;
 const N: usize = 2;
@@ -48,4 +51,14 @@ fn test_ndarray_array1_from_array2() {
     let vec_n: Array1<f64> = mat.new_vector_n();
     assert_arrays_equal!(vec_m, [0.0; M]);
     assert_arrays_equal!(vec_n, [0.0; N]);
+}
+
+#[test]
+#[cfg(feature = "faer")]
+fn test_faer_mat_from_faer_mat() {
+    let mat: FMat<f64> = FMat::new_with_shape(M, N);
+    let vec_m: FMat<f64> = mat.new_vector_m();
+    let vec_n: FMat<f64> = mat.new_vector_n();
+    assert_arrays_equal!(vec_m.as_slice(), [0.0; M]);
+    assert_arrays_equal!(vec_n.as_slice(), [0.0; N]);
 }

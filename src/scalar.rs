@@ -2,7 +2,7 @@ use num_traits::Float;
 use std::fmt::Debug;
 use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Rem, RemAssign, Sub, SubAssign};
 
-/// Scalar type.
+/// Trait defining a generic scalar type.
 ///
 /// # Interoperability with [`f64`]s.
 ///

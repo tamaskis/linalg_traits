@@ -1,5 +1,6 @@
 use crate::matrix::matrix_trait::Matrix;
 use crate::scalar::Scalar;
+use std::borrow::Cow;
 
 #[cfg(feature = "nalgebra")]
 use nalgebra::{SMatrix, SVector};
@@ -51,8 +52,8 @@ where
         SMatrix::from_column_slice(slice)
     }
 
-    fn as_slice(&self) -> &[S] {
-        Self::as_slice(self)
+    fn as_slice(&self) -> Cow<[S]> {
+        Cow::from(Self::as_slice(self))
     }
 
     fn add(&self, other: &Self) -> Self {
