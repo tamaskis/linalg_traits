@@ -26,9 +26,15 @@ fn test_mat() {
     // Testing equality of the two matrices.
     assert_arrays_equal!(x1, x2);
 
-    // Testing slice representation.
+    // Testing slice representations of x1.
     assert_arrays_equal!(x1.as_slice(), ROW_SLICE);
+    assert_arrays_equal!(x1.as_row_slice(), ROW_SLICE);
+    assert_arrays_equal!(x1.as_col_slice(), COL_SLICE);
+
+    // Testing slice representations of x2.
     assert_arrays_equal!(x2.as_slice(), ROW_SLICE);
+    assert_arrays_equal!(x2.as_row_slice(), ROW_SLICE);
+    assert_arrays_equal!(x2.as_col_slice(), COL_SLICE);
 }
 
 #[test]
@@ -56,9 +62,15 @@ fn test_nalgebra_dmatrix() {
     // Testing equality of the two matrices.
     assert_arrays_equal!(x1, x2);
 
-    // Testing slice representation.
+    // Testing slice representations of x1.
     assert_arrays_equal!(x1.as_slice(), COL_SLICE);
+    assert_arrays_equal!(x1.as_row_slice(), ROW_SLICE);
+    assert_arrays_equal!(x1.as_col_slice(), COL_SLICE);
+
+    // Testing slice representations of x2.
     assert_arrays_equal!(x2.as_slice(), COL_SLICE);
+    assert_arrays_equal!(x2.as_row_slice(), ROW_SLICE);
+    assert_arrays_equal!(x2.as_col_slice(), COL_SLICE);
 }
 
 #[test]
@@ -92,9 +104,15 @@ fn test_nalgebra_smatrix() {
     // Testing equality of the two matrices.
     assert_arrays_equal!(x1, x2);
 
-    // Testing slice representation.
+    // Testing slice representations of x1.
     assert_arrays_equal!(x1.as_slice(), COL_SLICE);
+    assert_arrays_equal!(x1.as_row_slice(), ROW_SLICE);
+    assert_arrays_equal!(x1.as_col_slice(), COL_SLICE);
+
+    // Testing slice representations of x2.
     assert_arrays_equal!(x2.as_slice(), COL_SLICE);
+    assert_arrays_equal!(x2.as_row_slice(), ROW_SLICE);
+    assert_arrays_equal!(x2.as_col_slice(), COL_SLICE);
 }
 
 #[test]
@@ -138,9 +156,15 @@ fn test_ndarray_array2() {
     // Testing equality of the two matrices.
     assert_arrays_equal!(x1, x2);
 
-    // Testing slice representation.
+    // Testing slice representations of x1.
     assert_arrays_equal!(<Array2<f64> as Matrix<f64>>::as_slice(&x1), ROW_SLICE);
+    assert_arrays_equal!(x1.as_row_slice(), ROW_SLICE);
+    assert_arrays_equal!(x1.as_col_slice(), COL_SLICE);
+
+    // Testing slice representations of x2.
     assert_arrays_equal!(<Array2<f64> as Matrix<f64>>::as_slice(&x2), ROW_SLICE);
+    assert_arrays_equal!(x2.as_row_slice(), ROW_SLICE);
+    assert_arrays_equal!(x2.as_col_slice(), COL_SLICE);
 }
 
 #[test]
@@ -167,9 +191,15 @@ fn test_faer_mat() {
     // Testing from a column slice.
     let x2: FMat<f64> = FMat::from_col_slice(2, 3, COL_SLICE);
 
-    // Testing slice representation.
+    // Testing slice representations of x1.
     assert_arrays_equal!(x1.as_slice(), COL_SLICE);
+    assert_arrays_equal!(x1.as_row_slice(), ROW_SLICE);
+    assert_arrays_equal!(x1.as_col_slice(), COL_SLICE);
+
+    // Testing slice representations of x2.
     assert_arrays_equal!(x2.as_slice(), COL_SLICE);
+    assert_arrays_equal!(x2.as_row_slice(), ROW_SLICE);
+    assert_arrays_equal!(x2.as_col_slice(), COL_SLICE);
 }
 
 #[test]

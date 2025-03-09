@@ -168,6 +168,72 @@ pub trait Matrix<S: Scalar>:
         );
     }
 
+    /// Return a slice view of the matrix's elements in row-major order.
+    ///
+    /// # Returns
+    ///
+    /// A slice of the matrix's elements in row-major order.
+    /// 
+    /// # Note
+    /// 
+    /// The slice is returned as a `Cow<[S]>` instead of a `&[S]`. This is primarily because the
+    /// underlying data will be _either_ in row-major order _or_ in column-major order. If it is in
+    /// column-major order, then we will need to re-order it to be in row-major order. This requires
+    /// building a temporary variable within this method which will be dropped when the method scope
+    /// ends. In such cases, this method will clone the data when returning it in a `Cow<[S]>`.
+    /// 
+    /// In most cases, if the data is in row-major order, then this function will not perform any
+    /// cloning. However, in some cases, even if the underlying data is in row-major order, its data
+    /// may not be contiguous in memory. This would also require cloning the data from a temporary
+    /// variable. See [`Matrix::as_slice`] for more information.
+    fn as_row_slice(&self) -> Cow<[S]> {
+        if Self::is_row_major() {
+            self.as_slice()
+        } else {
+            let (rows, cols) = self.shape();
+            let mut vec = Vec::<S>::with_capacity(rows * cols);
+            for row in 0..rows {
+                for col in 0..cols {
+                    vec.push(self[(row, col)]);
+                }
+            }
+            Cow::from(vec)
+        }
+    }
+
+    /// Return a slice view of the matrix's elements in column-major order.
+    ///
+    /// # Returns
+    ///
+    /// A slice of the matrix's elements in column-major order.
+    /// 
+    /// # Note
+    /// 
+    /// The slice is returned as a `Cow<[S]>` instead of a `&[S]`. This is primarily because the
+    /// underlying data will be _either_ in row-major order _or_ in column-major order. If it is in
+    /// row-major order, then we will need to re-order it to be in column-major order. This requires
+    /// building a temporary variable within this method which will be dropped when the method scope
+    /// ends. In such cases, this method will clone the data when returning it in a `Cow<[S]>`.
+    /// 
+    /// In most cases, if the data is in column-major order, then this function will not perform any
+    /// cloning. However, in some cases, even if the underlying data is in column-major order, its
+    /// data may not be contiguous in memory. This would also require cloning the data from a
+    /// temporary variable. See [`Matrix::as_slice`] for more information.
+    fn as_col_slice(&self) -> Cow<[S]> {
+        if Self::is_column_major() {
+            self.as_slice()
+        } else {
+            let (rows, cols) = self.shape();
+            let mut vec = Vec::<S>::with_capacity(rows * cols);
+            for col in 0..cols {
+                for row in 0..rows {
+                    vec.push(self[(row, col)]);
+                }
+            }
+            Cow::from(vec)
+        }
+    }
+
     // -----------------------------
     // Required method declarations.
     // -----------------------------
