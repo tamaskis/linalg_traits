@@ -8,7 +8,7 @@ documentation = "https://docs.rs/linalg-traits"
 repository = "https://github.com/tamaskis/linalg_traits"
 license = "MIT OR Apache-2.0"
 
-exclude = ["Cargo.lock", ".github/", ".vscode/", ".gitignore"]
+exclude = [".github/", ".vscode/", "book/", ".gitignore", "Cargo.lock"]
 
 [dependencies]
 num-traits = "0.2.19"
