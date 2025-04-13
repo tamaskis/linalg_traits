@@ -19,20 +19,20 @@
 //!
 //! 1. **Compatibility with [`Vec<f64>`], as well as types from [`nalgebra`], [`ndarray`], and [`faer`].**
 //!
-//!     As a result, this crate does not require any operator overloads to be implemented for linear
-//!     alegebra types. Different numerical computing crates may have different implementations for
-//!     operator overloads (e.g. [`ndarray`] overloads `*` for elementwise multiplication, while
-//!     [`nalgebra`] overloads `*` for matrix multiplication). This means that anyone writing
-//!     generic linear algebra code using `linalg-traits` should use the arithmetic methods defined
-//!     on the [`Vector`] and [`Matrix`] traits. <br><br>
+//!    As a result, this crate does not require any operator overloads to be implemented for linear
+//!    alegebra types. Different numerical computing crates may have different implementations for
+//!    operator overloads (e.g. [`ndarray`] overloads `*` for elementwise multiplication, while
+//!    [`nalgebra`] overloads `*` for matrix multiplication). This means that anyone writing
+//!    generic linear algebra code using `linalg-traits` should use the arithmetic methods defined
+//!    on the [`Vector`] and [`Matrix`] traits. <br><br>
 //!
 //! 1. **Compatibility with both statically-sized and dynamically-sized types.**
 //!
-//!     Most linear algebra types implement the [`Clone`] trait. Statically-sized linear algebra
-//!     types (e.g. `nalgebra::SVector`) may also implement the [`Copy`] trait, which is often
-//!     preferable to use for those types. However, it can be unsafe to copy dynamically-sized
-//!     types, so to keep [`Vector`] and [`Matrix`] compatible with both statically and
-//!     dynamically-sized linear algebra types, they only require that [`Clone`] be implemented.
+//     Most linear algebra types implement the [`Clone`] trait. Statically-sized linear algebra
+//!    types (e.g. `nalgebra::SVector`) may also implement the [`Copy`] trait, which is often
+//!    preferable to use for those types. However, it can be unsafe to copy dynamically-sized
+//!    types, so to keep [`Vector`] and [`Matrix`] compatible with both statically and
+//!    dynamically-sized linear algebra types, they only require that [`Clone`] be implemented.
 //!
 //! # Linear Algebra Traits
 //!
