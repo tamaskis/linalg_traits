@@ -239,7 +239,7 @@ pub trait Vector<S: Scalar>:
     /// # Arguments
     /// 
     /// * `m` - Number of rows of the `M x N` matrix. Input as `None` for statically-sized vectors,
-    ///         and as `Some(m)` for dynamically-sized vectors.
+    ///   and as `Some(m)` for dynamically-sized vectors.
     /// 
     /// # Returns
     /// 
@@ -363,7 +363,7 @@ pub trait Vector<S: Scalar>:
     /// # Arguments
     /// 
     /// * `m` - Number of columns of the `N x M` matrix. Input as `None` for statically-sized
-    ///         vectors, and as `Some(m)` for dynamically-sized vectors.
+    ///   vectors, and as `Some(m)` for dynamically-sized vectors.
     /// 
     /// # Returns
     /// 
@@ -430,7 +430,7 @@ pub trait Vector<S: Scalar>:
     /// # Arguments
     /// 
     /// * `m` - Number of columns of the `N x M` matrix. Input as `None` for statically-sized
-    ///         vectors, and as `Some(m)` for dynamically-sized vectors.
+    ///   vectors, and as `Some(m)` for dynamically-sized vectors.
     /// 
     /// # Returns
     /// 
