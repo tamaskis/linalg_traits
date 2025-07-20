@@ -3,6 +3,9 @@
 ## 0.12.0
 
 1. Updated `rust` version to 2024.
+1. Updated `faer` optional dependency from `0.21.7` to `0.22.6`.
+1. Updated `faer-traits` optional dependency from `0.21.0` to `0.22.1`.
+1. Updated `numtest` dev dependency from `0.2.2` to `0.3.0`.
 
 ## 0.11.1
 
