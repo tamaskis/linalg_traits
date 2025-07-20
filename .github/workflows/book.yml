@@ -4,13 +4,14 @@ on:
   push:
     branches: [ "main" ]  # Run on merges to main.
 
+permissions:
+  contents: write # Needed to push the built book to GitHub Pages.
+  
 jobs:
     
   publish_book: # https://github.com/peaceiris/actions-mdbook
     name: Publish book
     runs-on: ubuntu-latest
-    permissions:  # https://github.com/peaceiris/actions-gh-pages?tab=readme-ov-file#%EF%B8%8F-first-deployment-with-github_token
-      contents: write
     steps:
       - name: Checkout  # Checkout this repo's code.
         uses: actions/checkout@v4
