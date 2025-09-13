@@ -66,7 +66,7 @@ where
         Mat::<S>::from_fn(rows, cols, |i, j| slice[i + j * rows])
     }
 
-    fn as_slice(&self) -> Cow<[S]> {
+    fn as_slice<'a>(&'a self) -> Cow<'a, [S]> {
         let mut slice_vec = Vec::<S>::with_capacity(self.nrows() * self.ncols());
         for i in 0..self.ncols() {
             slice_vec.extend_from_slice(self.col_as_slice(i));

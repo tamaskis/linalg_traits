@@ -186,7 +186,7 @@ pub trait Matrix<S: Scalar>:
     /// cloning. However, in some cases, even if the underlying data is in row-major order, its data
     /// may not be contiguous in memory. This would also require cloning the data from a temporary
     /// variable. See [`Matrix::as_slice`] for more information.
-    fn as_row_slice(&self) -> Cow<[S]> {
+    fn as_row_slice<'a>(&'a self) -> Cow<'a, [S]>  {
         if Self::is_row_major() {
             self.as_slice()
         } else {
@@ -219,7 +219,7 @@ pub trait Matrix<S: Scalar>:
     /// cloning. However, in some cases, even if the underlying data is in column-major order, its
     /// data may not be contiguous in memory. This would also require cloning the data from a
     /// temporary variable. See [`Matrix::as_slice`] for more information.
-    fn as_col_slice(&self) -> Cow<[S]> {
+    fn as_col_slice<'a>(&'a self) -> Cow<'a, [S]> {
         if Self::is_column_major() {
             self.as_slice()
         } else {
@@ -354,7 +354,7 @@ pub trait Matrix<S: Scalar>:
     /// 
     /// When the data _is_ contiguous in memory, this method will build the [`Cow`] directly from
     /// a slice of the data. In this case, the data is borrowed, and no cloning occurs.
-    fn as_slice(&self) -> Cow<[S]>;
+    fn as_slice<'a>(&'a self) -> Cow<'a, [S]>;
 
     /// Matrix addition (elementwise).
     /// 
