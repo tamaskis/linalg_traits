@@ -46,7 +46,7 @@ where
         DMatrix::from_column_slice(rows, cols, slice)
     }
 
-    fn as_slice(&self) -> Cow<[S]> {
+    fn as_slice<'a>(&'a self) -> Cow<'a, [S]> {
         Cow::from(Self::as_slice(self))
     }
 

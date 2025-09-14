@@ -69,7 +69,7 @@ where
         Array2::from_shape_vec((rows, cols), data).unwrap()
     }
 
-    fn as_slice(&self) -> Cow<[S]> {
+    fn as_slice<'a>(&'a self) -> Cow<'a, [S]> {
         Cow::from(Self::as_slice(self).unwrap())
     }
 

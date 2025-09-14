@@ -1,6 +1,6 @@
+use crate::Vector;
 use crate::matrix::matrix_trait::Matrix;
 use crate::scalar::Scalar;
-use crate::Vector;
 use std::borrow::Cow;
 use std::iter::Iterator;
 use std::ops::{Index, IndexMut};
@@ -152,7 +152,7 @@ where
         Mat { data, rows, cols }
     }
 
-    fn as_slice(&self) -> Cow<[S]> {
+    fn as_slice<'a>(&'a self) -> Cow<'a, [S]> {
         Cow::from(self.data.as_slice())
     }
 

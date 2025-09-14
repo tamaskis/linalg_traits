@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.12.1
+
+1. Made some lifetimes explicit to address new lints.
+1. Updated `nalgebra` optional dependency from `0.33.2` to `0.34.0`.
+1. Updated `numtest` dev dependency from `0.3.0` to `0.3.1`.
+1. Added `tracing-subscriber` dependency at `0.3.20` (since `<0.3.20` had a security vulnerability).
+
 ## 0.12.0
 
 1. Updated `rust` version to 2024.
