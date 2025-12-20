@@ -32,7 +32,7 @@ fn test_vec() {
 
 #[test]
 #[should_panic(
-    expected = "Length of the other vector (3) does not match the length of this vector (2)."
+    expected = "Length of the other vector (2) does not match the length of this vector (3)."
 )]
 fn test_vec_add_panic() {
     let x = Vec::from_slice(X);
@@ -42,7 +42,7 @@ fn test_vec_add_panic() {
 
 #[test]
 #[should_panic(
-    expected = "Length of the other vector (3) does not match the length of this vector (2)."
+    expected = "Length of the other vector (2) does not match the length of this vector (3)."
 )]
 fn test_vec_add_assign_panic() {
     let mut x = Vec::from_slice(X);
@@ -116,7 +116,7 @@ fn test_ndarray_array1_add_panic() {
 
 #[test]
 #[should_panic(
-    expected = "Length of the other vector (3) does not match the length of this vector (2)."
+    expected = "Length of the other vector (2) does not match the length of this vector (3)."
 )]
 #[cfg(feature = "ndarray")]
 fn test_ndarray_array1_add_assign_panic() {

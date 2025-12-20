@@ -100,7 +100,7 @@ fn test_faer_mat() {
 
 #[test]
 #[should_panic(
-    expected = "assertion `left == right` failed: Length of the other vector (3) does not match the length of this vector (2)"
+    expected = "assertion `left == right` failed: Length of the other vector (2) does not match the length of this vector (3)."
 )]
 #[cfg(feature = "faer")]
 fn test_faer_mat_panic() {

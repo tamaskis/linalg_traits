@@ -70,7 +70,10 @@ where
     }
 
     fn as_slice<'a>(&'a self) -> Cow<'a, [S]> {
-        Cow::from(Self::as_slice(self).unwrap())
+        match self.as_slice_memory_order() {
+            Some(slice) => Cow::Borrowed(slice),
+            None => Cow::Owned(self.iter().cloned().collect()),
+        }
     }
 
     fn add(&self, other: &Self) -> Self {

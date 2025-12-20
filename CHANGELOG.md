@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.13.0
+
+1. Refactored for compatibility with `ndarray` `0.17`.
+1. Updated `faer` optional dependency from `0.22.1` to `0.23.2`.
+1. Updated `faer-traits` optional dependency from `0.22.1` to `0.23.2`.
+1. Updated `nalgebra` optional dependency from `0.34.0` to `0.34.1`.
+1. Updated `ndarray` optional dependency from `0.16.1` to `0.17.1`.
+1. Updated `numtest` dev dependency from `0.3.0` to `0.4.0`.
+1. Updated `tracing-subscriber` dependency from `0.3.20` to `0.3.22`.
+
 ## 0.12.1
 
 1. Made some lifetimes explicit to address new lints.

@@ -63,7 +63,7 @@ impl<S: Scalar> Vector<S> for DVector<S> {
     }
 
     fn as_slice(&self) -> &[S] {
-        self.as_slice()
+        DVector::as_slice(self)
     }
 
     fn add(&self, other: &Self) -> Self {
