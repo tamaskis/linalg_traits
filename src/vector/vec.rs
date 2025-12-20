@@ -56,7 +56,7 @@ impl<S: Scalar> Vector<S> for Vec<S> {
     }
 
     fn as_slice(&self) -> &[S] {
-        self.as_slice()
+        self
     }
 
     fn add(&self, other: &Self) -> Self {

@@ -483,8 +483,8 @@ pub trait Vector<S: Scalar>:
             self.len(),
             other.len(), 
             "Length of the other vector ({}) does not match the length of this vector ({}).",
-            self.len(),
-            other.len()
+            other.len(),
+            self.len()
         );
     }
 

@@ -5,6 +5,9 @@ use crate::vector::vector_trait::Vector;
 use ndarray::{Array1, Array2, LinalgScalar, ScalarOperand};
 
 #[cfg(feature = "ndarray")]
+use ndarray::linalg::Dot;
+
+#[cfg(feature = "ndarray")]
 impl<S: Scalar + ScalarOperand + LinalgScalar> Vector<S> for Array1<S> {
     // Cannot apply ScalarOperand + LinalgScalar trait bounds on T because it would be more
     // restrictive than the trait definition.
@@ -63,8 +66,10 @@ impl<S: Scalar + ScalarOperand + LinalgScalar> Vector<S> for Array1<S> {
     }
 
     fn as_slice(&self) -> &[S] {
-        self.as_slice()
-            .expect("The array's data is either not contiguous or not in standard order.")
+        match self.as_slice_memory_order() {
+            Some(slice) => slice,
+            None => panic!("Array1 is not in standard layout for as_slice conversion"),
+        }
     }
 
     fn add(&self, other: &Self) -> Self {
@@ -110,6 +115,6 @@ impl<S: Scalar + ScalarOperand + LinalgScalar> Vector<S> for Array1<S> {
     }
 
     fn dot(&self, other: &Self) -> S {
-        Array1::<S>::dot(self, other)
+        Dot::dot(self, other)
     }
 }

@@ -64,7 +64,7 @@ impl<const N: usize, S: Scalar> Vector<S> for SVector<S, N> {
     }
 
     fn as_slice(&self) -> &[S] {
-        self.as_slice()
+        SVector::as_slice(self)
     }
 
     fn add(&self, other: &Self) -> Self {
