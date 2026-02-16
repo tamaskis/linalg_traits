@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.14.0
+
+1. Updated `faer` optional dependency from `0.23.2` to `0.24.0`.
+1. Updated `faer-traits` optional dependency from `0.23.2` to `0.24.0`.
+1. Updated `ndarray` optional dependency from `0.17.1` to `0.17.2`.
+1. Updated `numtest` dev dependency from `0.4.0` to `0.4.1`.
+
 ## 0.13.0
 
 1. Refactored for compatibility with `ndarray` `0.17`.
