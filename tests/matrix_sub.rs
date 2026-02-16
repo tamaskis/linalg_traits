@@ -141,7 +141,7 @@ fn test_faer_mat_sub_panic() {
 }
 
 #[test]
-#[should_panic(expected = "Assertion failed: Head :: ncols(& head) == Tail :: ncols(& tail)")]
+#[should_panic(expected = "Assertion failed: Head :: ncols(&head) == Tail :: ncols(&tail)")]
 #[cfg(feature = "faer")]
 fn test_faer_mat_sub_assign_panic() {
     let mut x = FMat::from_row_slice(2, 2, X_ROW);
