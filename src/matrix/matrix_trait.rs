@@ -82,6 +82,8 @@ pub trait Matrix<S: Scalar>:
     /// ## Creating a statically-sized vector compatible with a statically-sized matrix
     /// 
     /// ```
+    /// # #[cfg(feature = "nalgebra")]
+    /// # {
     /// use linalg_traits::Matrix;
     /// use nalgebra::{SMatrix, SVector};
     /// 
@@ -91,11 +93,14 @@ pub trait Matrix<S: Scalar>:
     /// // Create a statically-sized length-2 vector.
     /// let vec: SVector<f64, 2> = mat.new_vector_n();
     /// assert_eq!(vec.len(), 2);
+    /// # }
     /// ```
     /// 
     /// ## Creating a dynamically-sized matrix compatible with a dynamically-sized vector
     /// 
     /// ```
+    /// # #[cfg(feature = "nalgebra")]
+    /// # {
     /// use linalg_traits::Matrix;
     /// use nalgebra::{DMatrix, DVector};
     /// 
@@ -105,6 +110,7 @@ pub trait Matrix<S: Scalar>:
     /// // Create a dynamically-sized length-2 vector.
     /// let vec: DVector<f64> = mat.new_vector_n();
     /// assert_eq!(vec.len(), 2);
+    /// # }
     /// ```
     fn new_vector_n(&self) -> Self::VectorN {
         let (_, n) = self.shape();
@@ -122,6 +128,8 @@ pub trait Matrix<S: Scalar>:
     /// ## Creating a statically-sized vector compatible with a statically-sized matrix
     /// 
     /// ```
+    /// # #[cfg(feature = "nalgebra")]
+    /// # {
     /// use linalg_traits::Matrix;
     /// use nalgebra::{SMatrix, SVector};
     /// 
@@ -131,11 +139,14 @@ pub trait Matrix<S: Scalar>:
     /// // Create a statically-sized length-3 vector.
     /// let vec: SVector<f64, 3> = mat.new_vector_m();
     /// assert_eq!(vec.len(), 3);
+    /// # }
     /// ```
     /// 
     /// ## Creating a dynamically-sized matrix compatible with a dynamically-sized vector
     /// 
     /// ```
+    /// # #[cfg(feature = "nalgebra")]
+    /// # {
     /// use linalg_traits::Matrix;
     /// use nalgebra::{DMatrix, DVector};
     /// 
@@ -145,6 +156,7 @@ pub trait Matrix<S: Scalar>:
     /// // Create a dynamically-sized length-3 vector.
     /// let vec: DVector<f64> = mat.new_vector_m();
     /// assert_eq!(vec.len(), 3);
+    /// # }
     /// ```
     fn new_vector_m(&self) -> Self::VectorM {
         let (m,_) = self.shape();
@@ -186,7 +198,7 @@ pub trait Matrix<S: Scalar>:
     /// cloning. However, in some cases, even if the underlying data is in row-major order, its data
     /// may not be contiguous in memory. This would also require cloning the data from a temporary
     /// variable. See [`Matrix::as_slice`] for more information.
-    fn as_row_slice<'a>(&'a self) -> Cow<'a, [S]>  {
+    fn as_row_slice(&self) -> Cow<'_, [S]>  {
         if Self::is_row_major() {
             self.as_slice()
         } else {
@@ -219,7 +231,7 @@ pub trait Matrix<S: Scalar>:
     /// cloning. However, in some cases, even if the underlying data is in column-major order, its
     /// data may not be contiguous in memory. This would also require cloning the data from a
     /// temporary variable. See [`Matrix::as_slice`] for more information.
-    fn as_col_slice<'a>(&'a self) -> Cow<'a, [S]> {
+    fn as_col_slice(&self) -> Cow<'_, [S]> {
         if Self::is_column_major() {
             self.as_slice()
         } else {
@@ -354,7 +366,7 @@ pub trait Matrix<S: Scalar>:
     /// 
     /// When the data _is_ contiguous in memory, this method will build the [`Cow`] directly from
     /// a slice of the data. In this case, the data is borrowed, and no cloning occurs.
-    fn as_slice<'a>(&'a self) -> Cow<'a, [S]>;
+    fn as_slice(&self) -> Cow<'_, [S]>;
 
     /// Matrix addition (elementwise).
     /// 
@@ -369,6 +381,7 @@ pub trait Matrix<S: Scalar>:
     /// # Panics
     /// 
     /// * If `self` and `other` are dynamically-sized matrices and do not have the same shape.
+    #[must_use]
     fn add(&self, other: &Self) -> Self;
 
     /// In-place matrix addition (elementwise) (`self += other`).
@@ -395,6 +408,7 @@ pub trait Matrix<S: Scalar>:
     /// # Panics
     /// 
     /// * If `self` and `other` are dynamically-sized matrices and do not have the same shape.
+    #[must_use]
     fn sub(&self, other: &Self) -> Self;
 
     /// In-place matrix subtraction (elementwise) (`self -= other`).
@@ -417,6 +431,7 @@ pub trait Matrix<S: Scalar>:
     /// # Returns
     /// 
     /// Product of this matrix with the scalar (i.e. `self * scalar` or `scalar * self`).
+    #[must_use]
     fn mul(&self, scalar: S) -> Self;
 
     /// In-place matrix-scalar multiplication (`self * scalar` or `scalar * self`).
@@ -435,6 +450,7 @@ pub trait Matrix<S: Scalar>:
     /// # Returns
     /// 
     /// This matrix divided by the scalar (i.e. `self / scalar`).
+    #[must_use]
     fn div(&self, scalar: S) -> Self;
 
     /// In-place matrix-scalar division (`self / scalar`).

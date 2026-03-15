@@ -1,5 +1,5 @@
-use crate::scalar::Scalar;
-use crate::vector::vector_trait::Vector;
+#[cfg(feature = "faer")]
+use crate::{Scalar, Vector};
 
 #[cfg(feature = "faer")]
 use faer::{Mat, Scale};

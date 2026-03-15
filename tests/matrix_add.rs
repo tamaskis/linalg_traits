@@ -16,6 +16,7 @@ static Y_ROW: &[f64; 4] = &[10.0, 7.0, 4.0, 1.0];
 
 // Expected result.
 static Z_ROW: &[f64; 4] = &[11.0, 9.0, 7.0, 5.0];
+#[cfg(any(feature = "nalgebra", feature = "faer"))]
 static Z_COL: &[f64; 4] = &[11.0, 7.0, 9.0, 5.0];
 
 // Slice with the wrong length.

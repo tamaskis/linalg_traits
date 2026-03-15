@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.15.0
+
+1. Enabled stricter lints.
+1. Updated `numtest` dev dependency from `0.4.1` to `0.5.0`.
+
 ## 0.14.0
 
 1. Updated `faer` optional dependency from `0.23.2` to `0.24.0`.

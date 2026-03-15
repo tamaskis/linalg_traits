@@ -1,12 +1,14 @@
-use crate::matrix::matrix_trait::Matrix;
-use crate::scalar::Scalar;
-use std::borrow::Cow;
+#[cfg(feature = "faer")]
+use crate::{Matrix, Scalar};
 
 #[cfg(feature = "faer")]
 use faer::{Mat, Scale};
 
 #[cfg(feature = "faer-traits")]
 use faer_traits::RealField;
+
+#[cfg(feature = "faer")]
+use std::borrow::Cow;
 
 #[cfg(feature = "faer")]
 #[cfg(feature = "faer-traits")]
@@ -66,7 +68,7 @@ where
         Mat::<S>::from_fn(rows, cols, |i, j| slice[i + j * rows])
     }
 
-    fn as_slice<'a>(&'a self) -> Cow<'a, [S]> {
+    fn as_slice(&self) -> Cow<'_, [S]> {
         let mut slice_vec = Vec::<S>::with_capacity(self.nrows() * self.ncols());
         for i in 0..self.ncols() {
             slice_vec.extend_from_slice(self.col_as_slice(i));
@@ -95,7 +97,7 @@ where
     }
 
     fn mul_assign(&mut self, scalar: S) {
-        *self *= Scale(scalar)
+        *self *= Scale(scalar);
     }
 
     fn div(&self, scalar: S) -> Self {
@@ -103,6 +105,6 @@ where
     }
 
     fn div_assign(&mut self, scalar: S) {
-        *self /= Scale(scalar)
+        *self /= Scale(scalar);
     }
 }

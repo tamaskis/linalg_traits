@@ -152,7 +152,7 @@ where
         Mat { data, rows, cols }
     }
 
-    fn as_slice<'a>(&'a self) -> Cow<'a, [S]> {
+    fn as_slice(&self) -> Cow<'_, [S]> {
         Cow::from(self.data.as_slice())
     }
 

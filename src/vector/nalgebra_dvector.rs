@@ -1,5 +1,5 @@
-use crate::scalar::Scalar;
-use crate::vector::vector_trait::Vector;
+#[cfg(feature = "nalgebra")]
+use crate::{Scalar, Vector};
 
 #[cfg(feature = "nalgebra")]
 use nalgebra::{DMatrix, DVector};

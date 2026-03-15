@@ -1,9 +1,11 @@
-use crate::matrix::matrix_trait::Matrix;
-use crate::scalar::Scalar;
-use std::borrow::Cow;
+#[cfg(feature = "ndarray")]
+use crate::{Matrix, Scalar};
 
 #[cfg(feature = "ndarray")]
 use ndarray::{Array1, Array2, LinalgScalar, ScalarOperand};
+
+#[cfg(feature = "ndarray")]
+use std::borrow::Cow;
 
 #[cfg(feature = "ndarray")]
 impl<S> Matrix<S> for Array2<S>
@@ -69,10 +71,10 @@ where
         Array2::from_shape_vec((rows, cols), data).unwrap()
     }
 
-    fn as_slice<'a>(&'a self) -> Cow<'a, [S]> {
+    fn as_slice(&self) -> Cow<'_, [S]> {
         match self.as_slice_memory_order() {
             Some(slice) => Cow::Borrowed(slice),
-            None => Cow::Owned(self.iter().cloned().collect()),
+            None => Cow::Owned(self.iter().copied().collect()),
         }
     }
 

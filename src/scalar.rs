@@ -68,6 +68,7 @@ pub trait Scalar:
     /// # Return
     /// 
     /// An instance of this scalar type constructed from an [`f64`].
+    #[must_use]
     fn new(x: f64) -> Self {
         Self::from(x).unwrap()
     }

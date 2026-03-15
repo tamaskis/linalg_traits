@@ -205,6 +205,8 @@ pub trait Vector<S: Scalar>:
     /// ## Creating a statically-sized matrix compatible with a statically-sized vector
     /// 
     /// ```
+    /// # #[cfg(feature = "nalgebra")]
+    /// # {
     /// use linalg_traits::Vector;
     /// use nalgebra::{SMatrix, SVector};
     /// 
@@ -214,11 +216,14 @@ pub trait Vector<S: Scalar>:
     /// // Create a statically-sized 2x2 matrix.
     /// let mat: SMatrix<f64, 2, 2> = vec.new_matrix_n_by_n();
     /// assert_eq!(mat.shape(), (2, 2));
+    /// # }
     /// ```
     /// 
     /// ## Creating a dynamically-sized matrix compatible with a dynamically-sized vector
     /// 
     /// ```
+    /// # #[cfg(feature = "nalgebra")]
+    /// # {
     /// use linalg_traits::Vector;
     /// use nalgebra::{DMatrix, DVector};
     /// 
@@ -228,6 +233,7 @@ pub trait Vector<S: Scalar>:
     /// // Create a dynamically-sized 2x2 matrix.
     /// let mat: DMatrix<f64> = vec.new_matrix_n_by_n();
     /// assert_eq!(mat.shape(), (2, 2));
+    /// # }
     /// ```
     fn new_matrix_n_by_n(&self) -> Self::MatrixNxN {
         let n = self.len();
@@ -259,6 +265,8 @@ pub trait Vector<S: Scalar>:
     /// ## Creating a statically-sized matrix compatible with a statically-sized vector
     /// 
     /// ```
+    /// # #[cfg(feature = "nalgebra")]
+    /// # {
     /// use linalg_traits::Vector;
     /// use nalgebra::{SMatrix, SVector};
     /// 
@@ -272,11 +280,14 @@ pub trait Vector<S: Scalar>:
     /// // Create a statically-sized 3x2 matrix.
     /// let mat: SMatrix<f64, M, N> = vec.new_matrix_m_by_n::<M>(None);
     /// assert_eq!(mat.shape(), (M, N));
+    /// # }
     /// ```
     /// 
     /// ## Creating a dynamically-sized matrix compatible with a dynamically-sized vector
     /// 
     /// ```
+    /// # #[cfg(feature = "nalgebra")]
+    /// # {
     /// use linalg_traits::Vector;
     /// use nalgebra::{DMatrix, DVector};
     /// 
@@ -290,6 +301,7 @@ pub trait Vector<S: Scalar>:
     /// // Create a dynamically-sized 3x2 matrix.
     /// let mat: DMatrix<f64> = vec.new_matrix_m_by_n::<0>(Some(M));
     /// assert_eq!(mat.shape(), (M, N));
+    /// # }
     /// ```
     fn new_matrix_m_by_n<const M: usize>(&self, m: Option<usize>) -> Self::MatrixMxN<M> {
         let n = self.len();
@@ -316,6 +328,8 @@ pub trait Vector<S: Scalar>:
     /// ## Creating a dynamically-sized matrix compatible with a statically-sized vector
     /// 
     /// ```
+    /// # #[cfg(feature = "nalgebra")]
+    /// # {
     /// use linalg_traits::Vector;
     /// use nalgebra::{DMatrix, SVector};
     /// 
@@ -325,11 +339,14 @@ pub trait Vector<S: Scalar>:
     /// // Create a dynamically-sized 3x2 matrix.
     /// let mat: DMatrix<f64> = vec.new_dmatrix_m_by_n(3);
     /// assert_eq!(mat.shape(), (3, 2));
+    /// # }
     /// ```
     /// 
     /// ## Creating a dynamically-sized matrix compatible with a dynamically-sized vector
     /// 
     /// ```
+    /// # #[cfg(feature = "nalgebra")]
+    /// # {
     /// use linalg_traits::Vector;
     /// use nalgebra::{DMatrix, DVector};
     /// 
@@ -339,6 +356,7 @@ pub trait Vector<S: Scalar>:
     /// // Create a dynamically-sized 3x2 matrix.
     /// let mat: DMatrix<f64> = vec.new_dmatrix_m_by_n(3);
     /// assert_eq!(mat.shape(), (3, 2));
+    /// # }
     /// ```
     fn new_dmatrix_m_by_n(&self, m: usize) -> Self::DMatrixMxN {
         Self::DMatrixMxN::new_with_shape(m, self.len())
@@ -383,6 +401,8 @@ pub trait Vector<S: Scalar>:
     /// ## Creating a statically-sized matrix compatible with a statically-sized vector
     /// 
     /// ```
+    /// # #[cfg(feature = "nalgebra")]
+    /// # {
     /// use linalg_traits::Vector;
     /// use nalgebra::{SMatrix, SVector};
     /// 
@@ -396,11 +416,14 @@ pub trait Vector<S: Scalar>:
     /// // Create a statically-sized 2x3 matrix.
     /// let mat: SMatrix<f64, N, M> = vec.new_matrix_n_by_m::<M>(None);
     /// assert_eq!(mat.shape(), (N, M));
+    /// # }
     /// ```
     /// 
     /// ## Creating a dynamically-sized matrix compatible with a dynamically-sized vector
     /// 
     /// ```
+    /// # #[cfg(feature = "nalgebra")]
+    /// # {
     /// use linalg_traits::Vector;
     /// use nalgebra::{DMatrix, DVector};
     /// 
@@ -414,6 +437,7 @@ pub trait Vector<S: Scalar>:
     /// // Create a dynamically-sized 2x3 matrix.
     /// let mat: DMatrix<f64> = vec.new_matrix_n_by_m::<0>(Some(M));
     /// assert_eq!(mat.shape(), (N, M));
+    /// # }
     /// ```
     fn new_matrix_n_by_m<const M: usize>(&self, m: Option<usize>) -> Self::MatrixNxM<M> {
         let n = self.len();
@@ -441,6 +465,8 @@ pub trait Vector<S: Scalar>:
     /// ## Creating a dynamically-sized matrix compatible with a statically-sized vector
     /// 
     /// ```
+    /// # #[cfg(feature = "nalgebra")]
+    /// # {
     /// use linalg_traits::Vector;
     /// use nalgebra::{DMatrix, SVector};
     /// 
@@ -450,11 +476,14 @@ pub trait Vector<S: Scalar>:
     /// // Create a dynamically-sized 2x3 matrix.
     /// let mat: DMatrix<f64> = vec.new_dmatrix_n_by_m(3);
     /// assert_eq!(mat.shape(), (2, 3));
+    /// # }
     /// ```
     /// 
     /// ## Creating a dynamically-sized matrix compatible with a dynamically-sized vector
     /// 
     /// ```
+    /// # #[cfg(feature = "nalgebra")]
+    /// # {
     /// use linalg_traits::Vector;
     /// use nalgebra::{DMatrix, DVector};
     /// 
@@ -464,6 +493,7 @@ pub trait Vector<S: Scalar>:
     /// // Create a dynamically-sized 2x3 matrix.
     /// let mat: DMatrix<f64> = vec.new_dmatrix_n_by_m(3);
     /// assert_eq!(mat.shape(), (2, 3));
+    /// # }
     /// ```
     fn new_dmatrix_n_by_m(&self, m: usize) -> Self::DMatrixNxM {
         Self::DMatrixNxM::new_with_shape(self.len(), m)
@@ -593,6 +623,7 @@ pub trait Vector<S: Scalar>:
     /// # Panics
     /// 
     /// * If `self` and `other` are dynamically-sized vectors and do not have the same length.
+    #[must_use]
     fn add(&self, other: &Self) -> Self;
 
     /// In-place vector addition (elementwise) (`self += other`).
@@ -619,6 +650,7 @@ pub trait Vector<S: Scalar>:
     /// # Panics
     /// 
     /// * If `self` and `other` are dynamically-sized vectors and do not have the same length.
+    #[must_use]
     fn sub(&self, other: &Self) -> Self;
 
     /// In-place vector subtraction (elementwise) (`self -= other`).
@@ -641,6 +673,7 @@ pub trait Vector<S: Scalar>:
     /// # Returns
     /// 
     /// Product of this vector with the scalar (i.e. `self * scalar` or `scalar * self`).
+    #[must_use]
     fn mul(&self, scalar: S) -> Self;
 
     /// In-place vector-scalar multiplication (`self * scalar` or `scalar * self`).
@@ -659,6 +692,7 @@ pub trait Vector<S: Scalar>:
     /// # Returns
     /// 
     /// This vector divided by the scalar (i.e. `self / scalar`).
+    #[must_use]
     fn div(&self, scalar: S) -> Self;
 
     /// In-place vector-scalar division (`self / scalar`).

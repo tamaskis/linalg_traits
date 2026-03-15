@@ -56,6 +56,8 @@
 //! it independent of what types we use to represent scalars and vectors.
 //!
 //! ```
+//! # #[cfg(feature = "ndarray")]
+//! # {
 //! use linalg_traits::{Scalar, Vector};
 //! use ndarray::{array, Array1};
 //! use numtest::*;
@@ -82,6 +84,7 @@
 //!
 //! // Check that the elements were properly repeated.
 //! assert_arrays_equal!(v_repeated, [1.0, 1.0, 2.0, 2.0, 3.0, 3.0]);
+//! # }
 //! ```
 //!
 //! # Using with `nalgebra`, `ndarray`, and `faer`
@@ -118,7 +121,8 @@
 //! should still use the APIs defined by [`ndarray`] (and not those defined by `linalg-traits`).
 
 // Linter setup.
-#![warn(missing_docs)]
+#![warn(missing_docs, warnings, clippy::all, clippy::pedantic, clippy::cargo)]
+#![allow(clippy::float_cmp, clippy::unreadable_literal)]
 
 // Module declarations.
 pub(crate) mod matrix;
