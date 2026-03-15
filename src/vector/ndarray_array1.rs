@@ -1,5 +1,5 @@
-use crate::scalar::Scalar;
-use crate::vector::vector_trait::Vector;
+#[cfg(feature = "ndarray")]
+use crate::{Scalar, Vector};
 
 #[cfg(feature = "ndarray")]
 use ndarray::{Array1, Array2, LinalgScalar, ScalarOperand};

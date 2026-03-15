@@ -1,11 +1,11 @@
-use linalg_traits::{Mat, Matrix, Scalar, Vector};
+use linalg_traits::{Mat, Matrix, Vector};
 use numtest::*;
 
 #[cfg(feature = "nalgebra")]
-use nalgebra::{dvector, DMatrix, DVector, SMatrix, SVector};
+use nalgebra::{DMatrix, DVector, SMatrix, SVector, dvector};
 
 #[cfg(feature = "ndarray")]
-use ndarray::{array, Array1, Array2};
+use ndarray::{Array1, Array2, array};
 
 #[cfg(feature = "faer")]
 use faer::Mat as FMat;
@@ -19,6 +19,8 @@ const N: usize = 2;
 #[cfg(feature = "ndarray")]
 #[cfg(feature = "faer")]
 fn test_vector_t() {
+    use linalg_traits::Scalar;
+
     // Helper function.
     fn vector_t_test_helper<S: Scalar, V: Vector<S>>(x: V) -> V::VectorT<f64> {
         V::VectorT::<f64>::new_with_length(x.len())
@@ -55,6 +57,8 @@ fn test_vector_t() {
 #[cfg(feature = "ndarray")]
 #[cfg(feature = "faer")]
 fn test_dvector_t() {
+    use linalg_traits::Scalar;
+
     // Helper function.
     fn dvector_t_test_helper<S: Scalar, V: Vector<S>>(x: V) -> V::DVectorT<f64> {
         V::DVectorT::<f64>::new_with_length(x.len())
@@ -91,6 +95,8 @@ fn test_dvector_t() {
 #[cfg(feature = "ndarray")]
 #[cfg(feature = "faer")]
 fn test_dvector_f64() {
+    use linalg_traits::Scalar;
+
     // Helper function.
     fn dvector_f64_test_helper<S: Scalar, V: Vector<S>>(x: V) -> V::DVectorf64 {
         V::DVectorf64::new_with_length(x.len())

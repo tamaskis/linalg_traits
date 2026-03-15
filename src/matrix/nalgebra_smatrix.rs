@@ -1,9 +1,11 @@
-use crate::matrix::matrix_trait::Matrix;
-use crate::scalar::Scalar;
-use std::borrow::Cow;
+#[cfg(feature = "nalgebra")]
+use crate::{Matrix, Scalar};
 
 #[cfg(feature = "nalgebra")]
 use nalgebra::{SMatrix, SVector};
+
+#[cfg(feature = "nalgebra")]
+use std::borrow::Cow;
 
 #[cfg(feature = "nalgebra")]
 impl<S, const M: usize, const N: usize> Matrix<S> for SMatrix<S, M, N>
@@ -52,7 +54,7 @@ where
         SMatrix::from_column_slice(slice)
     }
 
-    fn as_slice<'a>(&'a self) -> Cow<'a, [S]> {
+    fn as_slice(&self) -> Cow<'_, [S]> {
         Cow::from(Self::as_slice(self))
     }
 
@@ -77,7 +79,7 @@ where
     }
 
     fn mul_assign(&mut self, scalar: S) {
-        *self *= scalar
+        *self *= scalar;
     }
 
     fn div(&self, scalar: S) -> Self {
@@ -85,6 +87,6 @@ where
     }
 
     fn div_assign(&mut self, scalar: S) {
-        *self /= scalar
+        *self /= scalar;
     }
 }

@@ -110,9 +110,7 @@ impl<S: Scalar> Vector<S> for Vec<S> {
     }
 
     fn dot(&self, other: &Self) -> S {
-        if self.len() != other.len() {
-            panic!("Cannot evaluate the dot product of vectors with different lengths.");
-        }
+        assert_eq!(self.len(), other.len(), "Cannot evaluate the dot product of vectors with different lengths.");
         let mut result = S::zero();
         for i in 0..self.len() {
             result += self[i] * other[i];

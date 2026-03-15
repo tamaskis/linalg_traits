@@ -16,6 +16,7 @@ static Y: f64 = 2.0;
 
 // Expected result.
 static Z_ROW: &[f64; 4] = &[1.0, 2.0, 3.0, 4.0];
+#[cfg(any(feature = "nalgebra", feature = "faer"))]
 static Z_COL: &[f64; 4] = &[1.0, 3.0, 2.0, 4.0];
 
 #[test]
