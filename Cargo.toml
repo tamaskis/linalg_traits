@@ -7,7 +7,7 @@ description = "Traits for generic linear algebra."
 documentation = "https://docs.rs/linalg-traits"
 repository = "https://github.com/tamaskis/linalg_traits"
 license = "MIT OR Apache-2.0"
-keywords = ["linear algebra", "traits", "matrix", "vector", "math"]
+keywords = ["linear-algebra", "traits", "matrix", "vector", "math"]
 categories = ["mathematics", "science"]
 
 exclude = [".github/", ".vscode/", "book/", ".gitignore", "Cargo.lock"]
