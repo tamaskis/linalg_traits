@@ -54,6 +54,9 @@ pub trait Scalar:
     + MulAssign<f64>
     + DivAssign<f64>
     + RemAssign<f64>
+    // Conversion to/from f64.
+    + From<f64>
+    + Into<f64>
     // Debug printing.
     + Debug
     // Type must be defined at compile time.
@@ -70,7 +73,7 @@ pub trait Scalar:
     /// An instance of this scalar type constructed from an [`f64`].
     #[must_use]
     fn new(x: f64) -> Self {
-        Self::from(x).unwrap()
+        <Self as From<f64>>::from(x)
     }
 }
 
@@ -91,6 +94,8 @@ impl<T> Scalar for T where
         + MulAssign<f64>
         + DivAssign<f64>
         + RemAssign<f64>
+        + From<f64>
+        + Into<f64>
         + Debug
         + 'static
 {

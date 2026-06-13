@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.16.0
+
+1. Added `From<f64>` and `Into<f64>` supertrait bounds to `Scalar` trait.
+
 ## 0.15.0
 
 1. Enabled stricter lints.
