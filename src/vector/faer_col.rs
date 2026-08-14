@@ -1,15 +1,9 @@
-#[cfg(feature = "faer")]
 use crate::{Scalar, Vector};
-
-#[cfg(feature = "faer")]
-use faer::{Mat, Scale};
-
-#[cfg(feature = "faer-traits")]
+use faer::{Col, Mat, Scale};
 use faer_traits::RealField;
+use std::borrow::Cow;
 
-#[cfg(feature = "faer")]
-#[cfg(feature = "faer-traits")]
-impl<S: Scalar + RealField> Vector<S> for Mat<S> {
+impl<S: Scalar + RealField> Vector<S> for Col<S> {
     // Cannot apply RealField trait bound on T because it would be more restrictive than the trait
     // definition.
     type VectorT<T: Scalar> = Vec<T>;
@@ -18,9 +12,9 @@ impl<S: Scalar + RealField> Vector<S> for Mat<S> {
     // definition.
     type DVectorT<T: Scalar> = Vec<T>;
 
-    type Vectorf64 = Mat<f64>;
+    type Vectorf64 = Col<f64>;
 
-    type DVectorf64 = Mat<f64>;
+    type DVectorf64 = Col<f64>;
 
     type MatrixNxN = Mat<S>;
 
@@ -34,14 +28,6 @@ impl<S: Scalar + RealField> Vector<S> for Mat<S> {
 
     type DMatrixNxM = Mat<S>;
 
-    fn vget(&self, idx: usize) -> S {
-        self[(idx, 0)]
-    }
-
-    fn vset(&mut self, idx: usize, value: S) {
-        self[(idx, 0)] = value;
-    }
-
     fn is_statically_sized() -> bool {
         false
     }
@@ -51,7 +37,7 @@ impl<S: Scalar + RealField> Vector<S> for Mat<S> {
     }
 
     fn new_with_length(len: usize) -> Self {
-        Mat::<S>::zeros(len, 1)
+        Col::<S>::zeros(len)
     }
 
     fn len(&self) -> usize {
@@ -63,11 +49,19 @@ impl<S: Scalar + RealField> Vector<S> for Mat<S> {
     }
 
     fn from_slice(slice: &[S]) -> Self {
-        Mat::<S>::from_fn(slice.len(), 1, |i, _| slice[i])
+        Col::<S>::from_fn(slice.len(), |i| slice[i])
     }
 
-    fn as_slice(&self) -> &[S] {
-        self.col_as_slice(0)
+    fn as_slice(&self) -> Cow<'_, [S]> {
+        Cow::Owned(self.iter().copied().collect())
+    }
+
+    fn get(&self, idx: usize) -> Option<&S> {
+        if idx < self.len() {
+            Some(Col::get(self, idx))
+        } else {
+            None
+        }
     }
 
     fn add(&self, other: &Self) -> Self {
@@ -106,7 +100,7 @@ impl<S: Scalar + RealField> Vector<S> for Mat<S> {
         self.assert_same_length(other);
         let mut dot_product = S::zero();
         for i in 0..self.len() {
-            dot_product += self.vget(i) * other.vget(i);
+            dot_product += self[i] * other[i];
         }
         dot_product
     }

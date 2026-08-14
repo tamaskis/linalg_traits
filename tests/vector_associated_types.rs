@@ -1,5 +1,7 @@
+#[cfg(feature = "faer")]
+use faer::{Col, Mat as FMat};
+
 use linalg_traits::{Mat, Matrix, Vector};
-use numtest::*;
 
 #[cfg(feature = "nalgebra")]
 use nalgebra::{DMatrix, DVector, SMatrix, SVector, dvector};
@@ -7,8 +9,7 @@ use nalgebra::{DMatrix, DVector, SMatrix, SVector, dvector};
 #[cfg(feature = "ndarray")]
 use ndarray::{Array1, Array2, array};
 
-#[cfg(feature = "faer")]
-use faer::Mat as FMat;
+use numtest::*;
 
 // Dimensions for all unit tests.
 const M: usize = 3;
@@ -46,8 +47,8 @@ fn test_vector_t() {
     let vec_generic_exp: Vec<f64> = vec![0.0, 0.0, 0.0];
     assert_arrays_equal!(vec_generic, vec_generic_exp);
 
-    // Vec<f64> from faer::Mat<f64>.
-    let vec_generic: Vec<f64> = vector_t_test_helper(FMat::<f64>::new_with_length(3));
+    // Vec<f64> from faer::Col<f64>.
+    let vec_generic: Vec<f64> = vector_t_test_helper(Col::<f64>::new_with_length(3));
     let vec_generic_exp: Vec<f64> = vec![0.0, 0.0, 0.0];
     assert_arrays_equal!(vec_generic, vec_generic_exp);
 }
@@ -84,8 +85,8 @@ fn test_dvector_t() {
     let vec_generic_exp: Vec<f64> = vec![0.0, 0.0, 0.0];
     assert_arrays_equal!(vec_generic, vec_generic_exp);
 
-    // Vec<f64> from faer::Mat<f64>.
-    let vec_generic: Vec<f64> = dvector_t_test_helper(FMat::<f64>::new_with_length(3));
+    // Vec<f64> from faer::Col<f64>.
+    let vec_generic: Vec<f64> = dvector_t_test_helper(Col::<f64>::new_with_length(3));
     let vec_generic_exp: Vec<f64> = vec![0.0, 0.0, 0.0];
     assert_arrays_equal!(vec_generic, vec_generic_exp);
 }
@@ -122,9 +123,9 @@ fn test_dvector_f64() {
     let vec_generic_exp: Array1<f64> = array![0.0, 0.0, 0.0];
     assert_arrays_equal!(vec_generic, vec_generic_exp);
 
-    // faer::Mat<f64> from faer::Mat<f64>.
-    let vec_generic: FMat<f64> = dvector_f64_test_helper(FMat::<f64>::new_with_length(3));
-    let vec_generic_exp: FMat<f64> = FMat::zeros(3, 1);
+    // faer::Col<f64> from faer::Col<f64>.
+    let vec_generic: Col<f64> = dvector_f64_test_helper(Col::<f64>::new_with_length(3));
+    let vec_generic_exp: Col<f64> = Col::<f64>::new_with_length(3);
     assert_arrays_equal!(
         Vector::as_slice(&vec_generic),
         Vector::as_slice(&vec_generic_exp)
@@ -156,9 +157,9 @@ fn test_new_vector_f64() {
     let vec_f64: Array1<f64> = vec.new_vector_f64();
     assert_arrays_equal!(vec_f64, [0.0, 0.0, 0.0]);
 
-    // faer::Mat<f64> from faer::Mat<f64>.
-    let vec: FMat<f64> = FMat::from_slice(&[1.0, 2.0, 3.0]);
-    let vec_f64: FMat<f64> = vec.new_vector_f64();
+    // faer::Col<f64> from faer::Col<f64>.
+    let vec: Col<f64> = Col::from_slice(&[1.0, 2.0, 3.0]);
+    let vec_f64: Col<f64> = vec.new_vector_f64();
     assert_arrays_equal!(Vector::as_slice(&vec_f64), [0.0, 0.0, 0.0]);
 }
 
@@ -321,7 +322,7 @@ fn test_ndarray_array2_from_array1() {
 #[cfg(feature = "faer")]
 fn test_faer_mat_from_faer_mat() {
     // Vector.
-    let vec: FMat<f64> = FMat::new_with_length(N);
+    let vec: Col<f64> = Col::new_with_length(N);
 
     // Matrices constructed using `new_matrix_*_by_*`.
     let mat_n_by_n: FMat<f64> = vec.new_matrix_n_by_n();

@@ -1,5 +1,7 @@
+#[cfg(feature = "faer")]
+use faer::Mat as FMat;
+
 use linalg_traits::{Mat, Matrix};
-use numtest::*;
 
 #[cfg(feature = "nalgebra")]
 use nalgebra::{DMatrix, Matrix2};
@@ -7,8 +9,7 @@ use nalgebra::{DMatrix, Matrix2};
 #[cfg(feature = "ndarray")]
 use ndarray::Array2;
 
-#[cfg(feature = "faer")]
-use faer::Mat as FMat;
+use numtest::*;
 
 // Test conditions.
 static X_ROW: &[f64; 4] = &[2.0, 4.0, 6.0, 8.0];

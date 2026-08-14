@@ -1,5 +1,10 @@
+#[cfg(feature = "faer")]
+use faer::{Col, Mat as FMat};
+
 use linalg_traits::{Mat, Matrix};
-use numtest::*;
+
+#[cfg(feature = "faer")]
+use linalg_traits::Vector;
 
 #[cfg(feature = "nalgebra")]
 use nalgebra::{DMatrix, DVector, SMatrix, SVector};
@@ -7,8 +12,7 @@ use nalgebra::{DMatrix, DVector, SMatrix, SVector};
 #[cfg(feature = "ndarray")]
 use ndarray::{Array1, Array2};
 
-#[cfg(feature = "faer")]
-use faer::Mat as FMat;
+use numtest::*;
 
 // Dimensions for all unit tests.
 const M: usize = 3;
@@ -57,8 +61,8 @@ fn test_ndarray_array1_from_array2() {
 #[cfg(feature = "faer")]
 fn test_faer_mat_from_faer_mat() {
     let mat: FMat<f64> = FMat::new_with_shape(M, N);
-    let vec_m: FMat<f64> = mat.new_vector_m();
-    let vec_n: FMat<f64> = mat.new_vector_n();
-    assert_arrays_equal!(vec_m.as_slice(), [0.0; M]);
-    assert_arrays_equal!(vec_n.as_slice(), [0.0; N]);
+    let vec_m: Col<f64> = mat.new_vector_m();
+    let vec_n: Col<f64> = mat.new_vector_n();
+    assert_arrays_equal!(Vector::as_slice(&vec_m), [0.0; M]);
+    assert_arrays_equal!(Vector::as_slice(&vec_n), [0.0; N]);
 }

@@ -1,13 +1,7 @@
-#[cfg(feature = "ndarray")]
 use crate::{Matrix, Scalar};
-
-#[cfg(feature = "ndarray")]
 use ndarray::{Array1, Array2, LinalgScalar, ScalarOperand};
-
-#[cfg(feature = "ndarray")]
 use std::borrow::Cow;
 
-#[cfg(feature = "ndarray")]
 impl<S> Matrix<S> for Array2<S>
 where
     S: Scalar + ScalarOperand + LinalgScalar,
@@ -75,6 +69,15 @@ where
         match self.as_slice_memory_order() {
             Some(slice) => Cow::Borrowed(slice),
             None => Cow::Owned(self.iter().copied().collect()),
+        }
+    }
+
+    fn get(&self, index: (usize, usize)) -> Option<&S> {
+        let (row, col) = index;
+        if row < self.nrows() && col < self.ncols() {
+            Some(&self[(row, col)])
+        } else {
+            None
         }
     }
 

@@ -1,6 +1,6 @@
 [package]
 name = "linalg-traits"
-version = "0.17.0"
+version = "0.18.0-alpha.0"
 authors = ["Tamas Kis"]
 edition = "2024"
 description = "Traits for generic linear algebra."
@@ -14,7 +14,12 @@ exclude = [".github/", ".vscode/", "book/", ".gitignore", "Cargo.lock"]
 
 [package.metadata.docs.rs]
 rustdoc-args = [ "--html-in-header", "src/docs-header.html" ]
-features = ["faer", "faer-traits", "nalgebra", "ndarray"]
+features = ["faer", "nalgebra", "ndarray"]
+
+[features]
+faer = ["dep:faer", "dep:faer-traits"]
+nalgebra = ["dep:nalgebra"]
+ndarray = ["dep:ndarray"]
 
 [dependencies]
 faer = { version = "0.24.4", optional = true }

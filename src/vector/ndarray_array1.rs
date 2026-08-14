@@ -1,13 +1,8 @@
-#[cfg(feature = "ndarray")]
 use crate::{Scalar, Vector};
-
-#[cfg(feature = "ndarray")]
-use ndarray::{Array1, Array2, LinalgScalar, ScalarOperand};
-
-#[cfg(feature = "ndarray")]
 use ndarray::linalg::Dot;
+use ndarray::{Array1, Array2, LinalgScalar, ScalarOperand};
+use std::borrow::Cow;
 
-#[cfg(feature = "ndarray")]
 impl<S: Scalar + ScalarOperand + LinalgScalar> Vector<S> for Array1<S> {
     // Cannot apply ScalarOperand + LinalgScalar trait bounds on T because it would be more
     // restrictive than the trait definition.
@@ -33,14 +28,6 @@ impl<S: Scalar + ScalarOperand + LinalgScalar> Vector<S> for Array1<S> {
 
     type DMatrixNxM = Array2<S>;
 
-    fn vget(&self, idx: usize) -> S {
-        self[idx]
-    }
-
-    fn vset(&mut self, idx: usize, value: S) {
-        self[idx] = value;
-    }
-
     fn is_statically_sized() -> bool {
         false
     }
@@ -65,10 +52,23 @@ impl<S: Scalar + ScalarOperand + LinalgScalar> Vector<S> for Array1<S> {
         Array1::from(slice.to_vec())
     }
 
-    fn as_slice(&self) -> &[S] {
+    fn as_slice(&self) -> Cow<'_, [S]> {
         match self.as_slice_memory_order() {
-            Some(slice) => slice,
+            Some(slice) => Cow::from(slice),
             None => panic!("Array1 is not in standard layout for as_slice conversion"),
+        }
+    }
+
+    fn get(&self, idx: usize) -> Option<&S> {
+        match self.as_slice_memory_order() {
+            Some(slice) => slice.get(idx),
+            None => {
+                if idx < self.len() {
+                    Some(&self[idx])
+                } else {
+                    None
+                }
+            }
         }
     }
 

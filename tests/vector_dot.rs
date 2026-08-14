@@ -1,3 +1,6 @@
+#[cfg(feature = "faer")]
+use faer::Col;
+
 use linalg_traits::Vector;
 
 #[cfg(feature = "nalgebra")]
@@ -5,9 +8,6 @@ use nalgebra::{DVector, Vector3};
 
 #[cfg(feature = "ndarray")]
 use ndarray::Array1;
-
-#[cfg(feature = "faer")]
-use faer::Mat as FMat;
 
 // Test conditions.
 static X: &[f64; 3] = &[1.0, 2.0, 3.0];
@@ -92,8 +92,8 @@ fn test_ndarray_array1_panic() {
 #[test]
 #[cfg(feature = "faer")]
 fn test_faer_mat() {
-    let x = FMat::from_slice(X);
-    let y = FMat::from_slice(Y);
+    let x = Col::from_slice(X);
+    let y = Col::from_slice(Y);
     let z = x.dot(&y);
     assert_eq!(z, Z);
 }
@@ -104,7 +104,7 @@ fn test_faer_mat() {
 )]
 #[cfg(feature = "faer")]
 fn test_faer_mat_panic() {
-    let x = FMat::from_slice(X);
-    let w = FMat::from_slice(W);
+    let x = Col::from_slice(X);
+    let w = Col::from_slice(W);
     let _ = x.dot(&w);
 }
