@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.17.0
+
+1. Updated `faer` optional dependency from `0.24.0` to `0.24.4`.
+1. Updated `nalgebra` optional dependency from `0.34.1` to `0.35.0`.
+1. Added `rand` dependency to address a security vulnerability.
+
 ## 0.16.0
 
 1. Added `From<f64>` and `Into<f64>` supertrait bounds to `Scalar` trait.
