@@ -21,7 +21,7 @@ use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Rem, RemAssign, S
 ///
 /// [`nalgebra::Complex`] does not satisfy the the [`Scalar`] trait because it does not implement
 /// the [`PartialOrd`] trait.
-pub trait Scalar:
+pub trait ScalarBase:
     // Float trait from num-traits, providing:
     //  --> Copy
     //  --> PartialEq
@@ -77,7 +77,7 @@ pub trait Scalar:
     }
 }
 
-impl<T> Scalar for T where
+impl<T> ScalarBase for T where
     T: Float
         + AddAssign<Self>
         + SubAssign<Self>
@@ -100,3 +100,61 @@ impl<T> Scalar for T where
         + 'static
 {
 }
+
+/// Additional requirements when the `ndarray` feature is enabled.
+#[cfg(feature = "ndarray")]
+pub trait NdarrayScalar: ndarray::ScalarOperand + ndarray::LinalgScalar {}
+
+#[cfg(feature = "ndarray")]
+impl<T> NdarrayScalar for T where T: ndarray::ScalarOperand + ndarray::LinalgScalar {}
+
+/// No additional requirements when `ndarray` is disabled.
+#[cfg(not(feature = "ndarray"))]
+pub trait NdarrayScalar {}
+
+#[cfg(not(feature = "ndarray"))]
+impl<T> NdarrayScalar for T {}
+
+/// Additional requirements when the `faer` feature is enabled.
+#[cfg(feature = "faer")]
+pub trait FaerScalar: faer_traits::RealField {}
+
+#[cfg(feature = "faer")]
+impl<T> FaerScalar for T where T: faer_traits::RealField {}
+
+/// No additional requirements when `faer` is disabled.
+#[cfg(not(feature = "faer"))]
+pub trait FaerScalar {}
+
+#[cfg(not(feature = "faer"))]
+impl<T> FaerScalar for T {}
+
+/// Trait defining a generic scalar type.
+///
+/// # Interoperability with [`f64`]s.
+///
+/// We enforce that scalar types be interoperable with [`f64`]s. Some common differentiation
+/// methods, notably forward-mode automatic differentation and complex-step differentiation, rely
+/// on replacing real numbers with a custom type of number that has its own arithmetic (dual numbers
+/// for forward-mode automatic differentiation, complex numbers for complex-step differentiation).
+/// Forcing scalars to have this interoperability with [`f64`]s built-in helps enable downstream
+/// crates to write functions in way that can be used with both plain [`f64`]s for most use cases,
+/// and with custom types when the functions need to be differentiated.
+///
+/// Additionally, we chose to restrict this interoperability to be with [`f64`]s since
+/// double-precision floating point numbers are the de facto standard for numerical computations.
+///
+/// # Note
+///
+/// [`nalgebra::Complex`] does not satisfy the the [`Scalar`] trait because it does not implement
+/// the [`PartialOrd`] trait, which is required by the [`Float`] trait that is in turn required by
+/// the [`ScalarBase`] trait that is a supertrait of [`Scalar`].
+pub trait Scalar: ScalarBase + NdarrayScalar + FaerScalar {
+    /// Construct an instance of this scalar from an `f64`.
+    #[must_use]
+    fn new(x: f64) -> Self {
+        <Self as ScalarBase>::new(x)
+    }
+}
+
+impl<T> Scalar for T where T: ScalarBase + NdarrayScalar + FaerScalar {}

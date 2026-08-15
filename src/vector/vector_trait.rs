@@ -60,27 +60,11 @@ pub trait Vector<S: Scalar>:
     /// * We recommend that statically-sized vectors choose a compatible statically-sized matrix for
     ///   this associated type, and the dynamically-sized vectors choose a compatible
     ///   dynamically-sized matrix for this associated type.
-    /// * For [`ndarray::Array1`] and [`faer::Mat`], we define this associated type as a [`Vec`].
-    ///   This is because the elements of these structs must also implement additional traits 
-    ///   ([`ndarray::Array1`] must also implement [`ndarray::ScalarOperand`] and
-    ///   [`ndarray::LinalgScalar`], while [`faer::Mat`] must also implement
-    ///   [`faer_traits::RealField`]) but we cannot apply these trait bounds in the definition of
-    ///   this associated type if we wish to keep [`crate::Vector`] independent of any external
-    ///   crate.
     type VectorT<T: Scalar>: Vector<T>;
 
     /// Dynamically-sized vector type that is compatible with this "outer" vector type (i.e. the
     /// `Vector` part of `Vector<S>` where `S: Scalar`), but where the element type can be any other
     /// type that implements the [`crate::Scalar`] trait.
-    /// 
-    /// # Note
-    /// 
-    /// For [`ndarray::Array1`] and [`faer::Mat`], we define this associated type as a [`Vec`]. This
-    /// is because the elements of these structs must also implement additional traits 
-    /// ([`ndarray::Array1`] must also implement [`ndarray::ScalarOperand`] and
-    /// [`ndarray::LinalgScalar`], while [`faer::Mat`] must also implement
-    /// [`faer_traits::RealField`]) but we cannot apply these trait bounds in the definition of this
-    /// associated type if we wish to keep [`crate::Vector`] independent of any external crate.
     type DVectorT<T: Scalar>: Vector<T>;
 
     /// Length-`N` vector type that is of the same "outer" vector type (i.e. the `Vector` part of

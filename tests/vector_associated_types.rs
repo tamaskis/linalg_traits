@@ -1,14 +1,10 @@
 #[cfg(feature = "faer")]
 use faer::{Col, Mat as FMat};
-
 use linalg_traits::{Mat, Matrix, Vector};
-
 #[cfg(feature = "nalgebra")]
 use nalgebra::{DMatrix, DVector, SMatrix, SVector, dvector};
-
 #[cfg(feature = "ndarray")]
 use ndarray::{Array1, Array2, array};
-
 use numtest::*;
 
 // Dimensions for all unit tests.
@@ -43,13 +39,13 @@ fn test_vector_t() {
     assert_arrays_equal!(vec_generic, vec_generic_exp);
 
     // Vec<f64> from ndarray::Array1<f64>.
-    let vec_generic: Vec<f64> = vector_t_test_helper(Array1::<f64>::new_with_length(3));
-    let vec_generic_exp: Vec<f64> = vec![0.0, 0.0, 0.0];
+    let vec_generic: Array1<f64> = vector_t_test_helper(Array1::<f64>::new_with_length(3));
+    let vec_generic_exp: Array1<f64> = array![0.0, 0.0, 0.0];
     assert_arrays_equal!(vec_generic, vec_generic_exp);
 
     // Vec<f64> from faer::Col<f64>.
-    let vec_generic: Vec<f64> = vector_t_test_helper(Col::<f64>::new_with_length(3));
-    let vec_generic_exp: Vec<f64> = vec![0.0, 0.0, 0.0];
+    let vec_generic: Col<f64> = vector_t_test_helper(Col::<f64>::new_with_length(3));
+    let vec_generic_exp: Col<f64> = Col::<f64>::from_fn(3, |_| 0.0);
     assert_arrays_equal!(vec_generic, vec_generic_exp);
 }
 
@@ -75,19 +71,19 @@ fn test_dvector_t() {
     let vec_generic_exp: DVector<f64> = dvector![0.0, 0.0, 0.0];
     assert_arrays_equal!(vec_generic, vec_generic_exp);
 
-    // nalgebra::SVector<f64, 3> from nalgebra::SVector<f64, 3>.
+    // nalgebra::DVector<f64, 3> from nalgebra::SVector<f64, 3>.
     let vec_generic: DVector<f64> = dvector_t_test_helper(SVector::<f64, 3>::new_with_length(3));
     let vec_generic_exp: DVector<f64> = DVector::from_row_slice(&[0.0, 0.0, 0.0]);
     assert_arrays_equal!(vec_generic, vec_generic_exp);
 
-    // Vec<f64> from ndarray::Array1<f64>.
-    let vec_generic: Vec<f64> = dvector_t_test_helper(Array1::<f64>::new_with_length(3));
-    let vec_generic_exp: Vec<f64> = vec![0.0, 0.0, 0.0];
+    // ndarray::Array1<f64> from ndarray::Array1<f64>.
+    let vec_generic: Array1<f64> = dvector_t_test_helper(Array1::<f64>::new_with_length(3));
+    let vec_generic_exp: Array1<f64> = array![0.0, 0.0, 0.0];
     assert_arrays_equal!(vec_generic, vec_generic_exp);
 
-    // Vec<f64> from faer::Col<f64>.
-    let vec_generic: Vec<f64> = dvector_t_test_helper(Col::<f64>::new_with_length(3));
-    let vec_generic_exp: Vec<f64> = vec![0.0, 0.0, 0.0];
+    // faer::Col<f64> from faer::Col<f64>.
+    let vec_generic: Col<f64> = dvector_t_test_helper(Col::<f64>::new_with_length(3));
+    let vec_generic_exp: Col<f64> = Col::<f64>::from_fn(3, |_| 0.0);
     assert_arrays_equal!(vec_generic, vec_generic_exp);
 }
 

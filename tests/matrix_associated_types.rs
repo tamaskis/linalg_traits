@@ -1,17 +1,12 @@
 #[cfg(feature = "faer")]
 use faer::{Col, Mat as FMat};
-
-use linalg_traits::{Mat, Matrix};
-
 #[cfg(feature = "faer")]
 use linalg_traits::Vector;
-
+use linalg_traits::{Mat, Matrix};
 #[cfg(feature = "nalgebra")]
 use nalgebra::{DMatrix, DVector, SMatrix, SVector};
-
 #[cfg(feature = "ndarray")]
 use ndarray::{Array1, Array2};
-
 use numtest::*;
 
 // Dimensions for all unit tests.

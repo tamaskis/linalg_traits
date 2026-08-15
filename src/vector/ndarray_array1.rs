@@ -4,13 +4,9 @@ use ndarray::{Array1, Array2, LinalgScalar, ScalarOperand};
 use std::borrow::Cow;
 
 impl<S: Scalar + ScalarOperand + LinalgScalar> Vector<S> for Array1<S> {
-    // Cannot apply ScalarOperand + LinalgScalar trait bounds on T because it would be more
-    // restrictive than the trait definition.
-    type VectorT<T: Scalar> = Vec<T>;
+    type VectorT<T: Scalar> = Array1<T>;
 
-    // Cannot apply ScalarOperand + LinalgScalar trait bounds on T because it would be more
-    // restrictive than the trait definition.
-    type DVectorT<T: Scalar> = Vec<T>;
+    type DVectorT<T: Scalar> = Array1<T>;
 
     type Vectorf64 = Array1<f64>;
 

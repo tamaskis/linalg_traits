@@ -4,13 +4,9 @@ use faer_traits::RealField;
 use std::borrow::Cow;
 
 impl<S: Scalar + RealField> Vector<S> for Col<S> {
-    // Cannot apply RealField trait bound on T because it would be more restrictive than the trait
-    // definition.
-    type VectorT<T: Scalar> = Vec<T>;
+    type VectorT<T: Scalar> = Col<T>;
 
-    // Cannot apply RealField trait bound on T because it would be more restrictive than the trait
-    // definition.
-    type DVectorT<T: Scalar> = Vec<T>;
+    type DVectorT<T: Scalar> = Col<T>;
 
     type Vectorf64 = Col<f64>;
 
