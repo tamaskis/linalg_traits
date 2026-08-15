@@ -1,14 +1,10 @@
 #[cfg(feature = "faer")]
 use faer::Mat as FMat;
-
 use linalg_traits::{Mat, Matrix};
-
 #[cfg(feature = "nalgebra")]
 use nalgebra::{DMatrix, Matrix2};
-
 #[cfg(feature = "ndarray")]
 use ndarray::Array2;
-
 use numtest::*;
 
 // Test conditions.

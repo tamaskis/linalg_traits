@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.19.0
+
+1. Smarter `Scalar` trait
+  1. Conditionally compile additional `faer` and `ndarray` specific supertraits onto `Scalar` trait.
+  1. This also allowed specifying more specific associated types for `Vector::VectorT` and `Vector::DVectorT` for the `faer` and `ndarray`-specific implementations of the `Vector` trait.
+  
 ## 0.18.0
 
 1. `faer`-specific overhaul

@@ -2,15 +2,11 @@
 
 #[cfg(feature = "faer")]
 pub(crate) mod faer_mat;
-
 pub(crate) mod mat;
 pub(crate) mod matrix_trait;
-
 #[cfg(feature = "nalgebra")]
 pub(crate) mod nalgebra_dmatrix;
-
 #[cfg(feature = "nalgebra")]
 pub(crate) mod nalgebra_smatrix;
-
 #[cfg(feature = "ndarray")]
 pub(crate) mod ndarray_array2;

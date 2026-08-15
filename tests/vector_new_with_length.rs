@@ -1,14 +1,10 @@
 #[cfg(feature = "faer")]
 use faer::Col;
-
 use linalg_traits::Vector;
-
 #[cfg(feature = "nalgebra")]
 use nalgebra::{DVector, SVector};
-
 #[cfg(feature = "ndarray")]
 use ndarray::Array1;
-
 use numtest::*;
 
 #[test]
