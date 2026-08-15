@@ -133,5 +133,5 @@ pub(crate) mod vector;
 // Re-exports.
 pub use crate::matrix::mat::Mat;
 pub use crate::matrix::matrix_trait::Matrix;
-pub use crate::scalar::Scalar;
+pub use crate::scalar::{Scalar, ScalarBase};
 pub use crate::vector::vector_trait::Vector;
