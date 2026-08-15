@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.18.0 (unreleased)
+
+1. Overhauled `faer`-specific implementation of `Vector` trait, where `Vector` is now implemented for `faer::Col` instead of a `faer::Mat` with one column.
+1. Replaced custom `Vector::vget` and `Vector::vset` methods with the standard `Index` and `IndexMut` (i.e. square bracket indexing) traits.
+1. Added `Vector::get` and `Matrix::get` methods.
+1. Combined `faer` and `faer-traits` feature flags into a single `faer` feature flag.
+1. Updated `Vector::as_slice` method to return a `Cow<'_, [S]>` instead of a `&[S]` to support implementing this method for `faer::Col`.
+
 ## 0.17.0
 
 1. Updated `faer` optional dependency from `0.24.0` to `0.24.4`.

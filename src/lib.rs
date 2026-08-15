@@ -1,8 +1,9 @@
-//! [![github]](https://github.com/tamaskis/linalg_traits)&ensp;[![crates-io]](https://crates.io/crates/linalg-traits)&ensp;[![docs-rs]](https://docs.rs/linalg-traits)
+//! [![github]](https://github.com/tamaskis/linalg_traits)&ensp;[![crates-io]](https://crates.io/crates/linalg-traits)&ensp;[![docs-rs]](https://docs.rs/linalg-traits)&ensp;[![mdbook]](https://tamaskis.github.io/linalg_traits/)
 //!
 //! [github]: https://img.shields.io/badge/github-8da0cb?style=for-the-badge&labelColor=555555&logo=github
 //! [crates-io]: https://img.shields.io/badge/crates.io-fc8d62?style=for-the-badge&labelColor=555555&logo=rust
 //! [docs-rs]: https://img.shields.io/badge/docs.rs-66c2a5?style=for-the-badge&labelColor=555555&logo=docs.rs
+//! [mdbook]: https://img.shields.io/badge/mdbook-ffd92f?style=for-the-badge&labelColor=555555&logo=bookstack
 //!
 //! Traits for generic linear algebra.
 //!
@@ -69,8 +70,8 @@
 //!
 //!     // Populate the vector.
 //!     for i in 0..v.len() {
-//!         v_repeated.vset(2 * i, v.vget(i));
-//!         v_repeated.vset(2 * i + 1, v.vget(i));
+//!         v_repeated[2 * i] = v[i];
+//!         v_repeated[2 * i + 1] = v[i];
 //!     }
 //!
 //!     v_repeated

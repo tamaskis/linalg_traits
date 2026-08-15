@@ -1,6 +1,8 @@
 use std::fmt::Debug;
+use std::borrow::Cow;
 use crate::scalar::Scalar;
 use crate::matrix::matrix_trait::Matrix;
+use std::ops::{Index, IndexMut};
 
 /// Trait defining a generic vector type.
 /// 
@@ -40,6 +42,8 @@ pub trait Vector<S: Scalar>:
     Clone       // Copying (compatible with dynamically-sized types).
     + Debug     // Debug printing.
     + PartialEq // Equality comparisons.
+    + Index<usize, Output = S>
+    + IndexMut<usize>
 {
     // -----------------
     // Associated types.
@@ -522,33 +526,6 @@ pub trait Vector<S: Scalar>:
     // Required method declarations.
     // -----------------------------
 
-    /// Return the element at the specified index.
-    ///
-    /// # Arguments
-    ///
-    /// * `idx` - The index of the element to retrieve.
-    ///
-    /// # Returns
-    ///
-    /// The value at the specified index.
-    ///
-    /// # Panics
-    ///
-    /// * If `idx` is out of bounds.
-    fn vget(&self, idx: usize) -> S;
-
-    /// Set the element at the specified index to the specified value.
-    ///
-    /// # Arguments
-    ///
-    /// * `idx` - The index of the element to modify.
-    /// * `value` - The new value to assign at the specified index.
-    ///
-    /// # Panics
-    ///
-    /// * If `idx` is out of bounds.
-    fn vset(&mut self, idx: usize, value: S);
-
     /// Determine whether or not the vector is statically-sized.
     /// 
     /// # Returns
@@ -608,7 +585,32 @@ pub trait Vector<S: Scalar>:
     /// # Returns
     ///
     /// A slice of the vector's elements.
-    fn as_slice(&self) -> &[S];
+    /// 
+    /// # Note
+    /// 
+    /// The slice is returned as a `Cow<[S]>` instead of a `&[S]`. This is because some vector
+    /// implementations do NOT store data contiguously; for example, the columns of a [`faer::Col`]
+    /// do NOT have to be contiguous in memory.
+    /// 
+    /// When the data is not contiguous in memory, this method will first build a vector where the
+    /// data is contiguous. Since this vector is a temporary variable, we cannot return a reference
+    /// to its data (e.g. a `&[S]`) since it will be dropped when the method scope ends. In these
+    /// cases, this method will clone the data when returning it in a `Cow<[S]>`.
+    /// 
+    /// When the data _is_ contiguous in memory, this method will build the [`Cow`] directly from a
+    /// slice of the data. In this case, the data is borrowed, and no cloning occurs.
+    fn as_slice(&self) -> Cow<'_, [S]>;
+
+    /// Return the element at the specified index if it exists.
+    ///
+    /// # Arguments
+    ///
+    /// * `idx` - The index of the element to retrieve.
+    ///
+    /// # Returns
+    ///
+    /// The element at the specified index, or `None` if `idx` is out of bounds.
+    fn get(&self, idx: usize) -> Option<&S>;
 
     /// Vector addition (elementwise).
     /// 

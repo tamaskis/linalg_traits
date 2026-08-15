@@ -1,5 +1,7 @@
+#[cfg(feature = "faer")]
+use faer::Col;
+
 use linalg_traits::Vector;
-use numtest::*;
 
 #[cfg(feature = "nalgebra")]
 use nalgebra::{DVector, SVector};
@@ -7,8 +9,7 @@ use nalgebra::{DVector, SVector};
 #[cfg(feature = "ndarray")]
 use ndarray::Array1;
 
-#[cfg(feature = "faer")]
-use faer::Mat as FMat;
+use numtest::*;
 
 #[test]
 fn test_vec() {
@@ -55,5 +56,5 @@ fn test_ndarray_array1() {
 #[test]
 #[cfg(feature = "faer")]
 fn test_faer_mat() {
-    assert_arrays_equal!(FMat::<f64>::new_with_length(3).as_slice(), [0.0, 0.0, 0.0]);
+    assert_arrays_equal!(Col::<f64>::new_with_length(3).as_slice(), [0.0, 0.0, 0.0]);
 }

@@ -1,5 +1,7 @@
+#[cfg(feature = "faer")]
+use faer::Mat as FMat;
+
 use linalg_traits::{Mat, Matrix};
-use numtest::*;
 
 #[cfg(feature = "nalgebra")]
 use nalgebra::{DMatrix, SMatrix};
@@ -7,8 +9,7 @@ use nalgebra::{DMatrix, SMatrix};
 #[cfg(feature = "ndarray")]
 use ndarray::Array2;
 
-#[cfg(feature = "faer")]
-use faer::Mat as FMat;
+use numtest::*;
 
 #[test]
 fn test_mat() {

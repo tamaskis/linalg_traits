@@ -246,6 +246,17 @@ pub trait Matrix<S: Scalar>:
         }
     }
 
+    /// Return the element at the specified index if it exists.
+    ///
+    /// # Arguments
+    ///
+    /// * `index` - The row and column indices of the element to retrieve.
+    ///
+    /// # Returns
+    ///
+    /// The element at the specified index, or `None` if `index` is out of bounds.
+    fn get(&self, index: (usize, usize)) -> Option<&S>;
+
     // -----------------------------
     // Required method declarations.
     // -----------------------------
@@ -356,8 +367,8 @@ pub trait Matrix<S: Scalar>:
     /// # Note
     /// 
     /// The slice is returned as a `Cow<[S]>` instead of a `&[S]`. This is because some matrix
-    /// implementations do NOT store data contiguously; for example, the columns of [`faer::Mat`]
-    /// are generally NOT contiguous in memory.
+    /// implementations do NOT store data contiguously; for example, the columns of a [`faer::Mat`]
+    /// do NOT have to be contiguous in memory.
     /// 
     /// When the data is not contiguous in memory, this method will first build a vector where the
     /// data is contiguous. Since this vector is a temporary variable, we cannot return a reference

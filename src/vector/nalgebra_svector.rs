@@ -1,10 +1,7 @@
-#[cfg(feature = "nalgebra")]
 use crate::{Scalar, Vector};
-
-#[cfg(feature = "nalgebra")]
 use nalgebra::{DMatrix, DVector, SMatrix, SVector};
+use std::borrow::Cow;
 
-#[cfg(feature = "nalgebra")]
 impl<const N: usize, S: Scalar> Vector<S> for SVector<S, N> {
     type VectorT<T: Scalar> = SVector<T, N>;
 
@@ -25,14 +22,6 @@ impl<const N: usize, S: Scalar> Vector<S> for SVector<S, N> {
     type MatrixNxM<const M: usize> = SMatrix<S, N, M>;
 
     type DMatrixNxM = DMatrix<S>;
-
-    fn vget(&self, idx: usize) -> S {
-        self[idx]
-    }
-
-    fn vset(&mut self, idx: usize, value: S) {
-        self[idx] = value;
-    }
 
     fn is_statically_sized() -> bool {
         true
@@ -63,8 +52,12 @@ impl<const N: usize, S: Scalar> Vector<S> for SVector<S, N> {
         result
     }
 
-    fn as_slice(&self) -> &[S] {
-        SVector::as_slice(self)
+    fn as_slice(&self) -> Cow<'_, [S]> {
+        Cow::from(SVector::as_slice(self))
+    }
+
+    fn get(&self, idx: usize) -> Option<&S> {
+        SVector::get(self, idx)
     }
 
     fn add(&self, other: &Self) -> Self {

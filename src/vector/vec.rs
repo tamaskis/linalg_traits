@@ -1,6 +1,7 @@
 use crate::matrix::mat::Mat;
 use crate::scalar::Scalar;
 use crate::vector::vector_trait::Vector;
+use std::borrow::Cow;
 
 impl<S: Scalar> Vector<S> for Vec<S> {
     type VectorT<T: Scalar> = Vec<T>;
@@ -22,14 +23,6 @@ impl<S: Scalar> Vector<S> for Vec<S> {
     type MatrixNxM<const M: usize> = Mat<S>;
 
     type DMatrixNxM = Mat<S>;
-
-    fn vget(&self, idx: usize) -> S {
-        self[idx]
-    }
-
-    fn vset(&mut self, idx: usize, value: S) {
-        self[idx] = value;
-    }
 
     fn is_statically_sized() -> bool {
         false
@@ -55,8 +48,12 @@ impl<S: Scalar> Vector<S> for Vec<S> {
         slice.to_vec()
     }
 
-    fn as_slice(&self) -> &[S] {
-        self
+    fn as_slice(&self) -> Cow<'_, [S]> {
+        Cow::from(self.as_slice())
+    }
+
+    fn get(&self, idx: usize) -> Option<&S> {
+        self.as_slice().get(idx)
     }
 
     fn add(&self, other: &Self) -> Self {
@@ -110,7 +107,11 @@ impl<S: Scalar> Vector<S> for Vec<S> {
     }
 
     fn dot(&self, other: &Self) -> S {
-        assert_eq!(self.len(), other.len(), "Cannot evaluate the dot product of vectors with different lengths.");
+        assert_eq!(
+            self.len(),
+            other.len(),
+            "Cannot evaluate the dot product of vectors with different lengths."
+        );
         let mut result = S::zero();
         for i in 0..self.len() {
             result += self[i] * other[i];

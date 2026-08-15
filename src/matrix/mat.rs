@@ -156,6 +156,16 @@ where
         Cow::from(self.data.as_slice())
     }
 
+    fn get(&self, index: (usize, usize)) -> Option<&S> {
+        let (row, col) = index;
+        let (rows, cols) = self.shape();
+        if row < rows && col < cols {
+            Some(&self[index])
+        } else {
+            None
+        }
+    }
+
     fn add(&self, other: &Self) -> Self {
         self.assert_same_shape(other);
         Mat {

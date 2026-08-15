@@ -1,5 +1,7 @@
+#[cfg(feature = "faer")]
+use faer::Mat as FMat;
+
 use linalg_traits::{Mat, Matrix};
-use numtest::*;
 
 #[cfg(feature = "nalgebra")]
 use nalgebra::{DMatrix, SMatrix};
@@ -7,8 +9,7 @@ use nalgebra::{DMatrix, SMatrix};
 #[cfg(feature = "ndarray")]
 use ndarray::Array2;
 
-#[cfg(feature = "faer")]
-use faer::Mat as FMat;
+use numtest::*;
 
 // Slices to use for all tests.
 const ROW_SLICE: &[f64; 6] = &[1.0, 2.0, 3.0, 4.0, 5.0, 6.0];

@@ -1,24 +1,15 @@
-#[cfg(feature = "faer")]
 use crate::{Matrix, Scalar};
-
-#[cfg(feature = "faer")]
-use faer::{Mat, Scale};
-
-#[cfg(feature = "faer-traits")]
+use faer::{Col, Mat, Scale};
 use faer_traits::RealField;
-
-#[cfg(feature = "faer")]
 use std::borrow::Cow;
 
-#[cfg(feature = "faer")]
-#[cfg(feature = "faer-traits")]
 impl<S> Matrix<S> for Mat<S>
 where
     S: Scalar + RealField,
 {
-    type VectorM = Mat<S>;
+    type VectorM = Col<S>;
 
-    type VectorN = Mat<S>;
+    type VectorN = Col<S>;
 
     fn is_statically_sized() -> bool {
         false
@@ -74,6 +65,15 @@ where
             slice_vec.extend_from_slice(self.col_as_slice(i));
         }
         Cow::from(slice_vec)
+    }
+
+    fn get(&self, index: (usize, usize)) -> Option<&S> {
+        let (row, col) = index;
+        if row < self.nrows() && col < self.ncols() {
+            Some(Mat::get(self, row, col))
+        } else {
+            None
+        }
     }
 
     fn add(&self, other: &Self) -> Self {

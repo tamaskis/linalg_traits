@@ -1,13 +1,7 @@
-#[cfg(feature = "nalgebra")]
 use crate::{Matrix, Scalar};
-
-#[cfg(feature = "nalgebra")]
 use nalgebra::{SMatrix, SVector};
-
-#[cfg(feature = "nalgebra")]
 use std::borrow::Cow;
 
-#[cfg(feature = "nalgebra")]
 impl<S, const M: usize, const N: usize> Matrix<S> for SMatrix<S, M, N>
 where
     S: Scalar,
@@ -56,6 +50,10 @@ where
 
     fn as_slice(&self) -> Cow<'_, [S]> {
         Cow::from(Self::as_slice(self))
+    }
+
+    fn get(&self, index: (usize, usize)) -> Option<&S> {
+        SMatrix::get(self, index)
     }
 
     fn add(&self, other: &Self) -> Self {
