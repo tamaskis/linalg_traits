@@ -1,7 +1,7 @@
 use crate::scalar::Scalar;
 use crate::vector::vector_trait::Vector;
-use std::fmt::Debug;
 use std::borrow::Cow;
+use std::fmt::Debug;
 use std::ops::{Index, IndexMut};
 
 /// Trait defining a generic matrix type.
@@ -175,7 +175,7 @@ pub trait Matrix<S: Scalar>:
     fn assert_same_shape(&self, other: &Self) {
         assert_eq!(
             self.shape(),
-            other.shape(), 
+            other.shape(),
             "Matrices have incompatible shapes.",
         );
     }
@@ -260,21 +260,21 @@ pub trait Matrix<S: Scalar>:
     // -----------------------------
     // Required method declarations.
     // -----------------------------
-    
+
     /// Determine whether or not the matrix is statically-sized.
     /// 
     /// # Returns
     /// 
     /// `true` if the matrix is statically-sized, `false` if the matrix is dynamically-sized.
     fn is_statically_sized() -> bool;
-    
+
     /// Determine whether or not the matrix is dynamically-sized.
     /// 
     /// # Returns
     /// 
     /// `true` if the matrix is dynamically-sized, `false` if the matrix is statically-sized.
     fn is_dynamically_sized() -> bool;
-    
+
     /// Determine whether or not the matrix is row-major.
     /// 
     /// # Returns

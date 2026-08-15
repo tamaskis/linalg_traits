@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.19.1
+
+1. Got rid of `ScalarBase::new` to get rid of need to disambiguate from `Scalar::new`.
+
 ## 0.19.0
 
 1. Smarter `Scalar` trait
