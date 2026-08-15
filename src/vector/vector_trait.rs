@@ -1,40 +1,40 @@
-use std::fmt::Debug;
-use std::borrow::Cow;
-use crate::scalar::Scalar;
 use crate::matrix::matrix_trait::Matrix;
+use crate::scalar::Scalar;
+use std::borrow::Cow;
+use std::fmt::Debug;
 use std::ops::{Index, IndexMut};
 
 /// Trait defining a generic vector type.
-/// 
+///
 /// # Using [`Vector`] as a trait bound
-/// 
+///
 /// Say I want to write a function that is generic over all vectors of [`f64`], e.g. I want it to be
 /// compatible both with [`Vec<f64>`] and with [`nalgebra::Vector1<f64>`]. I can define this
 /// function as
-/// 
+///
 /// ```ignore
 /// fn my_function<V: Vector<f64>>(input_vector: &V) -> V { ... }
 /// ```
-/// 
+///
 /// Since the [`Vector`] trait is generic over types that implement the [`Scalar`] trait, any
 /// function that is generic over [`Vector`]s can also be made generic over the type of their
 /// elements. In this case, if we want `my_function` to be compatible with vectors of any scalar
 /// type (i.e. types that implement the [`Scalar`] trait), and not just matrices of [`f64`]s, we can
 /// include an additional generic parameter `S`.
-/// 
+///
 /// ```ignore
 /// fn my_function<S: Scalar, M: Matrix<S>>(input_vector: &M) -> M { ... }
 /// ```
-/// 
+///
 /// ## Warning
 ///
 /// When working with arrays from [`ndarray`], elements of the array must also implement the
 /// following traits in addition to the [`Scalar`] trait:
-/// 
+///
 /// * [`ndarray::ScalarOperand`]
 /// * [`ndarray::LinalgScalar`]
-/// 
-/// For example, consider the case where we define the struct `CustomType` and implement the 
+///
+/// For example, consider the case where we define the struct `CustomType` and implement the
 /// [`Scalar`] trait for `CustomType`. If we want to be able to pass an
 /// [`ndarray::Array2<CustomType>`] into `my_function` from the example above, then we must also
 /// implement the [`ndarray::ScalarOperand`] and [`ndarray::LinalgScalar`] traits for `CustomType`.
@@ -109,7 +109,7 @@ pub trait Vector<S: Scalar>:
     ///   to provide `M` as a const generic.
     /// * For dynamically-sized matrices, the const generic `M` is not used.
     type MatrixMxN<const M: usize>: Matrix<S>;
-    
+
     /// Dynamically-sized `M x N` matrix type implementing the [`crate::Matrix`] trait that is
     /// compatible with this vector type. An instance of this matrix type with shape `(M, N)` can be
     /// multiplied from the right by an instance of this vector type with length-`N`, resulting in a
@@ -181,7 +181,7 @@ pub trait Vector<S: Scalar>:
     fn new_matrix_m_by_n_f64(&self) -> Self::Vectorf64 {
         Self::Vectorf64::new_with_length(self.len())
     }
-    
+
     /// Create an `N x N` matrix that is compatible with this length-`N` vector.
     /// 
     /// # Returns
@@ -499,7 +499,7 @@ pub trait Vector<S: Scalar>:
     fn assert_same_length(&self, other: &Self) {
         assert_eq!(
             self.len(),
-            other.len(), 
+            other.len(),
             "Length of the other vector ({}) does not match the length of this vector ({}).",
             other.len(),
             self.len()
@@ -516,7 +516,7 @@ pub trait Vector<S: Scalar>:
     /// 
     /// `true` if the vector is statically-sized, `false` if the vector is dynamically-sized.
     fn is_statically_sized() -> bool;
-    
+
     /// Determine whether or not the vector is dynamically-sized.
     /// 
     /// # Returns
@@ -538,7 +538,7 @@ pub trait Vector<S: Scalar>:
     /// 
     /// * If `len` does not match the length of the vector (for statically-sized vectors only).
     fn new_with_length(len: usize) -> Self;
-    
+
     /// Get the length of the vector.
     ///
     /// # Returns
