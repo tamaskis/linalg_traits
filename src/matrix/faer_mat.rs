@@ -1,11 +1,10 @@
-use crate::{Matrix, Scalar};
+use crate::{Matrix, RealField};
 use faer::{Col, Mat, Scale};
-use faer_traits::RealField;
 use std::borrow::Cow;
 
 impl<S> Matrix<S> for Mat<S>
 where
-    S: Scalar + RealField,
+    S: RealField,
 {
     type VectorM = Col<S>;
 

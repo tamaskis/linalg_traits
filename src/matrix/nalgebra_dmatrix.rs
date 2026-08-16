@@ -1,10 +1,10 @@
-use crate::{Matrix, Scalar};
+use crate::{Matrix, RealField};
 use nalgebra::{DMatrix, DVector};
 use std::borrow::Cow;
 
 impl<S> Matrix<S> for DMatrix<S>
 where
-    S: Scalar,
+    S: RealField,
 {
     type VectorM = DVector<S>;
 

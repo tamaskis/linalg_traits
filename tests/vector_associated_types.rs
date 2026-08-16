@@ -16,10 +16,10 @@ const N: usize = 2;
 #[cfg(feature = "ndarray")]
 #[cfg(feature = "faer")]
 fn test_vector_t() {
-    use linalg_traits::Scalar;
+    use linalg_traits::RealField;
 
     // Helper function.
-    fn vector_t_test_helper<S: Scalar, V: Vector<S>>(x: V) -> V::VectorT<f64> {
+    fn vector_t_test_helper<S: RealField, V: Vector<S>>(x: V) -> V::VectorT<f64> {
         V::VectorT::<f64>::new_with_length(x.len())
     }
 
@@ -54,10 +54,10 @@ fn test_vector_t() {
 #[cfg(feature = "ndarray")]
 #[cfg(feature = "faer")]
 fn test_dvector_t() {
-    use linalg_traits::Scalar;
+    use linalg_traits::RealField;
 
     // Helper function.
-    fn dvector_t_test_helper<S: Scalar, V: Vector<S>>(x: V) -> V::DVectorT<f64> {
+    fn dvector_t_test_helper<S: RealField, V: Vector<S>>(x: V) -> V::DVectorT<f64> {
         V::DVectorT::<f64>::new_with_length(x.len())
     }
 
@@ -92,10 +92,10 @@ fn test_dvector_t() {
 #[cfg(feature = "ndarray")]
 #[cfg(feature = "faer")]
 fn test_dvector_f64() {
-    use linalg_traits::Scalar;
+    use linalg_traits::RealField;
 
     // Helper function.
-    fn dvector_f64_test_helper<S: Scalar, V: Vector<S>>(x: V) -> V::DVectorf64 {
+    fn dvector_f64_test_helper<S: RealField, V: Vector<S>>(x: V) -> V::DVectorf64 {
         V::DVectorf64::new_with_length(x.len())
     }
 

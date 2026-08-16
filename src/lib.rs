@@ -18,7 +18,8 @@
 //!
 //! #### Constraints
 //!
-//! 1. **Compatibility with [`Vec<f64>`], as well as types from [`nalgebra`], [`ndarray`], and [`faer`].**
+//! 1. **Compatibility with [`Vec<f64>`], as well as types from [`nalgebra`], [`ndarray`], and
+//!    [`faer`].**
 //!
 //!    As a result, this crate does not require any operator overloads to be implemented for linear
 //!    alegebra types. Different numerical computing crates may have different implementations for
@@ -42,9 +43,9 @@
 //!
 //! | Trait | Implementations on Foreign Types | Implementations on Local Types |
 //! | ----- | -------------------------------- | ------------------------------ |
-//! | [`Scalar`] | [`f64`] and all other types that satisfy its trait bounds. | N/A |
-//! | [`Vector`] | [`Vec<S>`] <BR> [`nalgebra::DVector<S>`] <BR> [`nalgebra::SVector<S, N>`] <BR> [`ndarray::Array1<T>`] <BR> [`faer::Mat<U>`] <BR><BR> Note:<BR>   • `S: Scalar` <BR>   • `T: Scalar + ndarray::ScalarOperand + ndarray::LinalgScalar` <BR>   • `U: Scalar + faer_traits::RealField` <BR> • `N: usize` | N/A |
-//! | [`Matrix`] | [`nalgebra::DMatrix<S>`] <BR> [`nalgebra::SMatrix<S, M, N>`] <BR> [`ndarray::Array2<T>`] <BR> [`faer::Mat<U>`] <BR><BR> Note:<BR>   • `S: Scalar` <BR>   • `T: Scalar + ndarray::ScalarOperand + ndarray::LinalgScalar` <BR>   • `U: Scalar + faer_traits::RealField` <BR>   • `M: usize` <BR>   • `N: usize` | [`Mat<S>`] <BR><BR> Note:<BR>   • `S: Scalar` |
+//! | [`RealField`] | [`f64`] and all other types that satisfy its trait bounds. | N/A |
+//! | [`Vector`] | [`Vec<S>`] <BR> [`nalgebra::DVector<S>`] <BR> [`nalgebra::SVector<S, N>`] <BR> [`ndarray::Array1<S>`] <BR> [`faer::Mat<S>`] <BR><BR> Note:<BR>   • `S: RealField` <BR>   • `N: usize` | N/A |
+//! | [`Matrix`] | [`nalgebra::DMatrix<S>`] <BR> [`nalgebra::SMatrix<S, M, N>`] <BR> [`ndarray::Array2<T>`] <BR> [`faer::Mat<U>`] <BR><BR> Note:<BR>   • `S: RealField` <BR>   • `M: usize` <BR>   • `N: usize` | [`Mat<S>`] <BR><BR> Note:<BR>   • `S: RealField` |
 //!
 //! See the [Using with `nalgebra`, `ndarray`, and `faer`](#using-with-nalgebra-ndarray-and-faer)
 //! section further down on this page for information on using the `linalg-traits` crate with types
@@ -53,18 +54,18 @@
 //! # Example
 //!
 //! Let's define a function that takes in a vector and returns a new vector with all the elements
-//! repeated twice. Using the [`Scalar`] and [`Vector`] traits, we can write it in a way that makes
-//! it independent of what types we use to represent scalars and vectors.
+//! repeated twice. Using the [`RealField`] and [`Vector`] traits, we can write it in a way that
+//! makes it independent of what types we use to represent scalars and vectors.
 //!
 //! ```
 //! # #[cfg(feature = "ndarray")]
 //! # {
-//! use linalg_traits::{Scalar, Vector};
+//! use linalg_traits::{RealField, Vector};
 //! use ndarray::{array, Array1};
 //! use numtest::*;
 //!
 //! // Define the function for repeating the elements.
-//! fn repeat_elements<S: Scalar, V: Vector<S>>(v: &V) -> V {
+//! fn repeat_elements<S: RealField, V: Vector<S>>(v: &V) -> V {
 //!     // Create a new vector of the same type but with twice the length.
 //!     let mut v_repeated = V::new_with_length(v.len() * 2);
 //!
@@ -126,12 +127,15 @@
 #![allow(clippy::float_cmp, clippy::unreadable_literal)]
 
 // Module declarations.
+pub(crate) mod example;
 pub(crate) mod matrix;
-pub(crate) mod scalar;
+pub mod real_field;
+pub mod real_field_operations;
 pub(crate) mod vector;
+pub(crate) mod verification;
 
 // Re-exports.
 pub use crate::matrix::mat::Mat;
 pub use crate::matrix::matrix_trait::Matrix;
-pub use crate::scalar::{Scalar, ScalarBase};
+pub use crate::real_field::real_field::RealField;
 pub use crate::vector::vector_trait::Vector;

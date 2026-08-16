@@ -1,6 +1,4 @@
-use crate::Vector;
-use crate::matrix::matrix_trait::Matrix;
-use crate::scalar::Scalar;
+use crate::{Matrix, RealField, Vector};
 use std::borrow::Cow;
 use std::iter::Iterator;
 use std::ops::{Index, IndexMut};
@@ -20,7 +18,7 @@ use std::ops::{Index, IndexMut};
 #[derive(Clone, Debug, PartialEq)]
 pub struct Mat<S>
 where
-    S: Scalar,
+    S: RealField,
 {
     data: Vec<S>,
     rows: usize,
@@ -29,7 +27,7 @@ where
 
 impl<S> Mat<S>
 where
-    S: Scalar,
+    S: RealField,
 {
     /// Helper function to calculate the linear index from row and column indices.
     fn index(&self, row: usize, col: usize) -> usize {
@@ -58,7 +56,7 @@ where
 
 impl<S> IntoIterator for Mat<S>
 where
-    S: Scalar,
+    S: RealField,
 {
     type Item = S;
     type IntoIter = std::vec::IntoIter<S>;
@@ -68,14 +66,14 @@ where
     }
 }
 
-impl<S: Scalar> Index<(usize, usize)> for Mat<S> {
+impl<S: RealField> Index<(usize, usize)> for Mat<S> {
     type Output = S;
     fn index(&self, (row, col): (usize, usize)) -> &Self::Output {
         &self.data[self.index(row, col)]
     }
 }
 
-impl<S: Scalar> IndexMut<(usize, usize)> for Mat<S> {
+impl<S: RealField> IndexMut<(usize, usize)> for Mat<S> {
     fn index_mut(&mut self, (row, col): (usize, usize)) -> &mut Self::Output {
         let idx = self.index(row, col);
         &mut self.data[idx]
@@ -84,7 +82,7 @@ impl<S: Scalar> IndexMut<(usize, usize)> for Mat<S> {
 
 impl<S> Matrix<S> for Mat<S>
 where
-    S: Scalar,
+    S: RealField,
 {
     type VectorM = Vec<S>;
 

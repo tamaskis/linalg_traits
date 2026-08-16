@@ -1,5 +1,4 @@
-use crate::matrix::matrix_trait::Matrix;
-use crate::scalar::Scalar;
+use crate::{Matrix, RealField};
 use std::borrow::Cow;
 use std::fmt::Debug;
 use std::ops::{Index, IndexMut};
@@ -16,29 +15,16 @@ use std::ops::{Index, IndexMut};
 /// fn my_function<V: Vector<f64>>(input_vector: &V) -> V { ... }
 /// ```
 ///
-/// Since the [`Vector`] trait is generic over types that implement the [`Scalar`] trait, any
+/// Since the [`Vector`] trait is generic over types that implement the [`RealField`] trait, any
 /// function that is generic over [`Vector`]s can also be made generic over the type of their
 /// elements. In this case, if we want `my_function` to be compatible with vectors of any scalar
-/// type (i.e. types that implement the [`Scalar`] trait), and not just matrices of [`f64`]s, we can
-/// include an additional generic parameter `S`.
+/// type (i.e. types that implement the [`RealField`] trait), and not just matrices of [`f64`]s, we
+/// can include an additional generic parameter `S`.
 ///
 /// ```ignore
-/// fn my_function<S: Scalar, M: Matrix<S>>(input_vector: &M) -> M { ... }
+/// fn my_function<S: RealField, V: Vector<S>>(input_vector: &V) -> V { ... }
 /// ```
-///
-/// ## Warning
-///
-/// When working with arrays from [`ndarray`], elements of the array must also implement the
-/// following traits in addition to the [`Scalar`] trait:
-///
-/// * [`ndarray::ScalarOperand`]
-/// * [`ndarray::LinalgScalar`]
-///
-/// For example, consider the case where we define the struct `CustomType` and implement the
-/// [`Scalar`] trait for `CustomType`. If we want to be able to pass an
-/// [`ndarray::Array2<CustomType>`] into `my_function` from the example above, then we must also
-/// implement the [`ndarray::ScalarOperand`] and [`ndarray::LinalgScalar`] traits for `CustomType`.
-pub trait Vector<S: Scalar>:
+pub trait Vector<S: RealField>:
     Clone       // Copying (compatible with dynamically-sized types).
     + Debug     // Debug printing.
     + PartialEq // Equality comparisons.
@@ -50,8 +36,8 @@ pub trait Vector<S: Scalar>:
     // -----------------
 
     /// Vector type that is of the same "outer" vector type (i.e. the `Vector` part of `Vector<S>`
-    /// where `S: Scalar`), but where the element type can be any other type that implements the
-    /// [`crate::Scalar`] trait.
+    /// where `S: RealField`), but where the element type can be any other type that implements the
+    /// [`crate::RealField`] trait.
     /// 
     /// # Note
     /// 
@@ -60,19 +46,20 @@ pub trait Vector<S: Scalar>:
     /// * We recommend that statically-sized vectors choose a compatible statically-sized matrix for
     ///   this associated type, and the dynamically-sized vectors choose a compatible
     ///   dynamically-sized matrix for this associated type.
-    type VectorT<T: Scalar>: Vector<T>;
+    type VectorT<T: RealField>: Vector<T>;
 
     /// Dynamically-sized vector type that is compatible with this "outer" vector type (i.e. the
-    /// `Vector` part of `Vector<S>` where `S: Scalar`), but where the element type can be any other
-    /// type that implements the [`crate::Scalar`] trait.
-    type DVectorT<T: Scalar>: Vector<T>;
+    /// `Vector` part of `Vector<S>` where `S: RealField`), but where the element type can be any
+    /// other type that implements the [`crate::RealField`] trait.
+    type DVectorT<T: RealField>: Vector<T>;
 
     /// Length-`N` vector type that is of the same "outer" vector type (i.e. the `Vector` part of
-    /// `Vector<S>` where `S: Scalar`), but where the elements are of type [`f64`].
+    /// `Vector<S>` where `S: RealField`), but where the elements are of type [`f64`].
     type Vectorf64: Vector<f64>;
 
     /// Dynamically-sized vector type that is compatible with this "outer" vector type (i.e. the
-    /// `Vector` part of `Vector<S>` where `S: Scalar`), but where the elements are of type [`f64`].
+    /// `Vector` part of `Vector<S>` where `S: RealField`), but where the elements are of type
+    /// [`f64`].
     type DVectorf64: Vector<f64>;
 
     /// `N x N` matrix type implementing the [`crate::Matrix`] trait that is compatible with this

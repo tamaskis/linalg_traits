@@ -1,12 +1,12 @@
-use crate::{Scalar, Vector};
+use crate::{RealField, Vector};
 use ndarray::linalg::Dot;
-use ndarray::{Array1, Array2, LinalgScalar, ScalarOperand};
+use ndarray::{Array1, Array2};
 use std::borrow::Cow;
 
-impl<S: Scalar + ScalarOperand + LinalgScalar> Vector<S> for Array1<S> {
-    type VectorT<T: Scalar> = Array1<T>;
+impl<S: RealField> Vector<S> for Array1<S> {
+    type VectorT<T: RealField> = Array1<T>;
 
-    type DVectorT<T: Scalar> = Array1<T>;
+    type DVectorT<T: RealField> = Array1<T>;
 
     type Vectorf64 = Array1<f64>;
 
