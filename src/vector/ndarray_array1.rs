@@ -1,28 +1,28 @@
-use crate::{Scalar, Vector};
+use crate::{RealField, Vector};
 use ndarray::linalg::Dot;
-use ndarray::{Array1, Array2, LinalgScalar, ScalarOperand};
+use ndarray::{Array1, Array2};
 use std::borrow::Cow;
 
-impl<S: Scalar + ScalarOperand + LinalgScalar> Vector<S> for Array1<S> {
-    type VectorT<T: Scalar> = Array1<T>;
+impl<R: RealField> Vector<R> for Array1<R> {
+    type VectorT<T: RealField> = Array1<T>;
 
-    type DVectorT<T: Scalar> = Array1<T>;
+    type DVectorT<T: RealField> = Array1<T>;
 
     type Vectorf64 = Array1<f64>;
 
     type DVectorf64 = Array1<f64>;
 
-    type MatrixNxN = Array2<S>;
+    type MatrixNxN = Array2<R>;
 
-    type MatrixMxN<const M: usize> = Array2<S>;
+    type MatrixMxN<const M: usize> = Array2<R>;
 
-    type DMatrixMxN = Array2<S>;
+    type DMatrixMxN = Array2<R>;
 
     type DMatrixMxNf64 = Array2<f64>;
 
-    type MatrixNxM<const M: usize> = Array2<S>;
+    type MatrixNxM<const M: usize> = Array2<R>;
 
-    type DMatrixNxM = Array2<S>;
+    type DMatrixNxM = Array2<R>;
 
     fn is_statically_sized() -> bool {
         false
@@ -33,7 +33,7 @@ impl<S: Scalar + ScalarOperand + LinalgScalar> Vector<S> for Array1<S> {
     }
 
     fn new_with_length(len: usize) -> Self {
-        Array1::<S>::zeros(len)
+        Array1::<R>::zeros(len)
     }
 
     fn len(&self) -> usize {
@@ -44,18 +44,18 @@ impl<S: Scalar + ScalarOperand + LinalgScalar> Vector<S> for Array1<S> {
         self.len() == 0
     }
 
-    fn from_slice(slice: &[S]) -> Self {
+    fn from_slice(slice: &[R]) -> Self {
         Array1::from(slice.to_vec())
     }
 
-    fn as_slice(&self) -> Cow<'_, [S]> {
+    fn as_slice(&self) -> Cow<'_, [R]> {
         match self.as_slice_memory_order() {
             Some(slice) => Cow::from(slice),
             None => panic!("Array1 is not in standard layout for as_slice conversion"),
         }
     }
 
-    fn get(&self, idx: usize) -> Option<&S> {
+    fn get(&self, idx: usize) -> Option<&R> {
         match self.as_slice_memory_order() {
             Some(slice) => slice.get(idx),
             None => {
@@ -90,27 +90,27 @@ impl<S: Scalar + ScalarOperand + LinalgScalar> Vector<S> for Array1<S> {
         }
     }
 
-    fn mul(&self, scalar: S) -> Self {
+    fn mul(&self, scalar: R) -> Self {
         self * scalar
     }
 
-    fn mul_assign(&mut self, scalar: S) {
+    fn mul_assign(&mut self, scalar: R) {
         for a in self.iter_mut() {
             *a *= scalar;
         }
     }
 
-    fn div(&self, scalar: S) -> Self {
+    fn div(&self, scalar: R) -> Self {
         self / scalar
     }
 
-    fn div_assign(&mut self, scalar: S) {
+    fn div_assign(&mut self, scalar: R) {
         for a in self.iter_mut() {
             *a /= scalar;
         }
     }
 
-    fn dot(&self, other: &Self) -> S {
+    fn dot(&self, other: &Self) -> R {
         Dot::dot(self, other)
     }
 }

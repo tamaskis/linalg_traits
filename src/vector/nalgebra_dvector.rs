@@ -1,27 +1,27 @@
-use crate::{Scalar, Vector};
+use crate::{RealField, Vector};
 use nalgebra::{DMatrix, DVector};
 use std::borrow::Cow;
 
-impl<S: Scalar> Vector<S> for DVector<S> {
-    type VectorT<T: Scalar> = DVector<T>;
+impl<R: RealField> Vector<R> for DVector<R> {
+    type VectorT<T: RealField> = DVector<T>;
 
-    type DVectorT<T: Scalar> = DVector<T>;
+    type DVectorT<T: RealField> = DVector<T>;
 
     type Vectorf64 = DVector<f64>;
 
     type DVectorf64 = DVector<f64>;
 
-    type MatrixNxN = DMatrix<S>;
+    type MatrixNxN = DMatrix<R>;
 
-    type MatrixMxN<const M: usize> = DMatrix<S>;
+    type MatrixMxN<const M: usize> = DMatrix<R>;
 
-    type DMatrixMxN = DMatrix<S>;
+    type DMatrixMxN = DMatrix<R>;
 
     type DMatrixMxNf64 = DMatrix<f64>;
 
-    type MatrixNxM<const M: usize> = DMatrix<S>;
+    type MatrixNxM<const M: usize> = DMatrix<R>;
 
-    type DMatrixNxM = DMatrix<S>;
+    type DMatrixNxM = DMatrix<R>;
 
     fn is_statically_sized() -> bool {
         false
@@ -31,8 +31,8 @@ impl<S: Scalar> Vector<S> for DVector<S> {
         true
     }
 
-    fn new_with_length(len: usize) -> DVector<S> {
-        DVector::from_element(len, S::zero())
+    fn new_with_length(len: usize) -> DVector<R> {
+        DVector::from_element(len, R::zero())
     }
 
     fn len(&self) -> usize {
@@ -43,7 +43,7 @@ impl<S: Scalar> Vector<S> for DVector<S> {
         self.is_empty()
     }
 
-    fn from_slice(slice: &[S]) -> Self {
+    fn from_slice(slice: &[R]) -> Self {
         let mut result = DVector::new_with_length(slice.len());
         for (i, &item) in slice.iter().enumerate() {
             result[i] = item;
@@ -51,11 +51,11 @@ impl<S: Scalar> Vector<S> for DVector<S> {
         result
     }
 
-    fn as_slice(&self) -> Cow<'_, [S]> {
+    fn as_slice(&self) -> Cow<'_, [R]> {
         Cow::from(DVector::as_slice(self))
     }
 
-    fn get(&self, idx: usize) -> Option<&S> {
+    fn get(&self, idx: usize) -> Option<&R> {
         DVector::get(self, idx)
     }
 
@@ -75,23 +75,23 @@ impl<S: Scalar> Vector<S> for DVector<S> {
         *self -= other;
     }
 
-    fn mul(&self, scalar: S) -> Self {
+    fn mul(&self, scalar: R) -> Self {
         self * scalar
     }
 
-    fn mul_assign(&mut self, scalar: S) {
+    fn mul_assign(&mut self, scalar: R) {
         *self *= scalar;
     }
 
-    fn div(&self, scalar: S) -> Self {
+    fn div(&self, scalar: R) -> Self {
         self / scalar
     }
 
-    fn div_assign(&mut self, scalar: S) {
+    fn div_assign(&mut self, scalar: R) {
         *self /= scalar;
     }
 
-    fn dot(&self, other: &Self) -> S {
+    fn dot(&self, other: &Self) -> R {
         self.dot(other)
     }
 }

@@ -1,28 +1,26 @@
-use crate::matrix::mat::Mat;
-use crate::scalar::Scalar;
-use crate::vector::vector_trait::Vector;
+use crate::{Mat, RealField, Vector};
 use std::borrow::Cow;
 
-impl<S: Scalar> Vector<S> for Vec<S> {
-    type VectorT<T: Scalar> = Vec<T>;
+impl<R: RealField> Vector<R> for Vec<R> {
+    type VectorT<T: RealField> = Vec<T>;
 
-    type DVectorT<T: Scalar> = Vec<T>;
+    type DVectorT<T: RealField> = Vec<T>;
 
     type Vectorf64 = Vec<f64>;
 
     type DVectorf64 = Vec<f64>;
 
-    type MatrixNxN = Mat<S>;
+    type MatrixNxN = Mat<R>;
 
-    type MatrixMxN<const M: usize> = Mat<S>;
+    type MatrixMxN<const M: usize> = Mat<R>;
 
-    type DMatrixMxN = Mat<S>;
+    type DMatrixMxN = Mat<R>;
 
     type DMatrixMxNf64 = Mat<f64>;
 
-    type MatrixNxM<const M: usize> = Mat<S>;
+    type MatrixNxM<const M: usize> = Mat<R>;
 
-    type DMatrixNxM = Mat<S>;
+    type DMatrixNxM = Mat<R>;
 
     fn is_statically_sized() -> bool {
         false
@@ -32,8 +30,8 @@ impl<S: Scalar> Vector<S> for Vec<S> {
         true
     }
 
-    fn new_with_length(len: usize) -> Vec<S> {
-        vec![S::zero(); len]
+    fn new_with_length(len: usize) -> Vec<R> {
+        vec![R::_zero(); len]
     }
 
     fn len(&self) -> usize {
@@ -44,15 +42,15 @@ impl<S: Scalar> Vector<S> for Vec<S> {
         self.is_empty()
     }
 
-    fn from_slice(slice: &[S]) -> Vec<S> {
+    fn from_slice(slice: &[R]) -> Vec<R> {
         slice.to_vec()
     }
 
-    fn as_slice(&self) -> Cow<'_, [S]> {
+    fn as_slice(&self) -> Cow<'_, [R]> {
         Cow::from(self.as_slice())
     }
 
-    fn get(&self, idx: usize) -> Option<&S> {
+    fn get(&self, idx: usize) -> Option<&R> {
         self.as_slice().get(idx)
     }
 
@@ -86,33 +84,33 @@ impl<S: Scalar> Vector<S> for Vec<S> {
         }
     }
 
-    fn mul(&self, scalar: S) -> Self {
+    fn mul(&self, scalar: R) -> Self {
         self.iter().map(|a| *a * scalar).collect()
     }
 
-    fn mul_assign(&mut self, scalar: S) {
+    fn mul_assign(&mut self, scalar: R) {
         for a in self.iter_mut() {
             *a *= scalar;
         }
     }
 
-    fn div(&self, scalar: S) -> Self {
+    fn div(&self, scalar: R) -> Self {
         self.iter().map(|a| *a / scalar).collect()
     }
 
-    fn div_assign(&mut self, scalar: S) {
+    fn div_assign(&mut self, scalar: R) {
         for a in self.iter_mut() {
             *a /= scalar;
         }
     }
 
-    fn dot(&self, other: &Self) -> S {
+    fn dot(&self, other: &Self) -> R {
         assert_eq!(
             self.len(),
             other.len(),
             "Cannot evaluate the dot product of vectors with different lengths."
         );
-        let mut result = S::zero();
+        let mut result = R::_zero();
         for i in 0..self.len() {
             result += self[i] * other[i];
         }

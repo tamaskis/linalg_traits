@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.20.0
+
+1. Major overhaul, replacing the `Scalar` trait with a smarter `RealField` trait.
+
 ## 0.19.2
 
 1. Exposing `ScalarBase` trait as part of the public API.

@@ -1,5 +1,4 @@
-use crate::scalar::Scalar;
-use crate::vector::vector_trait::Vector;
+use crate::{RealField, Vector};
 use std::borrow::Cow;
 use std::fmt::Debug;
 use std::ops::{Index, IndexMut};
@@ -22,31 +21,18 @@ use std::ops::{Index, IndexMut};
 /// fn my_function<M: Matrix<f64>>(input_vector: &M) -> M { ... }
 /// ```
 ///
-/// Since the [`Matrix`] trait is generic over types that implement the [`Scalar`] trait, any
+/// Since the [`Matrix`] trait is generic over types that implement the [`RealField`] trait, any
 /// function that is generic over [`Matrix`]es can also be made generic over the type of their
-/// elements. In this case, if we want `my_function` to be compatible with vectors of any scalar
-/// type (i.e. types that implement the [`Scalar`] trait), and not just vectors of [`f64`]s, we can
-/// include an additional generic parameter `S`.
+/// elements. In this case, if we want `my_function` to be compatible with matrices of any scalar
+/// type (i.e. types that implement the [`RealField`] trait), and not just matrices of [`f64`]s, we
+/// can include an additional generic parameter `R`.
 ///
 /// ```ignore
-/// fn my_function<S: Scalar, V: Vector<S>>(input_vector: &V) -> V { ... }
+/// fn my_function<R: RealField, M: Matrix<R>>(input_matrix: &M) -> M { ... }
 /// ```
-///
-/// ## Warning
-///
-/// When working with arrays from [`ndarray`], elements of the array must also implement the
-/// following traits in addition to the [`Scalar`] trait:
-///
-/// * [`ndarray::ScalarOperand`]
-/// * [`ndarray::LinalgScalar`]
-///
-/// For example, consider the case where we define the struct `CustomType` and implement the
-/// [`Scalar`] trait for `CustomType`. If we want to be able to pass an
-/// [`ndarray::Array2<CustomType>`] into `my_function` from the example above, then we must also
-/// implement the [`ndarray::ScalarOperand`] and [`ndarray::LinalgScalar`] traits for `CustomType`.
-pub trait Matrix<S: Scalar>:
-    Index<(usize, usize), Output = S>       // Indexing via square brackets.
-    + IndexMut<(usize, usize), Output = S>  // Index-assignment via square brackets.
+pub trait Matrix<R: RealField>:
+    Index<(usize, usize), Output = R>       // Indexing via square brackets.
+    + IndexMut<(usize, usize), Output = R>  // Index-assignment via square brackets.
     + Clone                                 // Copying (compatible with dynamically-sized types).
     + Debug                                 // Debug printing.
     + PartialEq                             // Equality comparisons.
@@ -59,13 +45,13 @@ pub trait Matrix<S: Scalar>:
     /// matrix type. An instance of this matrix type with shape `(M, N)` can be multiplied from the
     /// right by an instance of this vector type with length `N`, resulting in an instance of this
     /// vector type with length `M` (mathematically representing a column vector).
-    type VectorN: Vector<S>;
+    type VectorN: Vector<R>;
 
     /// Length-`M` Vector type implementing the [`crate::Vector`] trait that is compatible with this
     /// matrix type. An instance of this matrix type with shape `(M, N)` can be multiplied from the
     /// left by an instance of this vector type with length `M`, resulting in an instance of this
     /// vector type with length `N` (mathematically representing a row vector).
-    type VectorM: Vector<S>;
+    type VectorM: Vector<R>;
 
     // -------------------------------
     // Default method implementations.
@@ -188,22 +174,22 @@ pub trait Matrix<S: Scalar>:
     /// 
     /// # Note
     /// 
-    /// The slice is returned as a `Cow<[S]>` instead of a `&[S]`. This is primarily because the
+    /// The slice is returned as a `Cow<[R]>` instead of a `&[R]`. This is primarily because the
     /// underlying data will be _either_ in row-major order _or_ in column-major order. If it is in
     /// column-major order, then we will need to re-order it to be in row-major order. This requires
     /// building a temporary variable within this method which will be dropped when the method scope
-    /// ends. In such cases, this method will clone the data when returning it in a `Cow<[S]>`.
+    /// ends. In such cases, this method will clone the data when returning it in a `Cow<[R]>`.
     /// 
     /// In most cases, if the data is in row-major order, then this function will not perform any
     /// cloning. However, in some cases, even if the underlying data is in row-major order, its data
     /// may not be contiguous in memory. This would also require cloning the data from a temporary
     /// variable. See [`Matrix::as_slice`] for more information.
-    fn as_row_slice(&self) -> Cow<'_, [S]>  {
+    fn as_row_slice(&self) -> Cow<'_, [R]>  {
         if Self::is_row_major() {
             self.as_slice()
         } else {
             let (rows, cols) = self.shape();
-            let mut vec = Vec::<S>::with_capacity(rows * cols);
+            let mut vec = Vec::<R>::with_capacity(rows * cols);
             for row in 0..rows {
                 for col in 0..cols {
                     vec.push(self[(row, col)]);
@@ -221,22 +207,22 @@ pub trait Matrix<S: Scalar>:
     /// 
     /// # Note
     /// 
-    /// The slice is returned as a `Cow<[S]>` instead of a `&[S]`. This is primarily because the
+    /// The slice is returned as a `Cow<[R]>` instead of a `&[R]`. This is primarily because the
     /// underlying data will be _either_ in row-major order _or_ in column-major order. If it is in
     /// row-major order, then we will need to re-order it to be in column-major order. This requires
     /// building a temporary variable within this method which will be dropped when the method scope
-    /// ends. In such cases, this method will clone the data when returning it in a `Cow<[S]>`.
+    /// ends. In such cases, this method will clone the data when returning it in a `Cow<[R]>`.
     /// 
     /// In most cases, if the data is in column-major order, then this function will not perform any
     /// cloning. However, in some cases, even if the underlying data is in column-major order, its
     /// data may not be contiguous in memory. This would also require cloning the data from a
     /// temporary variable. See [`Matrix::as_slice`] for more information.
-    fn as_col_slice(&self) -> Cow<'_, [S]> {
+    fn as_col_slice(&self) -> Cow<'_, [R]> {
         if Self::is_column_major() {
             self.as_slice()
         } else {
             let (rows, cols) = self.shape();
-            let mut vec = Vec::<S>::with_capacity(rows * cols);
+            let mut vec = Vec::<R>::with_capacity(rows * cols);
             for col in 0..cols {
                 for row in 0..rows {
                     vec.push(self[(row, col)]);
@@ -255,7 +241,7 @@ pub trait Matrix<S: Scalar>:
     /// # Returns
     ///
     /// The element at the specified index, or `None` if `index` is out of bounds.
-    fn get(&self, index: (usize, usize)) -> Option<&S>;
+    fn get(&self, index: (usize, usize)) -> Option<&R>;
 
     // -----------------------------
     // Required method declarations.
@@ -330,7 +316,7 @@ pub trait Matrix<S: Scalar>:
     /// 
     /// * If `rows` does not match the number of rows in the matrix (for statically-sized matrices
     ///   only).
-    fn from_row_slice(rows: usize, cols: usize, slice: &[S]) -> Self;
+    fn from_row_slice(rows: usize, cols: usize, slice: &[R]) -> Self;
 
     /// Create a matrix from a slice of scalars arranged in column-major order.
     ///
@@ -350,7 +336,7 @@ pub trait Matrix<S: Scalar>:
     ///   only).
     /// * If the slice length is not compatible with the shape of the matrix (for dynamically-sized
     ///   matrices only).
-    fn from_col_slice(rows: usize, cols: usize, slice: &[S]) -> Self;
+    fn from_col_slice(rows: usize, cols: usize, slice: &[R]) -> Self;
 
     /// Return a slice view of the matrix's elements.
     ///
@@ -366,18 +352,18 @@ pub trait Matrix<S: Scalar>:
     /// 
     /// # Note
     /// 
-    /// The slice is returned as a `Cow<[S]>` instead of a `&[S]`. This is because some matrix
+    /// The slice is returned as a `Cow<[R]>` instead of a `&[R]`. This is because some matrix
     /// implementations do NOT store data contiguously; for example, the columns of a [`faer::Mat`]
     /// do NOT have to be contiguous in memory.
     /// 
     /// When the data is not contiguous in memory, this method will first build a vector where the
     /// data is contiguous. Since this vector is a temporary variable, we cannot return a reference
-    /// to its data (e.g. a `&[S]`) since it will be dropped when the method scope ends. In these
-    /// cases, this method will clone the data when returning it in a `Cow<[S]>`.
+    /// to its data (e.g. a `&[R]`) since it will be dropped when the method scope ends. In these
+    /// cases, this method will clone the data when returning it in a `Cow<[R]>`.
     /// 
     /// When the data _is_ contiguous in memory, this method will build the [`Cow`] directly from
     /// a slice of the data. In this case, the data is borrowed, and no cloning occurs.
-    fn as_slice(&self) -> Cow<'_, [S]>;
+    fn as_slice(&self) -> Cow<'_, [R]>;
 
     /// Matrix addition (elementwise).
     /// 
@@ -443,14 +429,14 @@ pub trait Matrix<S: Scalar>:
     /// 
     /// Product of this matrix with the scalar (i.e. `self * scalar` or `scalar * self`).
     #[must_use]
-    fn mul(&self, scalar: S) -> Self;
+    fn mul(&self, scalar: R) -> Self;
 
     /// In-place matrix-scalar multiplication (`self * scalar` or `scalar * self`).
     /// 
     /// # Arguments
     /// 
     /// * `scalar` - The scalar to multiply each element of this matrix by.
-    fn mul_assign(&mut self, scalar: S);
+    fn mul_assign(&mut self, scalar: R);
 
     /// Matrix-scalar division.
     /// 
@@ -462,13 +448,13 @@ pub trait Matrix<S: Scalar>:
     /// 
     /// This matrix divided by the scalar (i.e. `self / scalar`).
     #[must_use]
-    fn div(&self, scalar: S) -> Self;
+    fn div(&self, scalar: R) -> Self;
 
     /// In-place matrix-scalar division (`self / scalar`).
     /// 
     /// # Arguments
     /// 
     /// * `scalar` - The scalar to divide each element of this matrix by.
-    fn div_assign(&mut self, scalar: S);
+    fn div_assign(&mut self, scalar: R);
 
 }

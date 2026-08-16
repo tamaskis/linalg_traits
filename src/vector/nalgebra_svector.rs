@@ -1,27 +1,27 @@
-use crate::{Scalar, Vector};
+use crate::{RealField, Vector};
 use nalgebra::{DMatrix, DVector, SMatrix, SVector};
 use std::borrow::Cow;
 
-impl<const N: usize, S: Scalar> Vector<S> for SVector<S, N> {
-    type VectorT<T: Scalar> = SVector<T, N>;
+impl<const N: usize, R: RealField> Vector<R> for SVector<R, N> {
+    type VectorT<T: RealField> = SVector<T, N>;
 
-    type DVectorT<T: Scalar> = DVector<T>;
+    type DVectorT<T: RealField> = DVector<T>;
 
     type Vectorf64 = SVector<f64, N>;
 
     type DVectorf64 = DVector<f64>;
 
-    type MatrixNxN = SMatrix<S, N, N>;
+    type MatrixNxN = SMatrix<R, N, N>;
 
-    type MatrixMxN<const M: usize> = SMatrix<S, M, N>;
+    type MatrixMxN<const M: usize> = SMatrix<R, M, N>;
 
-    type DMatrixMxN = DMatrix<S>;
+    type DMatrixMxN = DMatrix<R>;
 
     type DMatrixMxNf64 = DMatrix<f64>;
 
-    type MatrixNxM<const M: usize> = SMatrix<S, N, M>;
+    type MatrixNxM<const M: usize> = SMatrix<R, N, M>;
 
-    type DMatrixNxM = DMatrix<S>;
+    type DMatrixNxM = DMatrix<R>;
 
     fn is_statically_sized() -> bool {
         true
@@ -33,7 +33,7 @@ impl<const N: usize, S: Scalar> Vector<S> for SVector<S, N> {
 
     fn new_with_length(len: usize) -> Self {
         assert_eq!(len, N, "Length must match the fixed size of the SVector.");
-        SVector::from_element(S::zero())
+        SVector::from_element(R::zero())
     }
 
     fn len(&self) -> usize {
@@ -44,7 +44,7 @@ impl<const N: usize, S: Scalar> Vector<S> for SVector<S, N> {
         false // SVector is never empty because it's fixed size.
     }
 
-    fn from_slice(slice: &[S]) -> Self {
+    fn from_slice(slice: &[R]) -> Self {
         let mut result = SVector::new_with_length(slice.len());
         for (i, &item) in slice.iter().enumerate() {
             result[i] = item;
@@ -52,11 +52,11 @@ impl<const N: usize, S: Scalar> Vector<S> for SVector<S, N> {
         result
     }
 
-    fn as_slice(&self) -> Cow<'_, [S]> {
+    fn as_slice(&self) -> Cow<'_, [R]> {
         Cow::from(SVector::as_slice(self))
     }
 
-    fn get(&self, idx: usize) -> Option<&S> {
+    fn get(&self, idx: usize) -> Option<&R> {
         SVector::get(self, idx)
     }
 
@@ -76,23 +76,23 @@ impl<const N: usize, S: Scalar> Vector<S> for SVector<S, N> {
         *self -= other;
     }
 
-    fn mul(&self, scalar: S) -> Self {
+    fn mul(&self, scalar: R) -> Self {
         self * scalar
     }
 
-    fn mul_assign(&mut self, scalar: S) {
+    fn mul_assign(&mut self, scalar: R) {
         *self *= scalar;
     }
 
-    fn div(&self, scalar: S) -> Self {
+    fn div(&self, scalar: R) -> Self {
         self / scalar
     }
 
-    fn div_assign(&mut self, scalar: S) {
+    fn div_assign(&mut self, scalar: R) {
         *self /= scalar;
     }
 
-    fn dot(&self, other: &Self) -> S {
+    fn dot(&self, other: &Self) -> R {
         self.dot(other)
     }
 }
