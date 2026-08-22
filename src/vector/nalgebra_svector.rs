@@ -1,11 +1,11 @@
-use crate::{Scalar, Vector};
+use crate::{RealField, Vector};
 use nalgebra::{DMatrix, DVector, SMatrix, SVector};
 use std::borrow::Cow;
 
-impl<const N: usize, S: Scalar> Vector<S> for SVector<S, N> {
-    type VectorT<T: Scalar> = SVector<T, N>;
+impl<const N: usize, S: RealField> Vector<S> for SVector<S, N> {
+    type VectorT<T: RealField> = SVector<T, N>;
 
-    type DVectorT<T: Scalar> = DVector<T>;
+    type DVectorT<T: RealField> = DVector<T>;
 
     type Vectorf64 = SVector<f64, N>;
 

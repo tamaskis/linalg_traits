@@ -1,12 +1,11 @@
-use crate::{Scalar, Vector};
+use crate::{RealField, Vector};
 use faer::{Col, Mat, Scale};
-use faer_traits::RealField;
 use std::borrow::Cow;
 
-impl<S: Scalar + RealField> Vector<S> for Col<S> {
-    type VectorT<T: Scalar> = Col<T>;
+impl<S: RealField> Vector<S> for Col<S> {
+    type VectorT<T: RealField> = Col<T>;
 
-    type DVectorT<T: Scalar> = Col<T>;
+    type DVectorT<T: RealField> = Col<T>;
 
     type Vectorf64 = Col<f64>;
 

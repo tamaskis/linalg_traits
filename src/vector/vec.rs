@@ -1,12 +1,10 @@
-use crate::matrix::mat::Mat;
-use crate::scalar::Scalar;
-use crate::vector::vector_trait::Vector;
+use crate::{Mat, RealField, Vector};
 use std::borrow::Cow;
 
-impl<S: Scalar> Vector<S> for Vec<S> {
-    type VectorT<T: Scalar> = Vec<T>;
+impl<S: RealField> Vector<S> for Vec<S> {
+    type VectorT<T: RealField> = Vec<T>;
 
-    type DVectorT<T: Scalar> = Vec<T>;
+    type DVectorT<T: RealField> = Vec<T>;
 
     type Vectorf64 = Vec<f64>;
 

@@ -1,10 +1,10 @@
-use crate::{Matrix, Scalar};
-use ndarray::{Array1, Array2, LinalgScalar, ScalarOperand};
+use crate::{Matrix, RealField};
+use ndarray::{Array1, Array2};
 use std::borrow::Cow;
 
 impl<S> Matrix<S> for Array2<S>
 where
-    S: Scalar + ScalarOperand + LinalgScalar,
+    S: RealField,
 {
     type VectorM = Array1<S>;
 

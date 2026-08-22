@@ -1,5 +1,4 @@
-use crate::scalar::Scalar;
-use crate::vector::vector_trait::Vector;
+use crate::{RealField, Vector};
 use std::borrow::Cow;
 use std::fmt::Debug;
 use std::ops::{Index, IndexMut};
@@ -22,29 +21,16 @@ use std::ops::{Index, IndexMut};
 /// fn my_function<M: Matrix<f64>>(input_vector: &M) -> M { ... }
 /// ```
 ///
-/// Since the [`Matrix`] trait is generic over types that implement the [`Scalar`] trait, any
+/// Since the [`Matrix`] trait is generic over types that implement the [`RealField`] trait, any
 /// function that is generic over [`Matrix`]es can also be made generic over the type of their
-/// elements. In this case, if we want `my_function` to be compatible with vectors of any scalar
-/// type (i.e. types that implement the [`Scalar`] trait), and not just vectors of [`f64`]s, we can
-/// include an additional generic parameter `S`.
+/// elements. In this case, if we want `my_function` to be compatible with matrices of any scalar
+/// type (i.e. types that implement the [`RealField`] trait), and not just matrices of [`f64`]s, we
+/// can include an additional generic parameter `S`.
 ///
 /// ```ignore
-/// fn my_function<S: Scalar, V: Vector<S>>(input_vector: &V) -> V { ... }
+/// fn my_function<S: RealField, M: Matrix<S>>(input_matrix: &M) -> M { ... }
 /// ```
-///
-/// ## Warning
-///
-/// When working with arrays from [`ndarray`], elements of the array must also implement the
-/// following traits in addition to the [`Scalar`] trait:
-///
-/// * [`ndarray::ScalarOperand`]
-/// * [`ndarray::LinalgScalar`]
-///
-/// For example, consider the case where we define the struct `CustomType` and implement the
-/// [`Scalar`] trait for `CustomType`. If we want to be able to pass an
-/// [`ndarray::Array2<CustomType>`] into `my_function` from the example above, then we must also
-/// implement the [`ndarray::ScalarOperand`] and [`ndarray::LinalgScalar`] traits for `CustomType`.
-pub trait Matrix<S: Scalar>:
+pub trait Matrix<S: RealField>:
     Index<(usize, usize), Output = S>       // Indexing via square brackets.
     + IndexMut<(usize, usize), Output = S>  // Index-assignment via square brackets.
     + Clone                                 // Copying (compatible with dynamically-sized types).
