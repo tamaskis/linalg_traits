@@ -127,7 +127,6 @@
 #![allow(clippy::float_cmp, clippy::unreadable_literal)]
 
 // Module declarations.
-pub(crate) mod example;
 pub(crate) mod matrix;
 pub mod real_field;
 pub mod real_field_operations;

@@ -1,6 +1,6 @@
-use crate::example::my_scalar::MyScalar;
-use crate::real_field::real_field_base::RealFieldBase;
-use crate::verify_trait_implemented;
+use crate::my_scalar::MyScalar;
+use linalg_traits::real_field::RealFieldBase;
+use linalg_traits::verify_trait_implemented;
 
 const _: bool = verify_trait_implemented!(MyScalar: RealFieldBase);
 

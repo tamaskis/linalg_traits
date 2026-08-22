@@ -1,6 +1,6 @@
-use crate::example::my_scalar::MyScalar;
-use crate::impl_real_field_operations;
-use crate::real_field_operations::BaseOperations;
+use crate::my_scalar::MyScalar;
+use linalg_traits::impl_real_field_operations;
+use linalg_traits::real_field_operations::BaseOperations;
 
 impl BaseOperations for MyScalar {
     fn neg(self) -> Self {

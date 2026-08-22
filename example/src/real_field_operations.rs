@@ -1,6 +1,6 @@
-use crate::example::my_scalar::MyScalar;
-use crate::real_field_operations::real_field_operations::RealFieldOperations;
-use crate::verify_trait_implemented;
+use crate::my_scalar::MyScalar;
+use linalg_traits::real_field_operations::RealFieldOperations;
+use linalg_traits::verify_trait_implemented;
 
 const _: bool = verify_trait_implemented!(MyScalar: RealFieldOperations);
 
@@ -11,7 +11,7 @@ const _: bool = verify_trait_implemented!(MyScalar: RealFieldOperations);
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::real_field_operations::real_field_operations::assert_real_field_operations;
+    use linalg_traits::real_field_operations::assert_real_field_operations;
 
     #[test]
     fn test_real_field_operations() {

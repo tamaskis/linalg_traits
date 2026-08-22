@@ -11,7 +11,7 @@ license = "MIT OR Apache-2.0"
 keywords = ["linear-algebra", "traits", "matrix", "vector", "math"]
 categories = ["mathematics", "science"]
 
-exclude = [".github/", ".vscode/", "book/", ".gitignore", "Cargo.lock"]
+exclude = [".github/", ".vscode/", "book/", "example/", ".gitignore", "Cargo.lock"]
 
 [package.metadata.docs.rs]
 rustdoc-args = [ "--html-in-header", "src/docs-header.html" ]
@@ -35,4 +35,8 @@ rand = "0.10.2" # not directly used, but fixes security vulnerability
 rustversion = "1.0.23"
 
 [dev-dependencies]
+linalg-traits-example = { path = "example" }
 numtest = "0.5.0"
+
+[workspace]
+members = ["example"]

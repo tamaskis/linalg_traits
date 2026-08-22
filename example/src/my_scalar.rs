@@ -1,8 +1,4 @@
-use crate::real_field::base::Base;
-use crate::verify_trait_implemented;
 use std::fmt::Display;
-
-const _: bool = verify_trait_implemented!(MyScalar: Base);
 
 #[derive(Copy, Clone, Debug, Default)]
 pub struct MyScalar {
@@ -32,6 +28,9 @@ impl From<MyScalar> for f64 {
         value.x
     }
 }
+
+// `MyScalar` automatically satisfies `linalg_traits::real_field::Base`'s blanket implementation
+// (`Copy + Clone + Debug + Default + Display`), so no explicit `impl` is required.
 
 #[cfg(test)]
 mod tests {

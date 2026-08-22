@@ -566,12 +566,25 @@ dependencies = [
  "faer",
  "faer-traits",
  "imply-hack",
+ "linalg-traits-example",
  "nalgebra",
  "ndarray",
  "num-traits",
  "numtest",
  "rand 0.10.2",
  "rustversion",
+ "simba",
+]
+
+[[package]]
+name = "linalg-traits-example"
+version = "0.0.0"
+dependencies = [
+ "approx",
+ "faer-traits",
+ "linalg-traits",
+ "nalgebra",
+ "num-traits",
  "simba",
 ]
 
