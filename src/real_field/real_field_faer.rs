@@ -24,6 +24,8 @@ impl<T> RealFieldFaer for T where T: crate::real_field::RealFieldBase + faer_tra
 #[cfg(not(feature = "faer"))]
 impl<T> RealFieldFaer for T where T: crate::real_field::RealFieldBase {}
 
+// TODO why is all this stuff implemented for f64 and not for T
+
 /// Implement the [`faer_traits::RealField`] trait for a type that has already implemented
 /// [`crate::real_field::RealFieldBase`].
 ///
@@ -67,12 +69,12 @@ macro_rules! impl_faer_traits_real_field {
 
             #[inline]
             fn nan_impl() -> Self {
-                <$t as $crate::real_field::RealFieldBase>::nan()
+                <$t as $crate::real_field::RealFieldBase>::_nan()
             }
 
             #[inline]
             fn infinity_impl() -> Self {
-                <$t as $crate::real_field::RealFieldBase>::infinity()
+                <$t as $crate::real_field::RealFieldBase>::_infinity()
             }
 
             #[inline]
@@ -107,22 +109,22 @@ macro_rules! impl_faer_traits_real_field {
 
             #[inline]
             fn recip_impl(value: &Self) -> Self {
-                <$t as $crate::real_field::RealFieldBase>::recip(*value)
+                <$t as $crate::real_field::RealFieldBase>::_recip(*value)
             }
 
             #[inline]
             fn sqrt_impl(value: &Self) -> Self {
-                <$t as $crate::real_field::RealFieldBase>::sqrt(*value)
+                <$t as $crate::real_field::RealFieldBase>::_sqrt(*value)
             }
 
             #[inline]
             fn abs_impl(value: &Self) -> Self::Real {
-                <$t as $crate::real_field::RealFieldBase>::abs(*value)
+                <$t as $crate::real_field::RealFieldBase>::_abs(*value)
             }
 
             #[inline]
             fn abs1_impl(value: &Self) -> Self::Real {
-                <$t as $crate::real_field::RealFieldBase>::abs(*value) // https://docs.rs/faer-traits/0.24.0/src/faer_traits/lib.rs.html#2161
+                <$t as $crate::real_field::RealFieldBase>::_abs(*value) // https://docs.rs/faer-traits/0.24.0/src/faer_traits/lib.rs.html#2161
             }
 
             #[inline]
@@ -142,7 +144,7 @@ macro_rules! impl_faer_traits_real_field {
 
             #[inline]
             fn is_finite_impl(value: &Self) -> bool {
-                <$t as $crate::real_field::RealFieldBase>::is_finite(*value)
+                <$t as $crate::real_field::RealFieldBase>::_is_finite(*value)
             }
 
             #[inline]
@@ -484,32 +486,32 @@ macro_rules! impl_faer_traits_real_field {
         impl faer_traits::RealField for $t {
             #[inline]
             fn epsilon_impl() -> Self {
-                <$t as $crate::real_field::RealFieldBase>::epsilon()
+                <$t as $crate::real_field::RealFieldBase>::_epsilon()
             }
 
             #[inline]
             fn nbits_impl() -> usize {
-                <$t as $crate::real_field::RealFieldBase>::bits()
+                <$t as $crate::real_field::RealFieldBase>::_bits()
             }
 
             #[inline]
             fn min_positive_impl() -> Self {
-                <$t as $crate::real_field::RealFieldBase>::min_positive()
+                <$t as $crate::real_field::RealFieldBase>::_min_positive()
             }
 
             #[inline]
             fn max_positive_impl() -> Self {
-                <$t as $crate::real_field::RealFieldBase>::max_positive()
+                <$t as $crate::real_field::RealFieldBase>::_max_positive()
             }
 
             #[inline]
             fn sqrt_min_positive_impl() -> Self {
-                <$t as $crate::real_field::RealFieldBase>::sqrt_min_positive()
+                <$t as $crate::real_field::RealFieldBase>::_sqrt_min_positive()
             }
 
             #[inline]
             fn sqrt_max_positive_impl() -> Self {
-                <$t as $crate::real_field::RealFieldBase>::sqrt_max_positive()
+                <$t as $crate::real_field::RealFieldBase>::_sqrt_max_positive()
             }
         }
     };

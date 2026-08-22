@@ -124,7 +124,13 @@
 
 // Linter setup.
 #![warn(missing_docs, warnings, clippy::all, clippy::pedantic, clippy::cargo)]
-#![allow(clippy::float_cmp, clippy::unreadable_literal)]
+#![allow(
+    clippy::float_cmp,
+    clippy::unreadable_literal,
+    clippy::used_underscore_items
+)]
+
+// TODO: allow used underscore items on a per-module basis if necessary
 
 // Module declarations.
 pub(crate) mod matrix;

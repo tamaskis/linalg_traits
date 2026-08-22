@@ -40,7 +40,7 @@ impl num_traits::Num for MyScalar {
 impl num_traits::Signed for MyScalar {
     #[inline]
     fn abs(&self) -> Self {
-        <MyScalar as linalg_traits::real_field::RealFieldBase>::abs(*self)
+        <MyScalar as linalg_traits::real_field::RealFieldBase>::_abs(*self)
     }
 
     #[inline]
@@ -54,9 +54,9 @@ impl num_traits::Signed for MyScalar {
 
     #[inline]
     fn signum(&self) -> Self {
-        if <MyScalar as linalg_traits::real_field::RealFieldBase>::is_nan(*self) {
+        if <MyScalar as linalg_traits::real_field::RealFieldBase>::_is_nan(*self) {
             *self
-        } else if <MyScalar as linalg_traits::real_field::RealFieldBase>::is_sign_negative(*self) {
+        } else if <MyScalar as linalg_traits::real_field::RealFieldBase>::_is_sign_negative(*self) {
             -<MyScalar as num_traits::One>::one()
         } else if <MyScalar as num_traits::Zero>::is_zero(self) {
             <MyScalar as num_traits::Zero>::zero()
@@ -68,12 +68,12 @@ impl num_traits::Signed for MyScalar {
     #[inline]
     fn is_positive(&self) -> bool {
         !<MyScalar as num_traits::Zero>::is_zero(self)
-            && <MyScalar as linalg_traits::real_field::RealFieldBase>::is_sign_positive(*self)
+            && <MyScalar as linalg_traits::real_field::RealFieldBase>::_is_sign_positive(*self)
     }
 
     #[inline]
     fn is_negative(&self) -> bool {
-        <MyScalar as linalg_traits::real_field::RealFieldBase>::is_sign_negative(*self)
+        <MyScalar as linalg_traits::real_field::RealFieldBase>::_is_sign_negative(*self)
     }
 }
 

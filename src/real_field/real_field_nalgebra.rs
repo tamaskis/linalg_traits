@@ -46,9 +46,9 @@ macro_rules! impl_nalgebra_real_field {
             }
 
             fn abs_diff_eq(&self, other: &Self, epsilon: Self::Epsilon) -> bool {
-                let self_slice: &[f64] = <$t as $crate::real_field::RealFieldBase>::as_slice(self);
+                let self_slice: &[f64] = <$t as $crate::real_field::RealFieldBase>::_as_slice(self);
                 let other_slice: &[f64] =
-                    <$t as $crate::real_field::RealFieldBase>::as_slice(other);
+                    <$t as $crate::real_field::RealFieldBase>::_as_slice(other);
                 self_slice
                     .iter()
                     .zip(other_slice)
@@ -70,9 +70,9 @@ macro_rules! impl_nalgebra_real_field {
                 epsilon: Self::Epsilon,
                 max_relative: Self::Epsilon,
             ) -> bool {
-                let self_slice: &[f64] = <$t as $crate::real_field::RealFieldBase>::as_slice(self);
+                let self_slice: &[f64] = <$t as $crate::real_field::RealFieldBase>::_as_slice(self);
                 let other_slice: &[f64] =
-                    <$t as $crate::real_field::RealFieldBase>::as_slice(other);
+                    <$t as $crate::real_field::RealFieldBase>::_as_slice(other);
                 self_slice
                     .iter()
                     .zip(other_slice)
@@ -89,9 +89,9 @@ macro_rules! impl_nalgebra_real_field {
             }
 
             fn ulps_eq(&self, other: &Self, epsilon: Self::Epsilon, max_ulps: u32) -> bool {
-                let self_slice: &[f64] = <$t as $crate::real_field::RealFieldBase>::as_slice(self);
+                let self_slice: &[f64] = <$t as $crate::real_field::RealFieldBase>::_as_slice(self);
                 let other_slice: &[f64] =
-                    <$t as $crate::real_field::RealFieldBase>::as_slice(other);
+                    <$t as $crate::real_field::RealFieldBase>::_as_slice(other);
                 self_slice
                     .iter()
                     .zip(other_slice)
@@ -212,7 +212,7 @@ macro_rules! impl_nalgebra_real_field {
 
             #[inline]
             fn modulus(self) -> Self::RealField {
-                <$t as $crate::real_field::RealFieldBase>::abs(self)
+                <$t as $crate::real_field::RealFieldBase>::_abs(self)
             }
 
             #[inline]
@@ -222,7 +222,7 @@ macro_rules! impl_nalgebra_real_field {
 
             #[inline]
             fn argument(self) -> Self::RealField {
-                <$t as $crate::real_field::RealFieldBase>::atan2(
+                <$t as $crate::real_field::RealFieldBase>::_atan2(
                     self,
                     <$t as num_traits::Zero>::zero(),
                 )
@@ -230,62 +230,62 @@ macro_rules! impl_nalgebra_real_field {
 
             #[inline]
             fn norm1(self) -> Self::RealField {
-                <$t as $crate::real_field::RealFieldBase>::abs(self) // https://docs.rs/simba/0.10.0/src/simba/scalar/complex.rs.html#768
+                <$t as $crate::real_field::RealFieldBase>::_abs(self) // https://docs.rs/simba/0.10.0/src/simba/scalar/complex.rs.html#768
             }
 
             #[inline]
             fn scale(self, factor: Self::RealField) -> Self {
-                <$t as $crate::real_field::RealFieldBase>::scale(self, factor)
+                <$t as $crate::real_field::RealFieldBase>::_scale(self, factor)
             }
 
             #[inline]
             fn unscale(self, factor: Self::RealField) -> Self {
-                <$t as $crate::real_field::RealFieldBase>::unscale(self, factor)
+                <$t as $crate::real_field::RealFieldBase>::_unscale(self, factor)
             }
 
             #[inline]
             fn floor(self) -> Self {
-                <$t as $crate::real_field::RealFieldBase>::floor(self)
+                <$t as $crate::real_field::RealFieldBase>::_floor(self)
             }
 
             #[inline]
             fn ceil(self) -> Self {
-                <$t as $crate::real_field::RealFieldBase>::ceil(self)
+                <$t as $crate::real_field::RealFieldBase>::_ceil(self)
             }
 
             #[inline]
             fn round(self) -> Self {
-                <$t as $crate::real_field::RealFieldBase>::round(self)
+                <$t as $crate::real_field::RealFieldBase>::_round(self)
             }
 
             #[inline]
             fn trunc(self) -> Self {
-                <$t as $crate::real_field::RealFieldBase>::trunc(self)
+                <$t as $crate::real_field::RealFieldBase>::_trunc(self)
             }
 
             #[inline]
             fn fract(self) -> Self {
-                <$t as $crate::real_field::RealFieldBase>::fract(self)
+                <$t as $crate::real_field::RealFieldBase>::_fract(self)
             }
 
             #[inline]
             fn mul_add(self, a: Self, b: Self) -> Self {
-                <$t as $crate::real_field::RealFieldBase>::mul_add(self, a, b)
+                <$t as $crate::real_field::RealFieldBase>::_mul_add(self, a, b)
             }
 
             #[inline]
             fn abs(self) -> Self::RealField {
-                <$t as $crate::real_field::RealFieldBase>::abs(self)
+                <$t as $crate::real_field::RealFieldBase>::_abs(self)
             }
 
             #[inline]
             fn hypot(self, other: Self) -> Self::RealField {
-                <$t as $crate::real_field::RealFieldBase>::hypot(self, other)
+                <$t as $crate::real_field::RealFieldBase>::_hypot(self, other)
             }
 
             #[inline]
             fn recip(self) -> Self {
-                <$t as $crate::real_field::RealFieldBase>::recip(self)
+                <$t as $crate::real_field::RealFieldBase>::_recip(self)
             }
 
             #[inline]
@@ -295,264 +295,264 @@ macro_rules! impl_nalgebra_real_field {
 
             #[inline]
             fn sin(self) -> Self {
-                <$t as $crate::real_field::RealFieldBase>::sin(self)
+                <$t as $crate::real_field::RealFieldBase>::_sin(self)
             }
 
             #[inline]
             fn cos(self) -> Self {
-                <$t as $crate::real_field::RealFieldBase>::cos(self)
+                <$t as $crate::real_field::RealFieldBase>::_cos(self)
             }
 
             #[inline]
             fn sin_cos(self) -> (Self, Self) {
-                <$t as $crate::real_field::RealFieldBase>::sin_cos(self)
+                <$t as $crate::real_field::RealFieldBase>::_sin_cos(self)
             }
 
             #[inline]
             fn tan(self) -> Self {
-                <$t as $crate::real_field::RealFieldBase>::tan(self)
+                <$t as $crate::real_field::RealFieldBase>::_tan(self)
             }
 
             #[inline]
             fn asin(self) -> Self {
-                <$t as $crate::real_field::RealFieldBase>::asin(self)
+                <$t as $crate::real_field::RealFieldBase>::_asin(self)
             }
 
             #[inline]
             fn acos(self) -> Self {
-                <$t as $crate::real_field::RealFieldBase>::acos(self)
+                <$t as $crate::real_field::RealFieldBase>::_acos(self)
             }
 
             #[inline]
             fn atan(self) -> Self {
-                <$t as $crate::real_field::RealFieldBase>::atan(self)
+                <$t as $crate::real_field::RealFieldBase>::_atan(self)
             }
 
             #[inline]
             fn sinh(self) -> Self {
-                <$t as $crate::real_field::RealFieldBase>::sinh(self)
+                <$t as $crate::real_field::RealFieldBase>::_sinh(self)
             }
 
             #[inline]
             fn cosh(self) -> Self {
-                <$t as $crate::real_field::RealFieldBase>::cosh(self)
+                <$t as $crate::real_field::RealFieldBase>::_cosh(self)
             }
 
             #[inline]
             fn tanh(self) -> Self {
-                <$t as $crate::real_field::RealFieldBase>::tanh(self)
+                <$t as $crate::real_field::RealFieldBase>::_tanh(self)
             }
 
             #[inline]
             fn asinh(self) -> Self {
-                <$t as $crate::real_field::RealFieldBase>::asinh(self)
+                <$t as $crate::real_field::RealFieldBase>::_asinh(self)
             }
 
             #[inline]
             fn acosh(self) -> Self {
-                <$t as $crate::real_field::RealFieldBase>::acosh(self)
+                <$t as $crate::real_field::RealFieldBase>::_acosh(self)
             }
 
             #[inline]
             fn atanh(self) -> Self {
-                <$t as $crate::real_field::RealFieldBase>::atanh(self)
+                <$t as $crate::real_field::RealFieldBase>::_atanh(self)
             }
 
             #[inline]
             fn log(self, base: Self::RealField) -> Self {
-                <$t as $crate::real_field::RealFieldBase>::log(self, base)
+                <$t as $crate::real_field::RealFieldBase>::_log(self, base)
             }
 
             #[inline]
             fn log2(self) -> Self {
-                <$t as $crate::real_field::RealFieldBase>::log2(self)
+                <$t as $crate::real_field::RealFieldBase>::_log2(self)
             }
 
             #[inline]
             fn log10(self) -> Self {
-                <$t as $crate::real_field::RealFieldBase>::log10(self)
+                <$t as $crate::real_field::RealFieldBase>::_log10(self)
             }
 
             #[inline]
             fn ln(self) -> Self {
-                <$t as $crate::real_field::RealFieldBase>::ln(self)
+                <$t as $crate::real_field::RealFieldBase>::_ln(self)
             }
 
             #[inline]
             fn ln_1p(self) -> Self {
-                <$t as $crate::real_field::RealFieldBase>::ln_1p(self)
+                <$t as $crate::real_field::RealFieldBase>::_ln_1p(self)
             }
 
             #[inline]
             fn sqrt(self) -> Self {
-                <$t as $crate::real_field::RealFieldBase>::sqrt(self)
+                <$t as $crate::real_field::RealFieldBase>::_sqrt(self)
             }
 
             #[inline]
             fn exp(self) -> Self {
-                <$t as $crate::real_field::RealFieldBase>::exp(self)
+                <$t as $crate::real_field::RealFieldBase>::_exp(self)
             }
 
             #[inline]
             fn exp2(self) -> Self {
-                <$t as $crate::real_field::RealFieldBase>::exp2(self)
+                <$t as $crate::real_field::RealFieldBase>::_exp2(self)
             }
 
             #[inline]
             fn exp_m1(self) -> Self {
-                <$t as $crate::real_field::RealFieldBase>::exp_m1(self)
+                <$t as $crate::real_field::RealFieldBase>::_exp_m1(self)
             }
 
             #[inline]
             fn powi(self, n: i32) -> Self {
-                <$t as $crate::real_field::RealFieldBase>::powi(self, n)
+                <$t as $crate::real_field::RealFieldBase>::_powi(self, n)
             }
 
             #[inline]
             fn powf(self, n: Self::RealField) -> Self {
-                <$t as $crate::real_field::RealFieldBase>::powf(self, n)
+                <$t as $crate::real_field::RealFieldBase>::_powf(self, n)
             }
 
             #[inline]
             fn powc(self, n: Self) -> Self {
-                <$t as $crate::real_field::RealFieldBase>::powf(self, n) // https://docs.rs/simba/0.10.0/src/simba/scalar/complex.rs.html#872
+                <$t as $crate::real_field::RealFieldBase>::_powf(self, n) // https://docs.rs/simba/0.10.0/src/simba/scalar/complex.rs.html#872
             }
 
             #[inline]
             fn cbrt(self) -> Self {
-                <$t as $crate::real_field::RealFieldBase>::cbrt(self)
+                <$t as $crate::real_field::RealFieldBase>::_cbrt(self)
             }
 
             #[inline]
             fn is_finite(&self) -> bool {
-                <$t as $crate::real_field::RealFieldBase>::is_finite(*self)
+                <$t as $crate::real_field::RealFieldBase>::_is_finite(*self)
             }
 
             #[inline]
             fn try_sqrt(self) -> Option<Self> {
-                <$t as $crate::real_field::RealFieldBase>::try_sqrt(self)
+                <$t as $crate::real_field::RealFieldBase>::_try_sqrt(self)
             }
         }
 
         impl nalgebra::RealField for $t {
             #[inline]
             fn is_sign_positive(&self) -> bool {
-                <$t as $crate::real_field::RealFieldBase>::is_sign_positive(*self)
+                <$t as $crate::real_field::RealFieldBase>::_is_sign_positive(*self)
             }
 
             #[inline]
             fn is_sign_negative(&self) -> bool {
-                <$t as $crate::real_field::RealFieldBase>::is_sign_negative(*self)
+                <$t as $crate::real_field::RealFieldBase>::_is_sign_negative(*self)
             }
 
             #[inline]
             fn copysign(self, sign: Self) -> Self {
-                <$t as $crate::real_field::RealFieldBase>::copysign(self, sign)
+                <$t as $crate::real_field::RealFieldBase>::_copysign(self, sign)
             }
 
             #[inline]
             fn max(self, other: Self) -> Self {
-                <$t as $crate::real_field::RealFieldBase>::max(self, other)
+                <$t as $crate::real_field::RealFieldBase>::_max(self, other)
             }
 
             #[inline]
             fn min(self, other: Self) -> Self {
-                <$t as $crate::real_field::RealFieldBase>::min(self, other)
+                <$t as $crate::real_field::RealFieldBase>::_min(self, other)
             }
 
             #[inline]
             fn clamp(self, min: Self, max: Self) -> Self {
-                <$t as $crate::real_field::RealFieldBase>::clamp(self, min, max)
+                <$t as $crate::real_field::RealFieldBase>::_clamp(self, min, max)
             }
 
             #[inline]
             fn atan2(self, other: Self) -> Self {
-                <$t as $crate::real_field::RealFieldBase>::atan2(self, other)
+                <$t as $crate::real_field::RealFieldBase>::_atan2(self, other)
             }
 
             #[inline]
             fn min_value() -> Option<Self> {
-                <$t as $crate::real_field::RealFieldBase>::min_value()
+                <$t as $crate::real_field::RealFieldBase>::_min_value()
             }
 
             #[inline]
             fn max_value() -> Option<Self> {
-                <$t as $crate::real_field::RealFieldBase>::max_value()
+                <$t as $crate::real_field::RealFieldBase>::_max_value()
             }
 
             #[inline]
             fn pi() -> Self {
-                <$t as $crate::real_field::RealFieldBase>::pi()
+                <$t as $crate::real_field::RealFieldBase>::_pi()
             }
 
             #[inline]
             fn two_pi() -> Self {
-                <$t as $crate::real_field::RealFieldBase>::two_pi()
+                <$t as $crate::real_field::RealFieldBase>::_two_pi()
             }
 
             #[inline]
             fn frac_pi_2() -> Self {
-                <$t as $crate::real_field::RealFieldBase>::frac_pi_2()
+                <$t as $crate::real_field::RealFieldBase>::_frac_pi_2()
             }
 
             #[inline]
             fn frac_pi_3() -> Self {
-                <$t as $crate::real_field::RealFieldBase>::frac_pi_3()
+                <$t as $crate::real_field::RealFieldBase>::_frac_pi_3()
             }
 
             #[inline]
             fn frac_pi_4() -> Self {
-                <$t as $crate::real_field::RealFieldBase>::frac_pi_4()
+                <$t as $crate::real_field::RealFieldBase>::_frac_pi_4()
             }
 
             #[inline]
             fn frac_pi_6() -> Self {
-                <$t as $crate::real_field::RealFieldBase>::frac_pi_6()
+                <$t as $crate::real_field::RealFieldBase>::_frac_pi_6()
             }
 
             #[inline]
             fn frac_pi_8() -> Self {
-                <$t as $crate::real_field::RealFieldBase>::frac_pi_8()
+                <$t as $crate::real_field::RealFieldBase>::_frac_pi_8()
             }
 
             #[inline]
             fn frac_1_pi() -> Self {
-                <$t as $crate::real_field::RealFieldBase>::frac_1_pi()
+                <$t as $crate::real_field::RealFieldBase>::_frac_1_pi()
             }
 
             #[inline]
             fn frac_2_pi() -> Self {
-                <$t as $crate::real_field::RealFieldBase>::frac_2_pi()
+                <$t as $crate::real_field::RealFieldBase>::_frac_2_pi()
             }
 
             #[inline]
             fn frac_2_sqrt_pi() -> Self {
-                <$t as $crate::real_field::RealFieldBase>::frac_2_sqrt_pi()
+                <$t as $crate::real_field::RealFieldBase>::_frac_2_sqrt_pi()
             }
 
             #[inline]
             fn e() -> Self {
-                <$t as $crate::real_field::RealFieldBase>::e()
+                <$t as $crate::real_field::RealFieldBase>::_e()
             }
 
             #[inline]
             fn log2_e() -> Self {
-                <$t as $crate::real_field::RealFieldBase>::log2_e()
+                <$t as $crate::real_field::RealFieldBase>::_log2_e()
             }
 
             #[inline]
             fn log10_e() -> Self {
-                <$t as $crate::real_field::RealFieldBase>::log10_e()
+                <$t as $crate::real_field::RealFieldBase>::_log10_e()
             }
 
             #[inline]
             fn ln_2() -> Self {
-                <$t as $crate::real_field::RealFieldBase>::ln_2()
+                <$t as $crate::real_field::RealFieldBase>::_ln_2()
             }
 
             #[inline]
             fn ln_10() -> Self {
-                <$t as $crate::real_field::RealFieldBase>::ln_10()
+                <$t as $crate::real_field::RealFieldBase>::_ln_10()
             }
         }
     };
