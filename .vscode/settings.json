@@ -11,4 +11,11 @@
     "rust-analyzer.check.command": "clippy",
     "rust-analyzer.cargo.features": "all",  // Ensures all #[cfg(feature = "...")] blocks are active in analysis.
     "rust-analyzer.check.features": "all",  // Ensures cargo check runs with all features enabled.
+    // Hide files from VS Code.
+    "files.exclude": {
+        "**/node_modules": true,
+        "**/dist": true,
+        "**/build": true,
+        "**/.git": true
+    }
 }

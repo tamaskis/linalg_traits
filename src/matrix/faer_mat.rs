@@ -1,15 +1,14 @@
-use crate::{Matrix, Scalar};
+use crate::{Matrix, RealField};
 use faer::{Col, Mat, Scale};
-use faer_traits::RealField;
 use std::borrow::Cow;
 
-impl<S> Matrix<S> for Mat<S>
+impl<R> Matrix<R> for Mat<R>
 where
-    S: Scalar + RealField,
+    R: RealField,
 {
-    type VectorM = Col<S>;
+    type VectorM = Col<R>;
 
-    type VectorN = Col<S>;
+    type VectorN = Col<R>;
 
     fn is_statically_sized() -> bool {
         false
@@ -28,14 +27,14 @@ where
     }
 
     fn new_with_shape(rows: usize, cols: usize) -> Self {
-        Mat::<S>::zeros(rows, cols)
+        Mat::<R>::zeros(rows, cols)
     }
 
     fn shape(&self) -> (usize, usize) {
         (self.nrows(), self.ncols())
     }
 
-    fn from_row_slice(rows: usize, cols: usize, slice: &[S]) -> Self {
+    fn from_row_slice(rows: usize, cols: usize, slice: &[R]) -> Self {
         assert_eq!(
             slice.len(),
             rows * cols,
@@ -44,10 +43,10 @@ where
             rows,
             cols,
         );
-        Mat::<S>::from_fn(rows, cols, |i, j| slice[i * cols + j])
+        Mat::<R>::from_fn(rows, cols, |i, j| slice[i * cols + j])
     }
 
-    fn from_col_slice(rows: usize, cols: usize, slice: &[S]) -> Self {
+    fn from_col_slice(rows: usize, cols: usize, slice: &[R]) -> Self {
         assert_eq!(
             slice.len(),
             rows * cols,
@@ -56,18 +55,18 @@ where
             rows,
             cols,
         );
-        Mat::<S>::from_fn(rows, cols, |i, j| slice[i + j * rows])
+        Mat::<R>::from_fn(rows, cols, |i, j| slice[i + j * rows])
     }
 
-    fn as_slice(&self) -> Cow<'_, [S]> {
-        let mut slice_vec = Vec::<S>::with_capacity(self.nrows() * self.ncols());
+    fn as_slice(&self) -> Cow<'_, [R]> {
+        let mut slice_vec = Vec::<R>::with_capacity(self.nrows() * self.ncols());
         for i in 0..self.ncols() {
             slice_vec.extend_from_slice(self.col_as_slice(i));
         }
         Cow::from(slice_vec)
     }
 
-    fn get(&self, index: (usize, usize)) -> Option<&S> {
+    fn get(&self, index: (usize, usize)) -> Option<&R> {
         let (row, col) = index;
         if row < self.nrows() && col < self.ncols() {
             Some(Mat::get(self, row, col))
@@ -92,19 +91,19 @@ where
         *self -= other;
     }
 
-    fn mul(&self, scalar: S) -> Self {
+    fn mul(&self, scalar: R) -> Self {
         self * Scale(scalar)
     }
 
-    fn mul_assign(&mut self, scalar: S) {
+    fn mul_assign(&mut self, scalar: R) {
         *self *= Scale(scalar);
     }
 
-    fn div(&self, scalar: S) -> Self {
+    fn div(&self, scalar: R) -> Self {
         self / Scale(scalar)
     }
 
-    fn div_assign(&mut self, scalar: S) {
+    fn div_assign(&mut self, scalar: R) {
         *self /= Scale(scalar);
     }
 }
