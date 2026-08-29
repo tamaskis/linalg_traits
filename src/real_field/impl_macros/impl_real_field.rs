@@ -1,14 +1,6 @@
 /// Implement everything needed for a type to satisfy [`crate::RealField`], given that the type
 /// already implements [`crate::real_field::RealFieldBase`].
 ///
-/// This is a one-stop macro that, depending on which of the `faer`/`nalgebra`/`ndarray` features
-/// are enabled in the _calling_ crate, invokes whichever of [`crate::impl_real_field_operations`],
-/// [`crate::impl_num_traits_num`], [`crate::impl_num_traits_signed`],
-/// [`crate::impl_num_traits_from_primitive`], [`crate::impl_faer_traits_real_field`], and
-/// [`crate::impl_nalgebra_real_field`] are needed, without producing conflicting implementations.
-/// When the `ndarray` feature is enabled, it also implements [`ndarray::ScalarOperand`] for the
-/// type.
-///
 /// For this to work correctly, the calling crate must define its own `faer`, `nalgebra`, and
 /// `ndarray` features (typically forwarding to `linalg-traits`'s features of the same names).
 ///
