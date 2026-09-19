@@ -1,14 +1,14 @@
-use crate::{Matrix, Scalar};
+use crate::{Matrix, RealField};
 use nalgebra::{DMatrix, DVector};
 use std::borrow::Cow;
 
-impl<S> Matrix<S> for DMatrix<S>
+impl<R> Matrix<R> for DMatrix<R>
 where
-    S: Scalar,
+    R: RealField,
 {
-    type VectorM = DVector<S>;
+    type VectorM = DVector<R>;
 
-    type VectorN = DVector<S>;
+    type VectorN = DVector<R>;
 
     fn is_statically_sized() -> bool {
         false
@@ -34,19 +34,19 @@ where
         (self.nrows(), self.ncols())
     }
 
-    fn from_row_slice(rows: usize, cols: usize, slice: &[S]) -> Self {
+    fn from_row_slice(rows: usize, cols: usize, slice: &[R]) -> Self {
         DMatrix::from_row_slice(rows, cols, slice)
     }
 
-    fn from_col_slice(rows: usize, cols: usize, slice: &[S]) -> Self {
+    fn from_col_slice(rows: usize, cols: usize, slice: &[R]) -> Self {
         DMatrix::from_column_slice(rows, cols, slice)
     }
 
-    fn as_slice(&self) -> Cow<'_, [S]> {
+    fn as_slice(&self) -> Cow<'_, [R]> {
         Cow::from(Self::as_slice(self))
     }
 
-    fn get(&self, index: (usize, usize)) -> Option<&S> {
+    fn get(&self, index: (usize, usize)) -> Option<&R> {
         DMatrix::get(self, index)
     }
 
@@ -66,19 +66,19 @@ where
         *self -= other;
     }
 
-    fn mul(&self, scalar: S) -> Self {
+    fn mul(&self, scalar: R) -> Self {
         self * scalar
     }
 
-    fn mul_assign(&mut self, scalar: S) {
+    fn mul_assign(&mut self, scalar: R) {
         *self *= scalar;
     }
 
-    fn div(&self, scalar: S) -> Self {
+    fn div(&self, scalar: R) -> Self {
         self / scalar
     }
 
-    fn div_assign(&mut self, scalar: S) {
+    fn div_assign(&mut self, scalar: R) {
         *self /= scalar;
     }
 }

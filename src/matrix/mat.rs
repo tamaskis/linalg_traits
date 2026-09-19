@@ -1,35 +1,33 @@
-use crate::Vector;
-use crate::matrix::matrix_trait::Matrix;
-use crate::scalar::Scalar;
+use crate::{Matrix, RealField, Vector};
 use std::borrow::Cow;
 use std::iter::Iterator;
 use std::ops::{Index, IndexMut};
 
-/// Extremely basic matrix type, written as `Mat<S>`, short for "matrix".
+/// Extremely basic matrix type, written as `Mat<R>`, short for "matrix".
 ///
 /// # Implementation Details
 ///
-/// * The underlying data structure is a [`Vec<S>`].
+/// * The underlying data structure is a [`Vec<R>`].
 /// * This matrix implementation is row-major; the elements of the matrix are stored row-by-row
-///   in a one-dimensional "flat" data structure (in this case a [`Vec<S>`]).
+///   in a one-dimensional "flat" data structure (in this case a [`Vec<R>`]).
 ///
 /// # Motivation
 ///
 /// Rust does not have a matrix type in the `std` library, and users of this crate may not want to
 /// have dependencies such as [`nalgebra`], [`ndarray`], and/or [`faer`].
 #[derive(Clone, Debug, PartialEq)]
-pub struct Mat<S>
+pub struct Mat<R>
 where
-    S: Scalar,
+    R: RealField,
 {
-    data: Vec<S>,
+    data: Vec<R>,
     rows: usize,
     cols: usize,
 }
 
-impl<S> Mat<S>
+impl<R> Mat<R>
 where
-    S: Scalar,
+    R: RealField,
 {
     /// Helper function to calculate the linear index from row and column indices.
     fn index(&self, row: usize, col: usize) -> usize {
@@ -42,7 +40,7 @@ where
     /// # Returns
     ///
     /// An iterator that yields references to the elements of the matrix.
-    pub fn iter(&self) -> impl Iterator<Item = &S> {
+    pub fn iter(&self) -> impl Iterator<Item = &R> {
         self.data.iter()
     }
 
@@ -51,44 +49,44 @@ where
     /// # Returns
     ///
     /// An iterator that yields mutable references to the elements of the matrix.
-    pub fn iter_mut(&mut self) -> impl Iterator<Item = &mut S> {
+    pub fn iter_mut(&mut self) -> impl Iterator<Item = &mut R> {
         self.data.iter_mut()
     }
 }
 
-impl<S> IntoIterator for Mat<S>
+impl<R> IntoIterator for Mat<R>
 where
-    S: Scalar,
+    R: RealField,
 {
-    type Item = S;
-    type IntoIter = std::vec::IntoIter<S>;
+    type Item = R;
+    type IntoIter = std::vec::IntoIter<R>;
 
     fn into_iter(self) -> Self::IntoIter {
         self.data.into_iter()
     }
 }
 
-impl<S: Scalar> Index<(usize, usize)> for Mat<S> {
-    type Output = S;
+impl<R: RealField> Index<(usize, usize)> for Mat<R> {
+    type Output = R;
     fn index(&self, (row, col): (usize, usize)) -> &Self::Output {
         &self.data[self.index(row, col)]
     }
 }
 
-impl<S: Scalar> IndexMut<(usize, usize)> for Mat<S> {
+impl<R: RealField> IndexMut<(usize, usize)> for Mat<R> {
     fn index_mut(&mut self, (row, col): (usize, usize)) -> &mut Self::Output {
         let idx = self.index(row, col);
         &mut self.data[idx]
     }
 }
 
-impl<S> Matrix<S> for Mat<S>
+impl<R> Matrix<R> for Mat<R>
 where
-    S: Scalar,
+    R: RealField,
 {
-    type VectorM = Vec<S>;
+    type VectorM = Vec<R>;
 
-    type VectorN = Vec<S>;
+    type VectorN = Vec<R>;
 
     fn is_statically_sized() -> bool {
         false
@@ -108,7 +106,7 @@ where
 
     fn new_with_shape(rows: usize, cols: usize) -> Self {
         Mat {
-            data: vec![S::zero(); rows * cols],
+            data: vec![R::_zero(); rows * cols],
             rows,
             cols,
         }
@@ -118,7 +116,7 @@ where
         (self.rows, self.cols)
     }
 
-    fn from_row_slice(rows: usize, cols: usize, slice: &[S]) -> Self {
+    fn from_row_slice(rows: usize, cols: usize, slice: &[R]) -> Self {
         assert_eq!(
             slice.len(),
             rows * cols,
@@ -134,7 +132,7 @@ where
         }
     }
 
-    fn from_col_slice(rows: usize, cols: usize, slice: &[S]) -> Self {
+    fn from_col_slice(rows: usize, cols: usize, slice: &[R]) -> Self {
         assert_eq!(
             slice.len(),
             rows * cols,
@@ -152,11 +150,11 @@ where
         Mat { data, rows, cols }
     }
 
-    fn as_slice(&self) -> Cow<'_, [S]> {
+    fn as_slice(&self) -> Cow<'_, [R]> {
         Cow::from(self.data.as_slice())
     }
 
-    fn get(&self, index: (usize, usize)) -> Option<&S> {
+    fn get(&self, index: (usize, usize)) -> Option<&R> {
         let (row, col) = index;
         let (rows, cols) = self.shape();
         if row < rows && col < cols {
@@ -194,7 +192,7 @@ where
         self.data.sub_assign(&other.data);
     }
 
-    fn mul(&self, scalar: S) -> Self {
+    fn mul(&self, scalar: R) -> Self {
         Mat {
             data: self.data.mul(scalar),
             rows: self.rows,
@@ -202,11 +200,11 @@ where
         }
     }
 
-    fn mul_assign(&mut self, scalar: S) {
+    fn mul_assign(&mut self, scalar: R) {
         self.data.mul_assign(scalar);
     }
 
-    fn div(&self, scalar: S) -> Self {
+    fn div(&self, scalar: R) -> Self {
         Mat {
             data: self.data.div(scalar),
             rows: self.rows,
@@ -214,7 +212,7 @@ where
         }
     }
 
-    fn div_assign(&mut self, scalar: S) {
+    fn div_assign(&mut self, scalar: R) {
         self.data.div_assign(scalar);
     }
 }

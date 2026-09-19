@@ -1,5 +1,4 @@
-use crate::matrix::matrix_trait::Matrix;
-use crate::scalar::Scalar;
+use crate::{Matrix, RealField};
 use std::borrow::Cow;
 use std::fmt::Debug;
 use std::ops::{Index, IndexMut};
@@ -16,42 +15,29 @@ use std::ops::{Index, IndexMut};
 /// fn my_function<V: Vector<f64>>(input_vector: &V) -> V { ... }
 /// ```
 ///
-/// Since the [`Vector`] trait is generic over types that implement the [`Scalar`] trait, any
+/// Since the [`Vector`] trait is generic over types that implement the [`RealField`] trait, any
 /// function that is generic over [`Vector`]s can also be made generic over the type of their
 /// elements. In this case, if we want `my_function` to be compatible with vectors of any scalar
-/// type (i.e. types that implement the [`Scalar`] trait), and not just matrices of [`f64`]s, we can
-/// include an additional generic parameter `S`.
+/// type (i.e. types that implement the [`RealField`] trait), and not just matrices of [`f64`]s, we
+/// can include an additional generic parameter `R`.
 ///
 /// ```ignore
-/// fn my_function<S: Scalar, M: Matrix<S>>(input_vector: &M) -> M { ... }
+/// fn my_function<R: RealField, V: Vector<R>>(input_vector: &V) -> V { ... }
 /// ```
-///
-/// ## Warning
-///
-/// When working with arrays from [`ndarray`], elements of the array must also implement the
-/// following traits in addition to the [`Scalar`] trait:
-///
-/// * [`ndarray::ScalarOperand`]
-/// * [`ndarray::LinalgScalar`]
-///
-/// For example, consider the case where we define the struct `CustomType` and implement the
-/// [`Scalar`] trait for `CustomType`. If we want to be able to pass an
-/// [`ndarray::Array2<CustomType>`] into `my_function` from the example above, then we must also
-/// implement the [`ndarray::ScalarOperand`] and [`ndarray::LinalgScalar`] traits for `CustomType`.
-pub trait Vector<S: Scalar>:
+pub trait Vector<R: RealField>:
     Clone       // Copying (compatible with dynamically-sized types).
     + Debug     // Debug printing.
     + PartialEq // Equality comparisons.
-    + Index<usize, Output = S>
+    + Index<usize, Output = R>
     + IndexMut<usize>
 {
     // -----------------
     // Associated types.
     // -----------------
 
-    /// Vector type that is of the same "outer" vector type (i.e. the `Vector` part of `Vector<S>`
-    /// where `S: Scalar`), but where the element type can be any other type that implements the
-    /// [`crate::Scalar`] trait.
+    /// Vector type that is of the same "outer" vector type (i.e. the `Vector` part of `Vector<R>`
+    /// where `R: RealField`), but where the element type can be any other type that implements the
+    /// [`crate::RealField`] trait.
     /// 
     /// # Note
     /// 
@@ -60,19 +46,20 @@ pub trait Vector<S: Scalar>:
     /// * We recommend that statically-sized vectors choose a compatible statically-sized matrix for
     ///   this associated type, and the dynamically-sized vectors choose a compatible
     ///   dynamically-sized matrix for this associated type.
-    type VectorT<T: Scalar>: Vector<T>;
+    type VectorT<T: RealField>: Vector<T>;
 
     /// Dynamically-sized vector type that is compatible with this "outer" vector type (i.e. the
-    /// `Vector` part of `Vector<S>` where `S: Scalar`), but where the element type can be any other
-    /// type that implements the [`crate::Scalar`] trait.
-    type DVectorT<T: Scalar>: Vector<T>;
+    /// `Vector` part of `Vector<R>` where `R: RealField`), but where the element type can be any
+    /// other type that implements the [`crate::RealField`] trait.
+    type DVectorT<T: RealField>: Vector<T>;
 
     /// Length-`N` vector type that is of the same "outer" vector type (i.e. the `Vector` part of
-    /// `Vector<S>` where `S: Scalar`), but where the elements are of type [`f64`].
+    /// `Vector<R>` where `R: RealField`), but where the elements are of type [`f64`].
     type Vectorf64: Vector<f64>;
 
     /// Dynamically-sized vector type that is compatible with this "outer" vector type (i.e. the
-    /// `Vector` part of `Vector<S>` where `S: Scalar`), but where the elements are of type [`f64`].
+    /// `Vector` part of `Vector<R>` where `R: RealField`), but where the elements are of type
+    /// [`f64`].
     type DVectorf64: Vector<f64>;
 
     /// `N x N` matrix type implementing the [`crate::Matrix`] trait that is compatible with this
@@ -92,7 +79,7 @@ pub trait Vector<S: Scalar>:
     /// * We recommend that statically-sized vectors choose a compatible statically-sized matrix for
     ///   this associated type, and the dynamically-sized vectors choose a compatible
     ///   dynamically-sized matrix for this associated type.
-    type MatrixNxN: Matrix<S>;
+    type MatrixNxN: Matrix<R>;
 
     /// `M x N` matrix type implementing the [`crate::Matrix`] trait that is compatible with this
     /// vector type. An instance of this matrix type with shape `(M, N)` can be multiplied from the
@@ -108,7 +95,7 @@ pub trait Vector<S: Scalar>:
     /// * For statically-sized matrices, to know the other dimension (`M`) at compile time, we need
     ///   to provide `M` as a const generic.
     /// * For dynamically-sized matrices, the const generic `M` is not used.
-    type MatrixMxN<const M: usize>: Matrix<S>;
+    type MatrixMxN<const M: usize>: Matrix<R>;
 
     /// Dynamically-sized `M x N` matrix type implementing the [`crate::Matrix`] trait that is
     /// compatible with this vector type. An instance of this matrix type with shape `(M, N)` can be
@@ -121,7 +108,7 @@ pub trait Vector<S: Scalar>:
     /// * Therefore, we already know one of the dimensions (`N`) of this `M`-by-`N` matrix.
     /// * The other dimension (`M`) is determined at runtime, so this type must be
     ///   dynamically-sized.
-    type DMatrixMxN: Matrix<S>;
+    type DMatrixMxN: Matrix<R>;
 
     /// Dynamically-sized `M x N` matrix type of the same "outer" type as
     /// [`crate::Vector::DMatrixMxN`], but with elements of type [`f64`].
@@ -141,7 +128,7 @@ pub trait Vector<S: Scalar>:
     /// * For statically-sized matrices, to know the other dimension (`M`) at compile time, we need
     ///   to provide `M` as a const generic.
     /// * For dynamically-sized matrices, the const generic `M` is not used.
-    type MatrixNxM<const M: usize>: Matrix<S>;
+    type MatrixNxM<const M: usize>: Matrix<R>;
 
     /// Dynmically-sized `N x M` matrix type implementing the [`crate::Matrix`] trait that is
     /// compatible with this vector type. An instance of this matrix type with shape `(N, M)` can be
@@ -154,7 +141,7 @@ pub trait Vector<S: Scalar>:
     /// * Therefore, we already know one of the dimensions (`N`) of this `N`-by-`M` matrix.
     /// * The other dimension (`M`) is determined at runtime, so this type must be
     ///   dynamically-sized.
-    type DMatrixNxM: Matrix<S>;
+    type DMatrixNxM: Matrix<R>;
 
     // -------------------------------
     // Default method implementations.
@@ -562,7 +549,7 @@ pub trait Vector<S: Scalar>:
     /// # Returns
     ///
     /// A vector containing the elements from the slice.
-    fn from_slice(slice: &[S]) -> Self;
+    fn from_slice(slice: &[R]) -> Self;
 
     /// Return a slice view of the vector's elements.
     ///
@@ -572,18 +559,18 @@ pub trait Vector<S: Scalar>:
     /// 
     /// # Note
     /// 
-    /// The slice is returned as a `Cow<[S]>` instead of a `&[S]`. This is because some vector
+    /// The slice is returned as a `Cow<[R]>` instead of a `&[R]`. This is because some vector
     /// implementations do NOT store data contiguously; for example, the columns of a [`faer::Col`]
     /// do NOT have to be contiguous in memory.
     /// 
     /// When the data is not contiguous in memory, this method will first build a vector where the
     /// data is contiguous. Since this vector is a temporary variable, we cannot return a reference
-    /// to its data (e.g. a `&[S]`) since it will be dropped when the method scope ends. In these
-    /// cases, this method will clone the data when returning it in a `Cow<[S]>`.
+    /// to its data (e.g. a `&[R]`) since it will be dropped when the method scope ends. In these
+    /// cases, this method will clone the data when returning it in a `Cow<[R]>`.
     /// 
     /// When the data _is_ contiguous in memory, this method will build the [`Cow`] directly from a
     /// slice of the data. In this case, the data is borrowed, and no cloning occurs.
-    fn as_slice(&self) -> Cow<'_, [S]>;
+    fn as_slice(&self) -> Cow<'_, [R]>;
 
     /// Return the element at the specified index if it exists.
     ///
@@ -594,7 +581,7 @@ pub trait Vector<S: Scalar>:
     /// # Returns
     ///
     /// The element at the specified index, or `None` if `idx` is out of bounds.
-    fn get(&self, idx: usize) -> Option<&S>;
+    fn get(&self, idx: usize) -> Option<&R>;
 
     /// Vector addition (elementwise).
     /// 
@@ -660,14 +647,14 @@ pub trait Vector<S: Scalar>:
     /// 
     /// Product of this vector with the scalar (i.e. `self * scalar` or `scalar * self`).
     #[must_use]
-    fn mul(&self, scalar: S) -> Self;
+    fn mul(&self, scalar: R) -> Self;
 
     /// In-place vector-scalar multiplication (`self * scalar` or `scalar * self`).
     /// 
     /// # Arguments
     /// 
     /// * `scalar` - The scalar to multiply each element of this vector by.
-    fn mul_assign(&mut self, scalar: S);
+    fn mul_assign(&mut self, scalar: R);
 
     /// Vector-scalar division.
     /// 
@@ -679,14 +666,14 @@ pub trait Vector<S: Scalar>:
     /// 
     /// This vector divided by the scalar (i.e. `self / scalar`).
     #[must_use]
-    fn div(&self, scalar: S) -> Self;
+    fn div(&self, scalar: R) -> Self;
 
     /// In-place vector-scalar division (`self / scalar`).
     /// 
     /// # Arguments
     /// 
     /// * `scalar` - The scalar to divide each element of this vector by.
-    fn div_assign(&mut self, scalar: S);
+    fn div_assign(&mut self, scalar: R);
 
     /// Dot product of two vectors.
     /// 
@@ -701,5 +688,5 @@ pub trait Vector<S: Scalar>:
     /// # Panics
     /// 
     /// * If the two vectors do not have the same length.
-    fn dot(&self, other: &Self) -> S;
+    fn dot(&self, other: &Self) -> R;
 }

@@ -18,7 +18,8 @@
 //!
 //! #### Constraints
 //!
-//! 1. **Compatibility with [`Vec<f64>`], as well as types from [`nalgebra`], [`ndarray`], and [`faer`].**
+//! 1. **Compatibility with [`Vec<f64>`], as well as types from [`nalgebra`], [`ndarray`], and
+//!    [`faer`].**
 //!
 //!    As a result, this crate does not require any operator overloads to be implemented for linear
 //!    alegebra types. Different numerical computing crates may have different implementations for
@@ -29,7 +30,7 @@
 //!
 //! 1. **Compatibility with both statically-sized and dynamically-sized types.**
 //!
-//     Most linear algebra types implement the [`Clone`] trait. Statically-sized linear algebra
+//!    Most linear algebra types implement the [`Clone`] trait. Statically-sized linear algebra
 //!    types (e.g. `nalgebra::SVector`) may also implement the [`Copy`] trait, which is often
 //!    preferable to use for those types. However, it can be unsafe to copy dynamically-sized
 //!    types, so to keep [`Vector`] and [`Matrix`] compatible with both statically and
@@ -42,9 +43,9 @@
 //!
 //! | Trait | Implementations on Foreign Types | Implementations on Local Types |
 //! | ----- | -------------------------------- | ------------------------------ |
-//! | [`Scalar`] | [`f64`] and all other types that satisfy its trait bounds. | N/A |
-//! | [`Vector`] | [`Vec<S>`] <BR> [`nalgebra::DVector<S>`] <BR> [`nalgebra::SVector<S, N>`] <BR> [`ndarray::Array1<T>`] <BR> [`faer::Mat<U>`] <BR><BR> Note:<BR>   • `S: Scalar` <BR>   • `T: Scalar + ndarray::ScalarOperand + ndarray::LinalgScalar` <BR>   • `U: Scalar + faer_traits::RealField` <BR> • `N: usize` | N/A |
-//! | [`Matrix`] | [`nalgebra::DMatrix<S>`] <BR> [`nalgebra::SMatrix<S, M, N>`] <BR> [`ndarray::Array2<T>`] <BR> [`faer::Mat<U>`] <BR><BR> Note:<BR>   • `S: Scalar` <BR>   • `T: Scalar + ndarray::ScalarOperand + ndarray::LinalgScalar` <BR>   • `U: Scalar + faer_traits::RealField` <BR>   • `M: usize` <BR>   • `N: usize` | [`Mat<S>`] <BR><BR> Note:<BR>   • `S: Scalar` |
+//! | [`RealField`] | [`f64`] | N/A |
+//! | [`Vector`] | [`Vec<R>`] <BR> [`nalgebra::DVector<R>`] <BR> [`nalgebra::SVector<R, N>`] <BR> [`ndarray::Array1<R>`] <BR> [`faer::Mat<R>`] <BR><BR> Note:<BR>   • `R: RealField` <BR>   • `N: usize` | N/A |
+//! | [`Matrix`] | [`nalgebra::DMatrix<R>`] <BR> [`nalgebra::SMatrix<R, M, N>`] <BR> [`ndarray::Array2<T>`] <BR> [`faer::Mat<U>`] <BR><BR> Note:<BR>   • `R: RealField` <BR>   • `M: usize` <BR>   • `N: usize` | [`Mat<R>`] <BR><BR> Note:<BR>   • `R: RealField` |
 //!
 //! See the [Using with `nalgebra`, `ndarray`, and `faer`](#using-with-nalgebra-ndarray-and-faer)
 //! section further down on this page for information on using the `linalg-traits` crate with types
@@ -53,18 +54,18 @@
 //! # Example
 //!
 //! Let's define a function that takes in a vector and returns a new vector with all the elements
-//! repeated twice. Using the [`Scalar`] and [`Vector`] traits, we can write it in a way that makes
-//! it independent of what types we use to represent scalars and vectors.
+//! repeated twice. Using the [`RealField`] and [`Vector`] traits, we can write it in a way that
+//! makes it independent of what types we use to represent scalars and vectors.
 //!
 //! ```
 //! # #[cfg(feature = "ndarray")]
 //! # {
-//! use linalg_traits::{Scalar, Vector};
+//! use linalg_traits::{RealField, Vector};
 //! use ndarray::{array, Array1};
 //! use numtest::*;
 //!
 //! // Define the function for repeating the elements.
-//! fn repeat_elements<S: Scalar, V: Vector<S>>(v: &V) -> V {
+//! fn repeat_elements<R: RealField, V: Vector<R>>(v: &V) -> V {
 //!     // Create a new vector of the same type but with twice the length.
 //!     let mut v_repeated = V::new_with_length(v.len() * 2);
 //!
@@ -101,10 +102,8 @@
 //!
 //! ```toml
 //! [dependencies]
-//! linalg-traits = { version = "x.y.z", features = ["nalgebra", "ndarray", "faer", "faer-traits"] }
+//! linalg-traits = { version = "x.y.z", features = ["nalgebra", "ndarray", "faer"] }
 //! ```
-//!
-//! Note that the `faer-traits` feature is also required when using [`faer`].
 //!
 //! # Additional notes on use cases
 //!
@@ -123,15 +122,35 @@
 
 // Linter setup.
 #![warn(missing_docs, warnings, clippy::all, clippy::pedantic, clippy::cargo)]
-#![allow(clippy::float_cmp, clippy::unreadable_literal)]
+#![allow(clippy::float_cmp)]
+// Duplicated versions of `equator`, `rand`, `glam`, and `windows-sys` come from `faer`'s internal
+// dependency tree, not from this crate's manifest, so this lint can't be fixed here.
+#![allow(clippy::multiple_crate_versions)]
+#![deny(rustdoc::broken_intra_doc_links)]
 
 // Module declarations.
 pub(crate) mod matrix;
-pub(crate) mod scalar;
+pub mod real_field;
 pub(crate) mod vector;
+pub(crate) mod verification;
+
+// Hidden dependency re-exports used by exported macros.
+#[doc(hidden)]
+pub mod __private {
+    #[cfg(feature = "nalgebra")]
+    pub use approx;
+    #[cfg(feature = "faer")]
+    pub use faer_traits;
+    #[cfg(feature = "nalgebra")]
+    pub use nalgebra;
+    #[cfg(any(feature = "faer", feature = "nalgebra", feature = "ndarray"))]
+    pub use num_traits;
+    #[cfg(feature = "nalgebra")]
+    pub use simba;
+}
 
 // Re-exports.
 pub use crate::matrix::mat::Mat;
 pub use crate::matrix::matrix_trait::Matrix;
-pub use crate::scalar::{Scalar, ScalarBase};
+pub use crate::real_field::real_field::RealField;
 pub use crate::vector::vector_trait::Vector;

@@ -1,0 +1,24 @@
+[package]
+name = "linalg-traits-example"
+version = "0.0.0"
+authors = ["Tamas Kis"]
+edition = "2024"
+publish = false
+
+[features]
+faer = ["dep:faer-traits", "linalg-traits/faer"]
+nalgebra = [
+	"dep:nalgebra",
+	"linalg-traits/nalgebra",
+]
+ndarray = ["dep:ndarray", "linalg-traits/ndarray"]
+
+[dependencies]
+faer-traits = { version = "0.24.0", optional = true }
+linalg-traits = { path = ".." }
+nalgebra = { version = "0.35.0", optional = true }
+ndarray = { version = "0.17.2", optional = true }
+
+# These are only used conditionally via feature flags, so cargo-machete can't detect their usage.
+[package.metadata.cargo-machete]
+ignored = ["faer-traits", "nalgebra", "ndarray"]

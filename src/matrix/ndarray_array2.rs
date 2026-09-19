@@ -1,14 +1,14 @@
-use crate::{Matrix, Scalar};
-use ndarray::{Array1, Array2, LinalgScalar, ScalarOperand};
+use crate::{Matrix, RealField};
+use ndarray::{Array1, Array2};
 use std::borrow::Cow;
 
-impl<S> Matrix<S> for Array2<S>
+impl<R> Matrix<R> for Array2<R>
 where
-    S: Scalar + ScalarOperand + LinalgScalar,
+    R: RealField,
 {
-    type VectorM = Array1<S>;
+    type VectorM = Array1<R>;
 
-    type VectorN = Array1<S>;
+    type VectorN = Array1<R>;
 
     fn is_statically_sized() -> bool {
         false
@@ -34,7 +34,7 @@ where
         (self.nrows(), self.ncols())
     }
 
-    fn from_row_slice(rows: usize, cols: usize, slice: &[S]) -> Self {
+    fn from_row_slice(rows: usize, cols: usize, slice: &[R]) -> Self {
         assert_eq!(
             slice.len(),
             rows * cols,
@@ -47,7 +47,7 @@ where
             .expect("Failed to create Array2 from slice")
     }
 
-    fn from_col_slice(rows: usize, cols: usize, slice: &[S]) -> Self {
+    fn from_col_slice(rows: usize, cols: usize, slice: &[R]) -> Self {
         assert_eq!(
             slice.len(),
             rows * cols,
@@ -65,14 +65,14 @@ where
         Array2::from_shape_vec((rows, cols), data).unwrap()
     }
 
-    fn as_slice(&self) -> Cow<'_, [S]> {
+    fn as_slice(&self) -> Cow<'_, [R]> {
         match self.as_slice_memory_order() {
             Some(slice) => Cow::Borrowed(slice),
             None => Cow::Owned(self.iter().copied().collect()),
         }
     }
 
-    fn get(&self, index: (usize, usize)) -> Option<&S> {
+    fn get(&self, index: (usize, usize)) -> Option<&R> {
         let (row, col) = index;
         if row < self.nrows() && col < self.ncols() {
             Some(&self[(row, col)])
@@ -97,19 +97,19 @@ where
         *self -= other;
     }
 
-    fn mul(&self, scalar: S) -> Self {
+    fn mul(&self, scalar: R) -> Self {
         self * scalar
     }
 
-    fn mul_assign(&mut self, scalar: S) {
+    fn mul_assign(&mut self, scalar: R) {
         *self *= scalar;
     }
 
-    fn div(&self, scalar: S) -> Self {
+    fn div(&self, scalar: R) -> Self {
         self / scalar
     }
 
-    fn div_assign(&mut self, scalar: S) {
+    fn div_assign(&mut self, scalar: R) {
         *self /= scalar;
     }
 }

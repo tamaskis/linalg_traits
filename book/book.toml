@@ -3,3 +3,14 @@ authors = ["Tamas Kis"]
 language = "en"
 src = "src"
 title = "linalg-traits"
+
+# Automatically generates table of contents using a `<!-- toc -->` marker.
+#   --> Note: requires `cargo install mdbook-toc`.
+[preprocessor.toc]
+command = "mdbook-toc"
+renderer = ["html"]
+
+# Better LaTeX support using KaTeX.
+#   --> Note: requires `cargo install mdbook-katex`.
+[preprocessor.katex]
+after = ["links"]

@@ -6,6 +6,8 @@ on:
 
 env:
   CARGO_TERM_COLOR: always  # Color cargo commands and output.
+  RUST_BACKTRACE: "1" # Print a stack backstrace when a panic occurs.
+  RUSTFLAGS: "-Dwarnings"   # Fail on `rustc` warnings.
 
 jobs:
 
@@ -15,13 +17,24 @@ jobs:
     steps:
       - name: Checkout  # Checkout this repo's code.
         uses: actions/checkout@v4
-      - name: Install # Install nightly toolchain.
-        run: rustup update nightly && rustup default nightly
-      - name: Lock latest # Generate new lock file using latest versions of dependencies.
-        run: cargo generate-lockfile
-      - name: Test latest # Test using latest dependencies.
-        run: RUST_BACKTRACE=1 cargo test --locked --all-features --verbose
+      - name: Install nightly toolchain # Install nightly toolchain.
+        run: rustup update nightly
+      - name: Get MSRV # Get the minimum supported Rust version from the crate's metadata.
+        id: msrv
+        run: |
+          version=$(cargo metadata --no-deps --format-version 1 | jq -r '.packages[0].rust_version')
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+      - name: Install MSRV # Install the minimum supported Rust version.
+        run: rustup toolchain install "${{ steps.msrv.outputs.version }}"
       - name: Lock minimal  # Generate new lock file using minimum allowed versions of dependencies.
-        run: cargo generate-lockfile -Z minimal-versions
-      - name: Check minimal  # Check compilation using minimal dependencies.
-        run: cargo check --locked --all-features
+        run: |
+          rm Cargo.lock
+          cargo +nightly generate-lockfile -Z minimal-versions
+      - name: Test minimal  # Test using the minimum supported Rust version and minimum allowed versions of dependencies.
+        run: cargo +"${{ steps.msrv.outputs.version }}" test --workspace --locked --verbose --all-features
+      - name: Lock latest # Generate new lock file using latest versions of dependencies.
+        run: |
+          rm Cargo.lock
+          cargo +nightly generate-lockfile
+      - name: Test latest # Test using nightly Rust version and latest dependencies.
+        run: cargo +nightly test --workspace --locked --verbose --all-features
