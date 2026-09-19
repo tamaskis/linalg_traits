@@ -203,7 +203,7 @@ macro_rules! __impl_base_cmp_f64_rhs {
             }
         }
 
-        // T partial_cmp f64
+        // T (<, <=, >, >=) f64
         impl PartialOrd<f64> for $t
         where
             $t: $crate::real_field::RealFieldBase,
@@ -333,6 +333,82 @@ macro_rules! __impl_base_cmp_f64_lhs {
 /// This macro implements the following operations for a type `T` that implements
 /// [`crate::real_field::RealFieldBase`]:
 ///
+/// * `T op T`
+///
+/// where `op` is each of `==`, `!=`, `<`, `<=`, `>`, `>=`.
+///
+/// # Generic Arguments
+///
+/// * `$t` - The type for which to implement the operations listed above.
+#[doc(hidden)]
+#[macro_export]
+macro_rules! __impl_base_cmp {
+    ($t:ty) => {
+        // T == T
+        impl PartialEq for $t
+        where
+            $t: $crate::real_field::RealFieldBase,
+        {
+            #[inline]
+            fn eq(&self, other: &Self) -> bool {
+                $crate::real_field::RealFieldBase::_eq(*self, *other)
+            }
+        }
+
+        // T partial_cmp T
+        impl PartialOrd for $t
+        where
+            $t: $crate::real_field::RealFieldBase,
+        {
+            #[inline]
+            fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+                $crate::real_field::RealFieldBase::_partial_cmp(*self, *other)
+            }
+        }
+    };
+}
+
+/// This macro implements the following operations for a type `T` that implements
+/// [`crate::real_field::RealFieldBase`]:
+///
+/// * `-T`
+/// * `-&T`
+///
+/// # Generic Arguments
+///
+/// * `$t` - The type for which to implement the operations listed above.
+#[doc(hidden)]
+#[macro_export]
+macro_rules! __impl_base_neg {
+    ($t:ty) => {
+        // -T
+        impl std::ops::Neg for $t {
+            type Output = $t;
+
+            #[inline]
+            fn neg(self) -> Self::Output {
+                $crate::real_field::RealFieldBase::_neg(self)
+            }
+        }
+
+        // -&T
+        impl std::ops::Neg for &$t
+        where
+            $t: $crate::real_field::RealFieldBase,
+        {
+            type Output = $t;
+
+            #[inline]
+            fn neg(self) -> Self::Output {
+                $crate::real_field::RealFieldBase::_neg(*self)
+            }
+        }
+    };
+}
+
+/// This macro implements the following operations for a type `T` that implements
+/// [`crate::real_field::RealFieldBase`]:
+///
 /// * `-T`
 /// * `-&T`
 /// * `T op T`
@@ -379,59 +455,14 @@ macro_rules! impl_real_field_operations {
         // Comparisons.
         // ------------
 
-        // TODO: these things should be in dedicated macros
+        // Comparisons between T's.
+        $crate::__impl_base_cmp!($t);
 
-        // ==, !=
-        impl PartialEq for $t
-        where
-            $t: $crate::real_field::RealFieldBase,
-        {
-            #[inline]
-            fn eq(&self, other: &Self) -> bool {
-                $crate::real_field::RealFieldBase::_eq(*self, *other)
-            }
-        }
-
-        // T == f64
+        // Comparisons between T and an f64 RHS.
         $crate::__impl_base_cmp_f64_rhs!($t);
 
-        // <, <=, >, >=
-        impl PartialOrd for $t
-        where
-            $t: $crate::real_field::RealFieldBase,
-        {
-            #[inline]
-            fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-                $crate::real_field::RealFieldBase::_partial_cmp(*self, *other)
-            }
-        }
-
-        // ---------------
         // Unary negation.
-        // ---------------
-
-        // -T
-        impl Neg for $t {
-            type Output = $t;
-
-            #[inline]
-            fn neg(self) -> Self::Output {
-                $crate::real_field::RealFieldBase::_neg(self)
-            }
-        }
-
-        // -&T
-        impl Neg for &$t
-        where
-            $t: $crate::real_field::RealFieldBase,
-        {
-            type Output = $t;
-
-            #[inline]
-            fn neg(self) -> Self::Output {
-                $crate::real_field::RealFieldBase::_neg(*self)
-            }
-        }
+        $crate::__impl_base_neg!($t);
 
         // ----------------------------------------------------
         // Operations with `T` LHS and either `T` or `f64` RHS.

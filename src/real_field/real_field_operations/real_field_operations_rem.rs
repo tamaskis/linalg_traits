@@ -1,5 +1,8 @@
+use crate::verify_trait_implemented;
 use imply_hack::Imply;
 use std::ops::{Rem, RemAssign};
+
+const _: bool = verify_trait_implemented!(f64: RealFieldOperationsRem);
 
 /// Remainder operations.
 ///

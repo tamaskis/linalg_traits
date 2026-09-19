@@ -19,6 +19,8 @@ jobs:
         uses: peaceiris/actions-mdbook@v2
         with:
           mdbook-version: 'latest'
+      - name: Install mdbook-toc # Install mdbook-toc plugin.
+        run: cargo install mdbook-toc
       - name: Build  # Build the book.
         run: mdbook build book
       - name: Deploy   # Deploy the book on GitHub pages.

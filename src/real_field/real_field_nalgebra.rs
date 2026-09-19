@@ -1,3 +1,9 @@
+use crate::verify_trait_implemented;
+
+// Verify at compile time that the `RealFieldNalgebra` trait is successfully implemented for `f64`
+// via the blanket implementation provided by this crate.
+const _: bool = verify_trait_implemented!(f64: RealFieldNalgebra);
+
 /// Additional requirements to add on top of [`crate::real_field::RealFieldBase`] to make a type
 /// compatible with [`nalgebra`] when the `nalgebra` feature is enabled.
 ///

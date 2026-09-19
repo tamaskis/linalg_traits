@@ -28,6 +28,6 @@ pub use real_field_operations::real_field_operations_ref_ops::RealFieldOperation
 pub use real_field_operations::real_field_operations_ref_ops::RefOps;
 pub use real_field_operations::real_field_operations_rem::RealFieldOperationsRem;
 pub use testing::{
-    assert_base, assert_f64_interop, assert_f64_lhs_ops, assert_f64_rhs_ops,
-    assert_real_field_operations,
+    assert_base, assert_f64_conversions, assert_f64_lhs_ops, assert_f64_rhs_ops,
+    assert_no_trait_disambiguation_needed, assert_real_field_operations,
 };

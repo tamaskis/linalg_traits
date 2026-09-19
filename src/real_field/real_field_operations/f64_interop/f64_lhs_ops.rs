@@ -2,6 +2,8 @@ use crate::verify_trait_implemented;
 use imply_hack::Imply;
 use std::ops::{Add, Div, Mul, Rem, Sub};
 
+// Verify at compile time that the `F64LhsOpsBase` trait is successfully implemented for `f64` via
+// the blanket implementation provided by this crate.
 const _: bool = verify_trait_implemented!(f64: F64LhsOpsBase<f64>);
 
 /// Operations between `f64` (LHS) and `T` (RHS).

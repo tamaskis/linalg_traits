@@ -5,8 +5,11 @@ use crate::real_field::real_field_faer::RealFieldFaer;
 use crate::real_field::real_field_nalgebra::RealFieldNalgebra;
 use crate::real_field::real_field_ndarray::RealFieldNdarray;
 use crate::real_field::real_field_operations::real_field_operations::RealFieldOperations;
+use crate::verify_trait_implemented;
 
-// TODO: test that all simd methods behave identically to corresponding non-simd methods
+// Verify at compile time that the `RealField` trait is successfully implemented for `f64` via the
+// blanket implementation provided by this crate.
+const _: bool = verify_trait_implemented!(f64: RealField);
 
 /// Trait defining a generic real number type.
 ///

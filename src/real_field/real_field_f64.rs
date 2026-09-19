@@ -1,10 +1,9 @@
-use crate::real_field::real_field::RealField;
 use crate::real_field::real_field_base::RealFieldBase;
 use crate::verify_trait_implemented;
 
-// Verify at compile time that the `RealField` trait is successfully implemented for `f64` via the
-// blanket implementation provided by this crate.
-const _: bool = verify_trait_implemented!(f64: RealField);
+// Verify at compile time that the `RealFieldBase` trait is successfully implemented for `f64` by
+// this crate.
+const _: bool = verify_trait_implemented!(f64: RealFieldBase);
 
 // Implement the `RealFieldBase` trait for `f64`.
 //
