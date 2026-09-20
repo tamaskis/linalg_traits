@@ -3,6 +3,8 @@ use crate::real_field::real_field_operations::f64_interop::f64_rhs_ops::F64RhsOp
 use crate::verify_trait_implemented;
 use imply_hack::Imply;
 
+// Verify at compile time that the `F64Interop` trait is successfully implemented for `f64` via the
+// blanket implementation provided by this crate.
 const _: bool = verify_trait_implemented!(f64: F64Interop);
 
 /// Trait defining the interoperability of a generic type `T` with [`f64`].

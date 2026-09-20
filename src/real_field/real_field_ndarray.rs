@@ -1,3 +1,9 @@
+use crate::verify_trait_implemented;
+
+// Verify at compile time that the `RealFieldNdarray` trait is successfully implemented for `f64`
+// via the blanket implementation provided by this crate.
+const _: bool = verify_trait_implemented!(f64: RealFieldNdarray);
+
 /// Additional requirements to add on top of [`crate::real_field::RealFieldBase`] to make a type
 /// compatible with [`ndarray`] when the `ndarray` feature is enabled.
 ///

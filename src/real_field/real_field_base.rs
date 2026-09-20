@@ -2,9 +2,6 @@
 
 use crate::real_field::base::Base;
 
-// TODO everything in this crate has to be unit tested, and we should check that in a generic
-// context we don't have to disambiguate
-
 /// Trait defining most functionality of a real number.
 ///
 /// This is a separate trait because the fully-fledged [`crate::RealField`] trait includes
@@ -1426,4 +1423,617 @@ pub trait RealFieldBase: Base {
     /// [dual number](https://docs.rs/numdiff/latest/numdiff/struct.Dual.html) that is substituted
     /// in place of a single real number for forward mode automatic differentiation.
     fn _as_slice(&self) -> &[f64];
+}
+
+#[cfg(test)]
+#[allow(clippy::used_underscore_items)]
+mod tests {
+    use super::RealFieldBase;
+    use std::num::FpCategory;
+
+    fn assert_close(actual: f64, expected: f64) {
+        assert!(
+            (actual.is_nan() && expected.is_nan())
+                || (actual - expected).abs() <= f64::EPSILON * 4.0 * expected.abs().max(1.0)
+        );
+    }
+
+    #[test]
+    fn test_from_f64() {
+        assert_eq!(f64::_from_f64(2.5), 2.5);
+    }
+
+    #[test]
+    fn test_to_f64() {
+        assert_eq!(2.5_f64._to_f64(), 2.5);
+    }
+
+    #[test]
+    fn test_neg() {
+        assert_eq!((-2.5_f64)._neg(), 2.5);
+    }
+
+    #[test]
+    fn test_add() {
+        assert_eq!(2.5_f64._add(1.5), 4.0);
+    }
+
+    #[test]
+    fn test_sub() {
+        assert_eq!(2.5_f64._sub(1.5), 1.0);
+    }
+
+    #[test]
+    fn test_mul() {
+        assert_eq!(2.5_f64._mul(1.5), 3.75);
+    }
+
+    #[test]
+    fn test_div() {
+        assert_eq!(3.0_f64._div(2.0), 1.5);
+    }
+
+    #[test]
+    fn test_rem() {
+        assert_eq!(3.5_f64._rem(2.0), 1.5);
+    }
+
+    #[test]
+    fn test_eq() {
+        assert!(2.0_f64._eq(2.0));
+    }
+
+    #[test]
+    fn test_partial_cmp() {
+        assert_eq!(2.0_f64._partial_cmp(3.0), Some(std::cmp::Ordering::Less));
+    }
+
+    #[test]
+    fn test_zero() {
+        assert_eq!(f64::_zero(), 0.0);
+    }
+
+    #[test]
+    fn test_is_zero() {
+        assert!(0.0_f64._is_zero());
+    }
+
+    #[test]
+    fn test_set_zero() {
+        let mut value = 3.0;
+        value._set_zero();
+        assert_eq!(value, 0.0);
+    }
+
+    #[test]
+    fn test_one() {
+        assert_eq!(f64::_one(), 1.0);
+    }
+
+    #[test]
+    fn test_is_one() {
+        assert!(1.0_f64._is_one());
+    }
+
+    #[test]
+    fn test_set_one() {
+        let mut value = 3.0;
+        value._set_one();
+        assert_eq!(value, 1.0);
+    }
+
+    #[test]
+    fn test_e() {
+        assert_eq!(f64::_e(), std::f64::consts::E);
+    }
+    #[test]
+    fn test_pi() {
+        assert_eq!(f64::_pi(), std::f64::consts::PI);
+    }
+    #[test]
+    fn test_tau() {
+        assert_eq!(f64::_tau(), std::f64::consts::TAU);
+    }
+    #[test]
+    fn test_two_pi() {
+        assert_eq!(f64::_two_pi(), std::f64::consts::TAU);
+    }
+    #[test]
+    fn test_euler_gamma() {
+        assert_eq!(f64::_euler_gamma(), 0.577_215_664_901_532_9);
+    }
+    #[test]
+    fn test_golden_ratio() {
+        assert_eq!(f64::_golden_ratio(), 1.618_033_988_749_895);
+    }
+    #[test]
+    fn test_frac_1_pi() {
+        assert_eq!(f64::_frac_1_pi(), 1.0 / std::f64::consts::PI);
+    }
+    #[test]
+    fn test_frac_2_pi() {
+        assert_eq!(f64::_frac_2_pi(), 2.0 / std::f64::consts::PI);
+    }
+    #[test]
+    fn test_frac_pi_2() {
+        assert_eq!(f64::_frac_pi_2(), std::f64::consts::PI / 2.0);
+    }
+    #[test]
+    fn test_frac_pi_3() {
+        assert_close(f64::_frac_pi_3(), std::f64::consts::PI / 3.0);
+    }
+    #[test]
+    fn test_frac_pi_4() {
+        assert_close(f64::_frac_pi_4(), std::f64::consts::PI / 4.0);
+    }
+    #[test]
+    fn test_frac_pi_6() {
+        assert_close(f64::_frac_pi_6(), std::f64::consts::PI / 6.0);
+    }
+    #[test]
+    fn test_frac_pi_8() {
+        assert_close(f64::_frac_pi_8(), std::f64::consts::PI / 8.0);
+    }
+    #[test]
+    fn test_frac_2_sqrt_pi() {
+        assert_close(f64::_frac_2_sqrt_pi(), 2.0 / std::f64::consts::PI.sqrt());
+    }
+    #[test]
+    fn test_frac_1_sqrt_pi() {
+        assert_close(f64::_frac_1_sqrt_pi(), 1.0 / std::f64::consts::PI.sqrt());
+    }
+    #[test]
+    fn test_ln_2() {
+        assert_eq!(f64::_ln_2(), std::f64::consts::LN_2);
+    }
+    #[test]
+    fn test_ln_10() {
+        assert_eq!(f64::_ln_10(), std::f64::consts::LN_10);
+    }
+    #[test]
+    fn test_log2_e() {
+        assert_eq!(f64::_log2_e(), std::f64::consts::LOG2_E);
+    }
+    #[test]
+    fn test_log10_e() {
+        assert_eq!(f64::_log10_e(), std::f64::consts::LOG10_E);
+    }
+    #[test]
+    fn test_log2_10() {
+        assert_eq!(f64::_log2_10(), std::f64::consts::LOG2_10);
+    }
+    #[test]
+    fn test_log10_2() {
+        assert_eq!(f64::_log10_2(), std::f64::consts::LOG10_2);
+    }
+    #[test]
+    fn test_sqrt_2() {
+        assert_eq!(f64::_sqrt_2(), std::f64::consts::SQRT_2);
+    }
+    #[test]
+    fn test_sqrt_3() {
+        assert_close(f64::_sqrt_3(), 3.0_f64.sqrt());
+    }
+    #[test]
+    fn test_sqrt_5() {
+        assert_close(f64::_sqrt_5(), 5.0_f64.sqrt());
+    }
+    #[test]
+    fn test_frac_1_sqrt_2() {
+        assert_eq!(f64::_frac_1_sqrt_2(), std::f64::consts::FRAC_1_SQRT_2);
+    }
+    #[test]
+    fn test_frac_1_sqrt_3() {
+        assert_close(f64::_frac_1_sqrt_3(), 1.0 / 3.0_f64.sqrt());
+    }
+    #[test]
+    fn test_frac_1_sqrt_5() {
+        assert_close(f64::_frac_1_sqrt_5(), 1.0 / 5.0_f64.sqrt());
+    }
+    #[test]
+    fn test_frac_1_sqrt_2pi() {
+        assert_close(
+            f64::_frac_1_sqrt_2pi(),
+            1.0 / (2.0 * std::f64::consts::PI).sqrt(),
+        );
+    }
+
+    #[test]
+    fn test_abs() {
+        assert_eq!((-2.5_f64)._abs(), 2.5);
+    }
+
+    #[test]
+    fn test_hypot() {
+        assert_eq!(3.0_f64._hypot(4.0), 5.0);
+    }
+
+    #[test]
+    fn test_scale() {
+        assert_eq!(2.0_f64._scale(3.0), 6.0);
+    }
+
+    #[test]
+    fn test_unscale() {
+        assert_eq!(6.0_f64._unscale(3.0), 2.0);
+    }
+
+    #[test]
+    fn test_recip() {
+        assert_eq!(2.0_f64._recip(), 0.5);
+    }
+
+    #[test]
+    fn test_mul_add() {
+        assert_eq!(2.0_f64._mul_add(3.0, 4.0), 10.0);
+    }
+
+    #[test]
+    fn test_sqrt() {
+        assert_eq!(4.0_f64._sqrt(), 2.0);
+    }
+
+    #[test]
+    fn test_try_sqrt() {
+        assert_eq!((-1.0_f64)._try_sqrt(), None);
+        assert_eq!(4.0_f64._try_sqrt(), Some(2.0));
+    }
+
+    #[test]
+    fn test_cbrt() {
+        assert_eq!(8.0_f64._cbrt(), 2.0);
+    }
+
+    #[test]
+    fn test_powi() {
+        assert_eq!(2.0_f64._powi(3), 8.0);
+    }
+
+    #[test]
+    fn test_powf() {
+        assert_close(8.0_f64._powf(1.0 / 3.0), 2.0);
+    }
+
+    #[test]
+    fn test_exp() {
+        assert_close(1.0_f64._exp(), std::f64::consts::E);
+    }
+    #[test]
+    fn test_exp2() {
+        assert_eq!(2.0_f64._exp2(), 4.0);
+    }
+    #[test]
+    fn test_exp_m1() {
+        assert_close(1.0_f64._exp_m1(), std::f64::consts::E - 1.0);
+    }
+    #[test]
+    fn test_ln() {
+        assert_close(std::f64::consts::E._ln(), 1.0);
+    }
+    #[test]
+    fn test_ln_1p() {
+        assert_close(1.0_f64._ln_1p(), 2.0_f64.ln());
+    }
+    #[test]
+    fn test_log() {
+        assert_eq!(8.0_f64._log(2.0), 3.0);
+    }
+    #[test]
+    fn test_log2() {
+        assert_eq!(8.0_f64._log2(), 3.0);
+    }
+    #[test]
+    fn test_log10() {
+        assert_eq!(100.0_f64._log10(), 2.0);
+    }
+
+    #[test]
+    fn test_to_radians() {
+        assert_eq!(180.0_f64._to_radians(), std::f64::consts::PI);
+    }
+    #[test]
+    fn test_to_degrees() {
+        assert_eq!(std::f64::consts::PI._to_degrees(), 180.0);
+    }
+
+    #[test]
+    fn test_sin() {
+        assert_close(0.5_f64._sin(), 0.5_f64.sin());
+    }
+
+    #[test]
+    fn test_cos() {
+        assert_close(0.5_f64._cos(), 0.5_f64.cos());
+    }
+
+    #[test]
+    fn test_sin_cos() {
+        assert_eq!(0.5_f64._sin_cos(), 0.5_f64.sin_cos());
+    }
+
+    #[test]
+    fn test_tan() {
+        assert_close(0.5_f64._tan(), 0.5_f64.tan());
+    }
+
+    #[test]
+    fn test_csc() {
+        assert_close(0.5_f64._csc(), 0.5_f64.sin().recip());
+    }
+
+    #[test]
+    fn test_sec() {
+        assert_close(0.5_f64._sec(), 0.5_f64.cos().recip());
+    }
+
+    #[test]
+    fn test_cot() {
+        assert_close(0.5_f64._cot(), 0.5_f64.cos() / 0.5_f64.sin());
+    }
+
+    #[test]
+    fn test_asin() {
+        assert_close(0.5_f64._asin(), 0.5_f64.asin());
+    }
+    #[test]
+    fn test_acos() {
+        assert_close(0.5_f64._acos(), 0.5_f64.acos());
+    }
+    #[test]
+    fn test_atan() {
+        assert_close(0.5_f64._atan(), 0.5_f64.atan());
+    }
+    #[test]
+    fn test_atan2() {
+        assert_close(0.5_f64._atan2(1.0), 0.5_f64.atan2(1.0));
+    }
+    #[test]
+    fn test_acsc() {
+        assert_close(2.0_f64._acsc(), (0.5_f64).asin());
+    }
+    #[test]
+    fn test_asec() {
+        assert_close(2.0_f64._asec(), (0.5_f64).acos());
+    }
+    #[test]
+    fn test_acot() {
+        assert_close(2.0_f64._acot(), (0.5_f64).atan());
+    }
+
+    #[test]
+    fn test_sind() {
+        assert_close(30.0_f64._sind(), 0.5);
+    }
+    #[test]
+    fn test_cosd() {
+        assert_close(60.0_f64._cosd(), 0.5);
+    }
+    #[test]
+    fn test_sind_cosd() {
+        let (sind, cosd) = 30.0_f64._sind_cosd();
+        assert_close(sind, 30.0_f64.to_radians().sin());
+        assert_close(cosd, 30.0_f64.to_radians().cos());
+    }
+    #[test]
+    fn test_tand() {
+        assert_close(45.0_f64._tand(), 1.0);
+    }
+    #[test]
+    fn test_cscd() {
+        assert_close(2.0_f64._cscd(), 2.0_f64.to_radians().sin().recip());
+    }
+    #[test]
+    fn test_secd() {
+        assert_close(60.0_f64._secd(), 2.0);
+    }
+    #[test]
+    fn test_cotd() {
+        assert_close(45.0_f64._cotd(), 1.0);
+    }
+    #[test]
+    fn test_asind() {
+        assert_close(0.5_f64._asind(), 30.0);
+    }
+    #[test]
+    fn test_acosd() {
+        assert_close(0.5_f64._acosd(), 60.0);
+    }
+    #[test]
+    fn test_atand() {
+        assert_close(1.0_f64._atand(), 45.0);
+    }
+    #[test]
+    fn test_atan2d() {
+        assert_close(1.0_f64._atan2d(1.0), 45.0);
+    }
+    #[test]
+    fn test_acscd() {
+        assert_close(2.0_f64._acscd(), 30.0);
+    }
+    #[test]
+    fn test_asecd() {
+        assert_close(2.0_f64._asecd(), 60.0);
+    }
+    #[test]
+    fn test_acotd() {
+        assert_close(1.0_f64._acotd(), 45.0);
+    }
+
+    #[test]
+    fn test_sinh() {
+        assert_close(0.5_f64._sinh(), 0.5_f64.sinh());
+    }
+    #[test]
+    fn test_cosh() {
+        assert_close(0.5_f64._cosh(), 0.5_f64.cosh());
+    }
+    #[test]
+    fn test_sinh_cosh() {
+        assert_eq!(0.5_f64._sinh_cosh(), (0.5_f64.sinh(), 0.5_f64.cosh()));
+    }
+    #[test]
+    fn test_tanh() {
+        assert_close(0.5_f64._tanh(), 0.5_f64.tanh());
+    }
+    #[test]
+    fn test_csch() {
+        assert_close(2.0_f64._csch(), 1.0 / 2.0_f64.sinh());
+    }
+    #[test]
+    fn test_sech() {
+        assert_close(2.0_f64._sech(), 1.0 / 2.0_f64.cosh());
+    }
+    #[test]
+    fn test_coth() {
+        assert_close(2.0_f64._coth(), 2.0_f64.cosh() / 2.0_f64.sinh());
+    }
+    #[test]
+    fn test_asinh() {
+        assert_close(0.5_f64._asinh(), 0.5_f64.asinh());
+    }
+    #[test]
+    fn test_acosh() {
+        assert_close(2.0_f64._acosh(), 2.0_f64.acosh());
+    }
+    #[test]
+    fn test_atanh() {
+        assert_close(0.5_f64._atanh(), 0.5_f64.atanh());
+    }
+    #[test]
+    fn test_acsch() {
+        assert_close(2.0_f64._acsch(), 0.5_f64.asinh());
+    }
+    #[test]
+    fn test_asech() {
+        assert_close(2.0_f64._asech(), 0.5_f64.acosh());
+    }
+    #[test]
+    fn test_acoth() {
+        assert_close(2.0_f64._acoth(), 0.5_f64.atanh());
+    }
+
+    #[test]
+    fn test_floor() {
+        assert_eq!((-1.5_f64)._floor(), -2.0);
+    }
+    #[test]
+    fn test_ceil() {
+        assert_eq!((-1.5_f64)._ceil(), -1.0);
+    }
+    #[test]
+    fn test_round() {
+        assert_eq!(1.5_f64._round(), 2.0);
+    }
+    #[test]
+    fn test_trunc() {
+        assert_eq!((-1.5_f64)._trunc(), -1.0);
+    }
+    #[test]
+    fn test_fract() {
+        assert_eq!((-1.5_f64)._fract(), -0.5);
+    }
+
+    #[test]
+    fn test_copysign() {
+        assert_eq!((-2.0_f64)._copysign(1.0), 2.0);
+    }
+    #[test]
+    fn test_min() {
+        assert_eq!(2.0_f64._min(3.0), 2.0);
+    }
+    #[test]
+    fn test_max() {
+        assert_eq!(2.0_f64._max(3.0), 3.0);
+    }
+    #[test]
+    fn test_clamp() {
+        assert_eq!(2.0_f64._clamp(1.0, 2.0), 2.0);
+    }
+
+    #[test]
+    fn test_is_nan() {
+        assert!(f64::NAN._is_nan());
+    }
+    #[test]
+    fn test_is_infinite() {
+        assert!(f64::INFINITY._is_infinite());
+    }
+    #[test]
+    fn test_is_finite() {
+        assert!(1.0_f64._is_finite());
+    }
+    #[test]
+    fn test_is_subnormal() {
+        assert!((f64::MIN_POSITIVE / 2.0)._is_subnormal());
+    }
+    #[test]
+    fn test_is_normal() {
+        assert!(1.0_f64._is_normal());
+    }
+    #[test]
+    fn test_classify() {
+        assert_eq!(0.0_f64._classify(), FpCategory::Zero);
+    }
+    #[test]
+    fn test_is_sign_negative() {
+        assert!((-0.0_f64)._is_sign_negative());
+    }
+    #[test]
+    fn test_is_sign_positive() {
+        assert!(0.0_f64._is_sign_positive());
+    }
+    #[test]
+    fn test_next_up() {
+        assert_eq!(1.0_f64._next_up(), 1.0_f64.next_up());
+    }
+    #[test]
+    fn test_next_down() {
+        assert_eq!(1.0_f64._next_down(), 1.0_f64.next_down());
+    }
+
+    #[test]
+    fn test_epsilon() {
+        assert_eq!(f64::_epsilon(), f64::EPSILON);
+    }
+    #[test]
+    fn test_bits() {
+        assert_eq!(f64::_bits(), 64);
+    }
+    #[test]
+    fn test_min_positive() {
+        assert_eq!(f64::_min_positive(), f64::MIN_POSITIVE);
+    }
+    #[test]
+    fn test_max_positive() {
+        assert_eq!(f64::_max_positive(), f64::MAX);
+    }
+    #[test]
+    fn test_sqrt_min_positive() {
+        assert_eq!(f64::_sqrt_min_positive(), f64::MIN_POSITIVE.sqrt());
+    }
+    #[test]
+    fn test_sqrt_max_positive() {
+        assert_eq!(f64::_sqrt_max_positive(), f64::MAX.sqrt());
+    }
+    #[test]
+    fn test_min_value() {
+        assert_eq!(f64::_min_value(), Some(f64::MIN));
+    }
+    #[test]
+    fn test_max_value() {
+        assert_eq!(f64::_max_value(), Some(f64::MAX));
+    }
+    #[test]
+    fn test_nan() {
+        assert!(f64::_nan()._is_nan());
+    }
+    #[test]
+    fn test_infinity() {
+        assert_eq!(f64::_infinity(), f64::INFINITY);
+    }
+
+    #[test]
+    fn test_as_slice() {
+        assert_eq!(1.0_f64._as_slice(), &[1.0]);
+    }
 }
