@@ -10,9 +10,9 @@ impl<R, const M: usize, const N: usize> Matrix<R> for SMatrix<R, M, N>
 where
     R: RealField,
 {
-    type VectorM = RowSVector<R, M>;
+    type RowVector = RowSVector<R, M>;
 
-    type VectorN = SVector<R, N>;
+    type Vector = SVector<R, N>;
 
     fn is_statically_sized() -> bool {
         true

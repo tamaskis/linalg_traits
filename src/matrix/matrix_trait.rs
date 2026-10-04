@@ -1,4 +1,4 @@
-use crate::{RealField, RowVector, Vector};
+use crate::RealField;
 use std::borrow::Cow;
 use std::fmt::Debug;
 use std::ops::{Index, IndexMut};
@@ -45,13 +45,13 @@ pub trait Matrix<R: RealField>:
     /// matrix type. An instance of this matrix type with shape `(M, N)` can be multiplied from the
     /// right by an instance of this vector type with length `N`, resulting in an instance of this
     /// vector type with length `M` (mathematically representing a column vector).
-    type VectorN: Vector<R>;
+    type Vector: crate::Vector<R>;
 
     /// Length-`M` row vector type implementing the [`crate::RowVector`] trait that is compatible
     /// with this matrix type. An instance of this matrix type with shape `(M, N)` can be multiplied
     /// from the left by an instance of this vector type with length `M`, resulting in an instance
     /// of this vector type with length `N`.
-    type VectorM: RowVector<R>;
+    type RowVector: crate::RowVector<R>;
 
     // -------------------------------
     // Default method implementations.
@@ -77,7 +77,7 @@ pub trait Matrix<R: RealField>:
     /// let mat: SMatrix<f64, 3, 2> = SMatrix::new_with_shape(3, 2);
     /// 
     /// // Create a statically-sized length-2 vector.
-    /// let vec: SVector<f64, 2> = mat.new_vector_n();
+    /// let vec: SVector<f64, 2> = mat.new_vector();
     /// assert_eq!(vec.len(), 2);
     /// # }
     /// ```
@@ -94,13 +94,13 @@ pub trait Matrix<R: RealField>:
     /// let mat: DMatrix<f64> = DMatrix::new_with_shape(3, 2);
     /// 
     /// // Create a dynamically-sized length-2 vector.
-    /// let vec: DVector<f64> = mat.new_vector_n();
+    /// let vec: DVector<f64> = mat.new_vector();
     /// assert_eq!(vec.len(), 2);
     /// # }
     /// ```
-    fn new_vector_n(&self) -> Self::VectorN {
+    fn new_vector(&self) -> Self::Vector {
         let (_, n) = self.shape();
-        Self::VectorN::new_with_length(n)
+        <Self::Vector as crate::Vector<R>>::new_with_length(n)
     }
 
     /// Create a length-`M` row vector that is compatible with this `M x N` matrix.
@@ -123,7 +123,7 @@ pub trait Matrix<R: RealField>:
     /// let mat: SMatrix<f64, 3, 2> = SMatrix::new_with_shape(3, 2);
     /// 
     /// // Create a statically-sized length-3 vector.
-    /// let vec: RowSVector<f64, 3> = mat.new_vector_m();
+    /// let vec: RowSVector<f64, 3> = mat.new_row_vector();
     /// assert_eq!(vec.len(), 3);
     /// # }
     /// ```
@@ -140,13 +140,13 @@ pub trait Matrix<R: RealField>:
     /// let mat: DMatrix<f64> = DMatrix::new_with_shape(3, 2);
     /// 
     /// // Create a dynamically-sized length-3 vector.
-    /// let vec: RowDVector<f64> = mat.new_vector_m();
+    /// let vec: RowDVector<f64> = mat.new_row_vector();
     /// assert_eq!(vec.len(), 3);
     /// # }
     /// ```
-    fn new_vector_m(&self) -> Self::VectorM {
+    fn new_row_vector(&self) -> Self::RowVector {
         let (m,_) = self.shape();
-        Self::VectorM::new_with_length(m)
+        <Self::RowVector as crate::RowVector<R>>::new_with_length(m)
     }
 
     /// Assert that this matrix and another matrix have the same shape. 

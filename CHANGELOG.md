@@ -3,7 +3,7 @@
 ## 0.22.0
 
 1. Added the `RowVector` trait for row-oriented vector types.
-1. `Matrix::VectorM` uses dedicated row types for `nalgebra` and `faer`; `Vec` and `ndarray::Array1` remain orientation-neutral.
+1. `Matrix` uses dedicated row types for `nalgebra` and `faer`; `Vec` and `ndarray::Array1` remain orientation-neutral.
 
 ## 0.21.0
 
