@@ -1,14 +1,14 @@
 use crate::{Matrix, RealField};
-use faer::{Col, Mat, Scale};
+use faer::{Col, Mat, Row, Scale};
 use std::borrow::Cow;
 
 impl<R> Matrix<R> for Mat<R>
 where
     R: RealField,
 {
-    type VectorM = Col<R>;
+    type RowVector = Row<R>;
 
-    type VectorN = Col<R>;
+    type Vector = Col<R>;
 
     fn is_statically_sized() -> bool {
         false
