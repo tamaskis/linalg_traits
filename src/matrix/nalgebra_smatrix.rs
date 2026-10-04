@@ -1,5 +1,5 @@
 use crate::{Matrix, RealField};
-use nalgebra::{SMatrix, SVector};
+use nalgebra::{RowSVector, SMatrix, SVector};
 use std::borrow::Cow;
 
 // ------------------------
@@ -10,7 +10,7 @@ impl<R, const M: usize, const N: usize> Matrix<R> for SMatrix<R, M, N>
 where
     R: RealField,
 {
-    type VectorM = SVector<R, M>;
+    type VectorM = RowSVector<R, M>;
 
     type VectorN = SVector<R, N>;
 

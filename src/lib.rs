@@ -45,6 +45,7 @@
 //! | ----- | -------------------------------- | ------------------------------ |
 //! | [`RealField`] | [`f64`] | N/A |
 //! | [`Vector`] | [`Vec<R>`] <BR> [`nalgebra::DVector<R>`] <BR> [`nalgebra::SVector<R, N>`] <BR> [`ndarray::Array1<R>`] <BR> [`faer::Mat<R>`] <BR><BR> Note:<BR>   • `R: RealField` <BR>   • `N: usize` | N/A |
+//! | [`RowVector`] | [`Vec<R>`] <BR> [`nalgebra::RowDVector<R>`] <BR> [`nalgebra::RowSVector<R, N>`] <BR> [`ndarray::Array1<R>`] <BR> [`faer::Row<R>`] <BR><BR> Note:<BR>   • `R: RealField` <BR>   • `N: usize` | N/A |
 //! | [`Matrix`] | [`nalgebra::DMatrix<R>`] <BR> [`nalgebra::SMatrix<R, M, N>`] <BR> [`ndarray::Array2<T>`] <BR> [`faer::Mat<U>`] <BR><BR> Note:<BR>   • `R: RealField` <BR>   • `M: usize` <BR>   • `N: usize` | [`Mat<R>`] <BR><BR> Note:<BR>   • `R: RealField` |
 //!
 //! See the [Using with `nalgebra`, `ndarray`, and `faer`](#using-with-nalgebra-ndarray-and-faer)
@@ -131,6 +132,7 @@
 // Module declarations.
 pub(crate) mod matrix;
 pub mod real_field;
+pub(crate) mod row_vector;
 pub(crate) mod vector;
 pub(crate) mod verification;
 
@@ -155,4 +157,5 @@ pub use crate::matrix::matrix_trait::Matrix;
 pub use crate::matrix::mul_mat::mul_mat_trait::MulMat;
 pub use crate::matrix::mul_vec::mul_vec_trait::MulVec;
 pub use crate::real_field::real_field::RealField;
+pub use crate::row_vector::row_vector_trait::RowVector;
 pub use crate::vector::vector_trait::Vector;

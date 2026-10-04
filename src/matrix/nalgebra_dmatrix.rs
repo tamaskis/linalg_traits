@@ -1,12 +1,12 @@
 use crate::{Matrix, RealField};
-use nalgebra::{DMatrix, DVector};
+use nalgebra::{DMatrix, DVector, RowDVector};
 use std::borrow::Cow;
 
 impl<R> Matrix<R> for DMatrix<R>
 where
     R: RealField,
 {
-    type VectorM = DVector<R>;
+    type VectorM = RowDVector<R>;
 
     type VectorN = DVector<R>;
 
