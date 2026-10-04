@@ -6,9 +6,9 @@ impl<R> Matrix<R> for Array2<R>
 where
     R: RealField,
 {
-    type VectorM = Array1<R>;
+    type RowVector = Array1<R>;
 
-    type VectorN = Array1<R>;
+    type Vector = Array1<R>;
 
     fn is_statically_sized() -> bool {
         false

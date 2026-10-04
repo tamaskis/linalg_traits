@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.22.0
+
+1. Added `RowVector` trait and implemented for `Vec`, `nalgebra`, `ndarray`, and `faer` types.
+1. Added `RowVectorMulMat` trait with a `mul_mat` method for row vector-matrix multiplication, implemented for `Vec`, `nalgebra`, `ndarray`, and `faer` row vector types.
+1. Renamed `linalg_traits::Matrix::VectorM` associated type to `linalg_traits::Matrix::RowVector`.
+1. Renamed `linalg_traits::Matrix::VectorN` associated type to `linalg_traits::Matrix::Vector`.
+1. Renamed `linalg_traits::Matrix::new_vector_n` method to `linalg_traits::Matrix::new_vector`.
+1. Renamed `linalg_traits::Matrix::new_vector_m` method to `linalg_traits::Matrix::new_row_vector`.
+
 ## 0.21.0
 
 1. Added `MulMat` trait with a `mul_mat` method for matrix-matrix multiplication.

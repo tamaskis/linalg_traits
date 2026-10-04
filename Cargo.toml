@@ -1,6 +1,6 @@
 [package]
 name = "linalg-traits"
-version = "0.21.0"
+version = "0.22.0"
 authors = ["Tamas Kis"]
 edition = "2024"
 rust-version = "1.86"
@@ -34,7 +34,6 @@ num-traits = { version = "0.2.19", optional = true }
 rustversion = "1.0.23"
 
 [dev-dependencies]
-linalg-traits-example = { path = "linalg_traits_example" , features=["faer", "nalgebra", "ndarray"]}
 numtest = "0.5.0"
 
 [workspace]
