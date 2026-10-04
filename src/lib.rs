@@ -152,5 +152,7 @@ pub mod __private {
 // Re-exports.
 pub use crate::matrix::mat::Mat;
 pub use crate::matrix::matrix_trait::Matrix;
+pub use crate::matrix::mul_mat::mul_mat_trait::MulMat;
+pub use crate::matrix::mul_vec::mul_vec_trait::MulVec;
 pub use crate::real_field::real_field::RealField;
 pub use crate::vector::vector_trait::Vector;
