@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.21.0
+
+1. Added `MulMat` trait with a `mul_mat` method for matrix-matrix multiplication.
+1. Added `MulVec` trait with a `mul_vec` method for matrix-vector multiplication.
+1. Both traits are implemented for `Mat`, `nalgebra`, `ndarray`, and `faer` types, and support statically-sized, dynamically-sized, and mixed operands within `nalgebra`.
+
 ## 0.20.0
 
 1. Major overhaul, replacing the `Scalar` trait with a smarter `RealField` trait.

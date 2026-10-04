@@ -2,6 +2,10 @@ use crate::{Matrix, RealField};
 use nalgebra::{SMatrix, SVector};
 use std::borrow::Cow;
 
+// ------------------------
+// `Matrix` implementation.
+// ------------------------
+
 impl<R, const M: usize, const N: usize> Matrix<R> for SMatrix<R, M, N>
 where
     R: RealField,
