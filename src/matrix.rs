@@ -3,8 +3,6 @@
 pub(crate) mod faer_mat;
 pub(crate) mod mat;
 pub(crate) mod matrix_trait;
-pub(crate) mod mul_mat;
-pub(crate) mod mul_vec;
 #[cfg(feature = "nalgebra")]
 pub(crate) mod nalgebra_dmatrix;
 #[cfg(feature = "nalgebra")]

@@ -84,9 +84,9 @@ impl<R> Matrix<R> for Mat<R>
 where
     R: RealField,
 {
-    type VectorM = Vec<R>;
+    type RowVector = Vec<R>;
 
-    type VectorN = Vec<R>;
+    type Vector = Vec<R>;
 
     fn is_statically_sized() -> bool {
         false

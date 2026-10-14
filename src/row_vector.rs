@@ -1,0 +1,11 @@
+// Module declarations.
+#[cfg(feature = "faer")]
+pub(crate) mod faer_row;
+#[cfg(feature = "nalgebra")]
+pub(crate) mod nalgebra_rowdvector;
+#[cfg(feature = "nalgebra")]
+pub(crate) mod nalgebra_rowsvector;
+#[cfg(feature = "ndarray")]
+pub(crate) mod ndarray_array1;
+pub(crate) mod row_vector_trait;
+pub(crate) mod vec;

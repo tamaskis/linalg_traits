@@ -4,6 +4,10 @@
 /// For this to work correctly, the calling crate must define its own `faer`, `nalgebra`, and
 /// `ndarray` features (typically forwarding to `linalg-traits`'s features of the same names).
 ///
+/// The generated `faer::ComplexField` and `nalgebra::ComplexField` implementations are tested in
+/// `linalg_traits_example/tests/faer_complex_field.rs` and
+/// `linalg_traits_example/tests/nalgebra_complex_field.rs`.
+///
 /// # Generic Arguments
 ///
 /// * `$t` - The type for which the rest of [`crate::RealField`]'s requirements are being
