@@ -36,10 +36,10 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-1b4aa0d7.js";
+            window.path_to_searchindex_js = "searchindex-4a5b5d19.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc-e797efad.js"></script>
+        <script src="toc-062049a9.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -175,24 +175,3016 @@
 
                 <div id="mdbook-content" class="content">
                     <main>
-                        <h1 id="introduction"><a class="header" href="#introduction">Introduction</a></h1>
-<p>The primary purpose of the <code>linalg-traits</code> crate is to provide the tools to write generic linear algebra in Rust. In particular, the traits provided by <code>linalg-traits</code> are extremely useful for writing functions that are generic over scalars, vectors, and matrices.</p>
-<p>For example, consider a function that multiplies a matrix by a vector. Using an <code>TODO TODO</code></p>
-<p>TODO:</p>
+                        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
+<h1 id="introduction"><a class="header" href="#introduction">Introduction</a></h1>
+<p>See the <a href="https://docs.rs/linalg-traits/latest/linalg_traits/"><code>docs.rs</code> overview of this crate</a>.</p>
+<div style="break-before: page; page-break-before: always;"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
+<h1 id="real-field"><a class="header" href="#real-field">Real Field</a></h1>
 <ul>
-<li>statically sized vs. dynamically sized</li>
-<li>types of functions
+<li><a href="#background">Background</a></li>
+<li><a href="#additional-features-geared-towards-automatic-differentiation">Additional features geared towards automatic differentiation</a>
 <ul>
-<li>univariate, scalar-valued</li>
-<li>univariate, vector-valued</li>
-<li>multivariate, scalar-valued</li>
-<li>multivariate, vector-valued</li>
+<li><a href="#brief-overview-of-forward-mode-automatic-differentiation">Brief overview of forward-mode automatic differentiation</a></li>
+<li><a href="#what-this-means-for-linalg_traitsrealfield">What this means for <code>linalg_traits::RealField</code></a>
+<ul>
+<li><a href="#more-on-trait-disambiguation">More on trait disambiguation</a></li>
 </ul>
 </li>
 </ul>
-<div style="break-before: page; page-break-before: always;"></div>
-<h1 id="page-2"><a class="header" href="#page-2">Page 2</a></h1>
-<p>TODO #2.</p>
+</li>
+</ul>
+<h2 id="background"><a class="header" href="#background">Background</a></h2>
+<p>The <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html"><code>linalg_traits::RealField</code></a> trait describes real number types.</p>
+<p>In mathematics, the real numbers form a <strong>field</strong>, meaning that they support the usual arithmetic operations of addition, subtraction, multiplication, and division (except division by zero). A real field also has an ordering, allowing values to be compared and concepts such as positive and negative numbers to be defined.</p>
+<p>In practice, double-precision floating-point numbers (<code>f64</code> in Rust) are commonly used to represent real numbers. Other types are also used, although less frequently, such as single-precision floating-point numbers (<code>f32</code> in Rust). Linear algebra crates like <a href="https://docs.rs/nalgebra/latest/nalgebra/"><code>nalgebra</code></a> and <a href="https://docs.rs/faer/latest/faer/"><code>faer</code></a> define their routines generically so they can work with any type satisfying the properties of a real field. They express these requirements via the <a href="https://docs.rs/nalgebra/latest/nalgebra/trait.RealField.html"><code>nalgebra::RealField</code></a> and <a href="https://docs.rs/faer-traits/latest/faer_traits/trait.RealField.html"><code>faer_traits::RealField</code></a> traits, respectively.</p>
+<p>Similarly, <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html"><code>linalg_traits::RealField</code></a> provides an abstraction over concrete real-valued numeric types, allowing linear algebra code to work generically with them. However, it goes one step further by allowing linear algebra code (or any code using linear algebra types) to be written in an even more generic fashion, supporting multiple “backend” crates (e.g. <a href="https://docs.rs/nalgebra/latest/nalgebra/"><code>nalgebra</code></a> and <a href="https://docs.rs/faer/latest/faer/"><code>faer</code></a>) while maintaining a uniform interface. The <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html"><code>linalg_traits::RealField</code></a> is the first step toward this goal; any type satisfying its requirements will also satisfy the corresponding requirements for real field types in these backend crates.</p>
+<p>This trait serves as the foundational interface for real number types that is cross-compatible across different linear algebra and numerical computation crates. Consequently, it originated as a trait that defined the superset of functionality provided by <a href="https://docs.rs/nalgebra/latest/nalgebra/trait.RealField.html"><code>nalgebra::RealField</code></a> and <a href="https://docs.rs/faer-traits/latest/faer_traits/trait.RealField.html"><code>faer_traits::RealField</code></a>. However, real numbers are used well beyond these specific crates, with many common operations not required by these crates (for example, <a href="https://docs.rs/faer-traits/latest/faer_traits/trait.RealField.html"><code>faer_traits::RealField</code></a> doesn’t require that a real number implement a <code>sin</code> method, which is one of the most widely used mathematical functions). As a result, this trait defines the superset (mostly; there are some methods missing) of functionality provided by <a href="https://docs.rs/num-traits/latest/num_traits/float/trait.Float.html"><code>num_traits::Float</code></a>, <a href="https://docs.rs/nalgebra/latest/nalgebra/trait.RealField.html"><code>nalgebra::RealField</code></a>, and <a href="https://docs.rs/faer-traits/latest/faer_traits/trait.RealField.html"><code>faer_traits::RealField</code></a>.</p>
+<h2 id="additional-features-geared-towards-automatic-differentiation"><a class="header" href="#additional-features-geared-towards-automatic-differentiation">Additional features geared towards automatic differentiation</a></h2>
+<p>While one aim of the <code>linalg-traits</code> crate is to define a generic interface for linear algebra types, another is to provide the scaffolding needed for implemeneting forward-mode automatic differentiation. This secondary goal adds a lot of additional constraints/requirements to the definition of the <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html"><code>linalg_traits::RealField</code></a> trait.</p>
+<h3 id="brief-overview-of-forward-mode-automatic-differentiation"><a class="header" href="#brief-overview-of-forward-mode-automatic-differentiation">Brief overview of forward-mode automatic differentiation</a></h3>
+<p>Forward-mode automatic differentiation is a technique for “automatically” obtaining the derivative of an arbitrary function. The simplest case is differentiating a univariate, scalar-valued function <span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8889em;vertical-align:-0.1944em;"></span><span class="mord mathnormal" style="margin-right:0.10764em;">f</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">:</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6889em;"></span><span class="mord mathbb">R</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">→</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:0.6889em;"></span><span class="mord mathbb">R</span></span></span></span>. In Rust, we would typically write such as function as</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>fn f(x: f64) -&gt; f64 {
+    ...
+}
+<span class="boring">}</span></code></pre>
+<p>To support forward-mode automatic differentiation, we would instead write this function as</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>fn f&lt;R&gt;(x: R) -&gt; R where R: RealField {
+    ...
+}
+<span class="boring">}</span></code></pre>
+<p>This is so that:</p>
+<ol>
+<li>We can still pass in an <code>f64</code> and get an <code>f64</code> out.</li>
+<li>We can pass in a <a href="https://docs.rs/numdiff/latest/numdiff/struct.Dual.html"><code>Dual</code></a> and get a <a href="https://docs.rs/numdiff/latest/numdiff/struct.Dual.html"><code>Dual</code></a> out, where the <code>dual</code><sup class="footnote-reference" id="fr-1-1"><a href="#footnote-1">1</a></sup> part of the return value stores the derivative of <code>f</code>.</li>
+</ol>
+<blockquote class="blockquote-tag blockquote-tag-note">
+<p class="blockquote-tag-title"><svg viewbox="0 0 16 16" width="18" height="18"><path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8Zm8-6.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13ZM6.5 7.75A.75.75 0 0 1 7.25 7h1a.75.75 0 0 1 .75.75v2.75h.25a.75.75 0 0 1 0 1.5h-2a.75.75 0 0 1 0-1.5h.25v-2h-.25a.75.75 0 0 1-.75-.75ZM8 6a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"></path></svg>Note</p>
+<p>The <a href="https://docs.rs/numdiff/latest/numdiff"><code>numdiff</code></a> crate implements the <a href="https://docs.rs/numdiff/latest/numdiff/struct.Dual.html"><code>numdiff::Dual</code></a> (for 1st-order differentiation) and <a href="https://docs.rs/numdiff/latest/numdiff/struct.HyperDual.html"><code>numdiff::HyperDual</code></a> (for 2nd-order differentiation) types and also has many convenient macros for performing forward-mode automatic differentiation, including for vector-valued and multivariate functions.</p>
+</blockquote>
+<h3 id="what-this-means-for-linalg_traitsrealfield"><a class="header" href="#what-this-means-for-linalg_traitsrealfield">What this means for <code>linalg_traits::RealField</code></a></h3>
+<p>Making functions compatible with forward-mode automatic differentiation is already burdensome for users; they have to replace all concrete types in function signatures with generic types implementing traits provided by this crate. To minimize the pain, we wanted <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html"><code>linalg_traits::RealField</code></a> to:</p>
+<ol>
+<li>Define the superset of all operations supported by <code>f64</code>, <code>num_traits::Float</code>, <code>nalgebra::RealField</code>, and <code>faer_traits::RealField</code>.
+<ul>
+<li><em>This allows us to write code in a way where it will always work, regardless of what third-party backend crates are used.</em></li>
+</ul>
+</li>
+<li>Have maximum interoperability with <code>f64</code> (e.g. support arithmetic operations between <code>f64</code> and <code>T: RealField</code>, cast <code>T: RealField</code> to/from <code>f64</code>, etc).
+<ul>
+<li><em>This allows us to write generic code in a way where we don’t have to do a lot of manual casting to/from <code>f64</code>.</em></li>
+</ul>
+</li>
+<li>Not introduce additional <a href="https://doc.rust-lang.org/rust-by-example/trait/disambiguating.html">trait disambiguation</a> burden on the user.
+<ul>
+<li><em>This has similar benefit to two items above, where the generic code we write looks nearly identical to the code we write just using the concrete <code>f64</code> type.</em></li>
+<li><em>See the <a href="#more-on-trait-disambiguation">“More on trait disambiguation” section below</a></em>.</li>
+</ul>
+</li>
+</ol>
+<h4 id="more-on-trait-disambiguation"><a class="header" href="#more-on-trait-disambiguation">More on trait disambiguation</a></h4>
+<blockquote class="blockquote-tag blockquote-tag-note">
+<p class="blockquote-tag-title"><svg viewbox="0 0 16 16" width="18" height="18"><path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8Zm8-6.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13ZM6.5 7.75A.75.75 0 0 1 7.25 7h1a.75.75 0 0 1 .75.75v2.75h.25a.75.75 0 0 1 0 1.5h-2a.75.75 0 0 1 0-1.5h.25v-2h-.25a.75.75 0 0 1-.75-.75ZM8 6a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"></path></svg>Note</p>
+<p>The information provided below is a description of how we circumvent trait disambiguation in the design of <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html"><code>linalg_traits::RealField</code></a>. However, users of this crate should not have to ever worry about this, unless they are manually implementing the <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html"><code>linalg_traits::RealField</code></a> trait for a custom type in the (unrecommended) method described <a href="https://tamaskis.github.io/linalg_traits/real_field_implementation.html#alternative-manual-implementation">here</a>.</p>
+</blockquote>
+<p>As an example, when the <code>nalgebra</code> feature is enabled, a large number of methods documented under the <a href="https://tamaskis.github.io/linalg_traits/real_field_methods.html"><code>Methods</code> page of the <code>linalg-traits</code> book</a> are provided directly by <a href="https://docs.rs/nalgebra/latest/nalgebra/trait.RealField.html"><code>nalgebra::RealField</code></a> and/or its super traits. When the <code>nalgebra</code> feature is NOT enabled, these same methods would be provided by <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html"><code>linalg_traits::RealField</code></a> by essentially forwarding the corresponding <a href="https://docs.rs/linalg-traits/latest/linalg_traits/real_field/trait.RealFieldBase.html"><code>linalg_traits::real_field::RealFieldBase</code></a> method.</p>
+<p>We <em>could</em> provide both implementations simultaneously; for example we could simultaneously have <code>nalgebra::ComplexField::sin</code> (where <a href="https://docs.rs/nalgebra/latest/nalgebra/trait.ComplexField.html"><code>nalgebra::ComplexField</code></a> is a super trait of <a href="https://docs.rs/nalgebra/latest/nalgebra/trait.RealField.html"><code>nalgebra::RealField</code></a>) and <code>linalg_traits::RealField::sin</code> implemented for some concrete type, but then we would have to disambiguate the trait every time this method was called. For example, we would have to do</p>
+<pre><code class="language-rust ignore">&lt;T as linalg_traits::RealField&gt;::sin(1.0)  // or &lt;T as nalgebra::ComplexField&gt;::sin(1.0)</code></pre>
+<p>instead of</p>
+<pre><code class="language-rust ignore">1.0.sin() // or equivalently `T::sin(1.0)`, where T: RealField</code></pre>
+<p>Therefore, when the <code>nalgebra</code> feature is enabled, the methods of this trait that collide with <a href="https://docs.rs/nalgebra/latest/nalgebra/trait.RealField.html"><code>nalgebra::RealField</code></a> (and any of its supertraits’) method names are omitted here to avoid ambiguous method resolution.</p>
+<p>Identical approaches are taken for any other name clashes introduced by other features.</p>
+<hr>
+<ol class="footnote-definition">
+<li id="footnote-1">
+<p>Where <code>Dual { real: f64, dual: f64 }</code>. <a href="#fr-1-1">↩</a></p>
+</li>
+</ol>
+<div style="break-before: page; page-break-before: always;"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
+<h1 id="operators"><a class="header" href="#operators">Operators</a></h1>
+<ul>
+<li><a href="#addition">Addition</a></li>
+<li><a href="#subtraction">Subtraction</a></li>
+<li><a href="#multiplication">Multiplication</a></li>
+<li><a href="#division">Division</a></li>
+<li><a href="#remainder-after-division">Remainder after division</a></li>
+<li><a href="#addition-assignment">Addition-assignment</a></li>
+<li><a href="#subtraction-assignment">Subtraction-assignment</a></li>
+<li><a href="#multiplication-assignment">Multiplication-assignment</a></li>
+<li><a href="#division-assignment">Division-assignment</a></li>
+<li><a href="#remainder-assignment">Remainder-assignment</a></li>
+<li><a href="#equality-and-inequality">Equality and Inequality</a></li>
+<li><a href="#ordering">Ordering</a></li>
+</ul>
+<h2 id="addition"><a class="header" href="#addition">Addition</a></h2>
+<p>The following addition operations are supported for <code>T: RealField</code>:</p>
+<ul>
+<li><code>T + T</code></li>
+<li><code>T + &amp;T</code></li>
+<li><code>&amp;T + T</code></li>
+<li><code>&amp;T + &amp;T</code></li>
+</ul>
+<p><strong>Example</strong></p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+#[allow(clippy::op_ref)]
+fn add&lt;T: RealField&gt;(x: T, y: T) -&gt; T {
+    let z1: T = x + y;
+    let z2: T = x + &amp;y;
+    let z3: T = &amp;x + y;
+    let z4: T = &amp;x + &amp;y;
+
+    assert_eq!(z1, z2);
+    assert_eq!(z2, z3);
+    assert_eq!(z3, z4);
+
+    z1
+}
+
+fn main() {
+    assert_eq!(add(1_f64, 2_f64), 3_f64);
+}</code></pre>
+<h2 id="subtraction"><a class="header" href="#subtraction">Subtraction</a></h2>
+<p>The following subtraction operations are supported for <code>T: RealField</code>:</p>
+<ul>
+<li><code>T - T</code></li>
+<li><code>T - &amp;T</code></li>
+<li><code>&amp;T - T</code></li>
+<li><code>&amp;T - &amp;T</code></li>
+</ul>
+<p><strong>Example</strong></p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+#[allow(clippy::op_ref)]
+fn sub&lt;T: RealField&gt;(x: T, y: T) -&gt; T {
+    let z1: T = x - y;
+    let z2: T = x - &amp;y;
+    let z3: T = &amp;x - y;
+    let z4: T = &amp;x - &amp;y;
+
+    assert_eq!(z1, z2);
+    assert_eq!(z2, z3);
+    assert_eq!(z3, z4);
+
+    z1
+}
+
+fn main() {
+    assert_eq!(sub(3_f64, 2_f64), 1_f64);
+}</code></pre>
+<h2 id="multiplication"><a class="header" href="#multiplication">Multiplication</a></h2>
+<p>The following multiplication operations are supported for <code>T: RealField</code>:</p>
+<ul>
+<li><code>T * T</code></li>
+<li><code>T * &amp;T</code></li>
+<li><code>&amp;T * T</code></li>
+<li><code>&amp;T * &amp;T</code></li>
+</ul>
+<p><strong>Example</strong></p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+#[allow(clippy::op_ref)]
+fn mul&lt;T: RealField&gt;(x: T, y: T) -&gt; T {
+    let z1: T = x * y;
+    let z2: T = x * &amp;y;
+    let z3: T = &amp;x * y;
+    let z4: T = &amp;x * &amp;y;
+
+    assert_eq!(z1, z2);
+    assert_eq!(z2, z3);
+    assert_eq!(z3, z4);
+
+    z1
+}
+
+fn main() {
+    assert_eq!(mul(2_f64, 3_f64), 6_f64);
+}</code></pre>
+<h2 id="division"><a class="header" href="#division">Division</a></h2>
+<p>The following division operations are supported for <code>T: RealField</code>:</p>
+<ul>
+<li><code>T / T</code></li>
+<li><code>T / &amp;T</code></li>
+<li><code>&amp;T / T</code></li>
+<li><code>&amp;T / &amp;T</code></li>
+</ul>
+<p><strong>Example</strong></p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+#[allow(clippy::op_ref)]
+fn div&lt;T: RealField&gt;(x: T, y: T) -&gt; T {
+    let z1: T = x / y;
+    let z2: T = x / &amp;y;
+    let z3: T = &amp;x / y;
+    let z4: T = &amp;x / &amp;y;
+
+    assert_eq!(z1, z2);
+    assert_eq!(z2, z3);
+    assert_eq!(z3, z4);
+
+    z1
+}
+
+fn main() {
+    assert_eq!(div(6_f64, 2_f64), 3_f64);
+}</code></pre>
+<h2 id="remainder-after-division"><a class="header" href="#remainder-after-division">Remainder after division</a></h2>
+<p>The following remainder after division operations are supported for <code>T: RealField</code>:</p>
+<ul>
+<li><code>T % T</code></li>
+<li><code>T % &amp;T</code></li>
+<li><code>&amp;T % T</code></li>
+<li><code>&amp;T % &amp;T</code></li>
+</ul>
+<p><strong>Example</strong></p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+#[allow(clippy::op_ref)]
+fn rem&lt;T: RealField&gt;(x: T, y: T) -&gt; T {
+    let z1: T = x % y;
+    let z2: T = x % &amp;y;
+    let z3: T = &amp;x % y;
+    let z4: T = &amp;x % &amp;y;
+
+    assert_eq!(z1, z2);
+    assert_eq!(z2, z3);
+    assert_eq!(z3, z4);
+
+    z1
+}
+
+fn main() {
+    assert_eq!(rem(5_f64, 3_f64), 2_f64);
+}</code></pre>
+<h2 id="addition-assignment"><a class="header" href="#addition-assignment">Addition-assignment</a></h2>
+<p>The following addition-assignment operations are supported for <code>T: RealField</code>:</p>
+<ul>
+<li><code>T += T</code></li>
+<li><code>T += &amp;T</code></li>
+</ul>
+<p><strong>Example</strong></p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn add_assign&lt;T: RealField&gt;(x: T, y: T) -&gt; T {
+    let mut z1: T = x;
+    z1 += y;
+
+    let mut z2: T = x;
+    z2 += &amp;y;
+
+    assert_eq!(z1, z2);
+
+    z1
+}
+
+fn main() {
+    assert_eq!(add_assign(1_f64, 2_f64), 3_f64);
+}</code></pre>
+<h2 id="subtraction-assignment"><a class="header" href="#subtraction-assignment">Subtraction-assignment</a></h2>
+<p>The following subtraction-assignment operations are supported for <code>T: RealField</code>:</p>
+<ul>
+<li><code>T -= T</code></li>
+<li><code>T -= &amp;T</code></li>
+</ul>
+<p><strong>Example</strong></p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn sub_assign&lt;T: RealField&gt;(x: T, y: T) -&gt; T {
+    let mut z1: T = x;
+    z1 -= y;
+
+    let mut z2: T = x;
+    z2 -= &amp;y;
+
+    assert_eq!(z1, z2);
+
+    z1
+}
+
+fn main() {
+    assert_eq!(sub_assign(3_f64, 2_f64), 1_f64);
+}</code></pre>
+<h2 id="multiplication-assignment"><a class="header" href="#multiplication-assignment">Multiplication-assignment</a></h2>
+<p>The following multiplication-assignment operations are supported for <code>T: RealField</code>:</p>
+<ul>
+<li><code>T *= T</code></li>
+<li><code>T *= &amp;T</code></li>
+</ul>
+<p><strong>Example</strong></p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn mul_assign&lt;T: RealField&gt;(x: T, y: T) -&gt; T {
+    let mut z1: T = x;
+    z1 *= y;
+
+    let mut z2: T = x;
+    z2 *= &amp;y;
+
+    assert_eq!(z1, z2);
+
+    z1
+}
+
+fn main() {
+    assert_eq!(mul_assign(2_f64, 3_f64), 6_f64);
+}</code></pre>
+<h2 id="division-assignment"><a class="header" href="#division-assignment">Division-assignment</a></h2>
+<p>The following division-assignment operations are supported for <code>T: RealField</code>:</p>
+<ul>
+<li><code>T /= T</code></li>
+<li><code>T /= &amp;T</code></li>
+</ul>
+<p><strong>Example</strong></p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn div_assign&lt;T: RealField&gt;(x: T, y: T) -&gt; T {
+    let mut z1: T = x;
+    z1 /= y;
+
+    let mut z2: T = x;
+    z2 /= &amp;y;
+
+    assert_eq!(z1, z2);
+
+    z1
+}
+
+fn main() {
+    assert_eq!(div_assign(6_f64, 2_f64), 3_f64);
+}</code></pre>
+<h2 id="remainder-assignment"><a class="header" href="#remainder-assignment">Remainder-assignment</a></h2>
+<p>The following remainder-assignment operations are supported for <code>T: RealField</code>:</p>
+<ul>
+<li><code>T %= T</code></li>
+<li><code>T %= &amp;T</code></li>
+</ul>
+<p><strong>Example</strong></p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn rem_assign&lt;T: RealField&gt;(x: T, y: T) -&gt; T {
+    let mut z1: T = x;
+    z1 %= y;
+
+    let mut z2: T = x;
+    z2 %= &amp;y;
+
+    assert_eq!(z1, z2);
+
+    z1
+}
+
+fn main() {
+    assert_eq!(rem_assign(5_f64, 3_f64), 2_f64);
+}</code></pre>
+<h2 id="equality-and-inequality"><a class="header" href="#equality-and-inequality">Equality and Inequality</a></h2>
+<p>The following equality/inequality operations are supported for <code>T: RealField</code>:</p>
+<ul>
+<li><code>T == T</code></li>
+<li><code>T != T</code></li>
+</ul>
+<p><strong>Example</strong></p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn eq&lt;T: RealField&gt;(x: T, y: T) -&gt; (bool, bool) {
+    (x == y, x != y)
+}
+
+fn main() {
+    assert_eq!(eq(1_f64, 1_f64), (true, false));
+    assert_eq!(eq(1_f64, 2_f64), (false, true));
+}</code></pre>
+<h2 id="ordering"><a class="header" href="#ordering">Ordering</a></h2>
+<p>The following ordering operations are supported for <code>T: RealField</code>:</p>
+<ul>
+<li><code>T &lt; T</code></li>
+<li><code>T &lt;= T</code></li>
+<li><code>T &gt; T</code></li>
+<li><code>T &gt;= T</code></li>
+</ul>
+<p><strong>Example</strong></p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn ord&lt;T: RealField&gt;(x: T, y: T) -&gt; (bool, bool, bool, bool) {
+    (x &lt; y, x &lt;= y, x &gt; y, x &gt;= y)
+}
+
+fn main() {
+    assert_eq!(ord(1_f64, 2_f64), (true, true, false, false));
+    assert_eq!(ord(2_f64, 2_f64), (false, true, false, true));
+    assert_eq!(ord(3_f64, 2_f64), (false, false, true, true));
+}</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
+<h1 id="interoperability-with-f64"><a class="header" href="#interoperability-with-f64">Interoperability with f64</a></h1>
+<ul>
+<li><a href="#conversion">Conversion</a></li>
+<li><a href="#equality">Equality</a></li>
+<li><a href="#ordering-1">Ordering</a></li>
+<li><a href="#addition-1">Addition</a></li>
+<li><a href="#subtraction-1">Subtraction</a></li>
+<li><a href="#multiplication-1">Multiplication</a></li>
+<li><a href="#division-1">Division</a></li>
+<li><a href="#remainder-after-division-1">Remainder after division</a></li>
+<li><a href="#addition-assignment-1">Addition-assignment</a></li>
+<li><a href="#subtraction-assignment-1">Subtraction-assignment</a></li>
+<li><a href="#multiplication-assignment-1">Multiplication-assignment</a></li>
+<li><a href="#division-assignment-1">Division-assignment</a></li>
+<li><a href="#remainder-assignment-1">Remainder-assignment</a></li>
+</ul>
+<blockquote class="blockquote-tag blockquote-tag-note">
+<p class="blockquote-tag-title"><svg viewbox="0 0 16 16" width="18" height="18"><path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8Zm8-6.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13ZM6.5 7.75A.75.75 0 0 1 7.25 7h1a.75.75 0 0 1 .75.75v2.75h.25a.75.75 0 0 1 0 1.5h-2a.75.75 0 0 1 0-1.5h.25v-2h-.25a.75.75 0 0 1-.75-.75ZM8 6a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"></path></svg>Note</p>
+<p>Assignment operations with <code>f64</code> on the left-hand side (e.g. <code>f64 += T</code>) are intentionally <strong>not</strong> supported. See the <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealFieldOperations.html"><code>RealFieldOperations</code></a> documentation for the rationale.</p>
+</blockquote>
+<h2 id="conversion"><a class="header" href="#conversion">Conversion</a></h2>
+<p>The following conversions are supported for <code>T: RealField</code>:</p>
+<ul>
+<li><code>f64::from(T)</code> / <code>T::into(self) -&gt; f64</code></li>
+<li><code>T::from(f64)</code> / <code>f64::into(self) -&gt; T</code></li>
+</ul>
+<p><strong>Example</strong></p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn convert&lt;T: RealField&gt;(x: T, y: f64) -&gt; (f64, T) {
+    let a: f64 = x.into();
+    let b: f64 = T::into(x);
+    let c: f64 = f64::from(x);
+
+    assert_eq!(a.to_bits(), b.to_bits());
+    assert_eq!(b.to_bits(), c.to_bits());
+
+    let d: T = y.into();
+    let e: T = f64::into(y);
+    let f: T = T::from(y);
+
+    assert_eq!(d, e);
+    assert_eq!(e, f);
+
+    (a, d)
+}
+
+fn main() {
+    assert_eq!(convert(1_f64, 2_f64), (1_f64, 2_f64));
+}</code></pre>
+<h2 id="equality"><a class="header" href="#equality">Equality</a></h2>
+<p>The following equality operations are supported for <code>T: RealField</code>:</p>
+<ul>
+<li><code>T == f64</code></li>
+<li><code>T != f64</code></li>
+<li><code>f64 == T</code></li>
+<li><code>f64 != T</code></li>
+</ul>
+<h2 id="ordering-1"><a class="header" href="#ordering-1">Ordering</a></h2>
+<p>The following ordering operations are supported for <code>T: RealField</code>:</p>
+<ul>
+<li><code>T &lt; f64</code></li>
+<li><code>T &lt;= f64</code></li>
+<li><code>T &gt; f64</code></li>
+<li><code>T &gt;= f64</code></li>
+<li><code>f64 &lt; T</code></li>
+<li><code>f64 &lt;= T</code></li>
+<li><code>f64 &gt; T</code></li>
+<li><code>f64 &gt;= T</code></li>
+</ul>
+<h2 id="addition-1"><a class="header" href="#addition-1">Addition</a></h2>
+<p>The following addition operations are supported for <code>T: RealField</code>:</p>
+<ul>
+<li><code>T + f64</code></li>
+<li><code>T + &amp;f64</code></li>
+<li><code>&amp;T + f64</code></li>
+<li><code>&amp;T + &amp;f64</code></li>
+<li><code>f64 + T</code></li>
+<li><code>f64 + &amp;T</code></li>
+<li><code>&amp;f64 + T</code></li>
+<li><code>&amp;f64 + &amp;T</code></li>
+</ul>
+<p><strong>Example</strong></p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+#[allow(clippy::op_ref)]
+fn add_rhs&lt;T: RealField&gt;(x: T, y: f64) -&gt; T {
+    let z1: T = x + y;
+    let z2: T = x + &amp;y;
+    let z3: T = &amp;x + y;
+    let z4: T = &amp;x + &amp;y;
+
+    assert_eq!(z1, z2);
+    assert_eq!(z2, z3);
+    assert_eq!(z3, z4);
+
+    z1
+}
+
+#[allow(clippy::op_ref)]
+fn add_lhs&lt;T: RealField&gt;(x: f64, y: T) -&gt; T {
+    let z1: T = x + y;
+    let z2: T = x + &amp;y;
+    let z3: T = &amp;x + y;
+    let z4: T = &amp;x + &amp;y;
+
+    assert_eq!(z1, z2);
+    assert_eq!(z2, z3);
+    assert_eq!(z3, z4);
+
+    z1
+}
+
+fn main() {
+    assert_eq!(add_rhs(1_f64, 2_f64), 3_f64);
+    assert_eq!(add_lhs(1_f64, 2_f64), 3_f64);
+}</code></pre>
+<h2 id="subtraction-1"><a class="header" href="#subtraction-1">Subtraction</a></h2>
+<p>The following subtraction operations are supported for <code>T: RealField</code>:</p>
+<ul>
+<li><code>T - f64</code></li>
+<li><code>T - &amp;f64</code></li>
+<li><code>&amp;T - f64</code></li>
+<li><code>&amp;T - &amp;f64</code></li>
+<li><code>f64 - T</code></li>
+<li><code>f64 - &amp;T</code></li>
+<li><code>&amp;f64 - T</code></li>
+<li><code>&amp;f64 - &amp;T</code></li>
+</ul>
+<p><strong>Example</strong></p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+#[allow(clippy::op_ref)]
+fn sub_rhs&lt;T: RealField&gt;(x: T, y: f64) -&gt; T {
+    let z1: T = x - y;
+    let z2: T = x - &amp;y;
+    let z3: T = &amp;x - y;
+    let z4: T = &amp;x - &amp;y;
+
+    assert_eq!(z1, z2);
+    assert_eq!(z2, z3);
+    assert_eq!(z3, z4);
+
+    z1
+}
+
+#[allow(clippy::op_ref)]
+fn sub_lhs&lt;T: RealField&gt;(x: f64, y: T) -&gt; T {
+    let z1: T = x - y;
+    let z2: T = x - &amp;y;
+    let z3: T = &amp;x - y;
+    let z4: T = &amp;x - &amp;y;
+
+    assert_eq!(z1, z2);
+    assert_eq!(z2, z3);
+    assert_eq!(z3, z4);
+
+    z1
+}
+
+fn main() {
+    assert_eq!(sub_rhs(3_f64, 2_f64), 1_f64);
+    assert_eq!(sub_lhs(3_f64, 2_f64), 1_f64);
+}</code></pre>
+<h2 id="multiplication-1"><a class="header" href="#multiplication-1">Multiplication</a></h2>
+<p>The following multiplication operations are supported for <code>T: RealField</code>:</p>
+<ul>
+<li><code>T * f64</code></li>
+<li><code>T * &amp;f64</code></li>
+<li><code>&amp;T * f64</code></li>
+<li><code>&amp;T * &amp;f64</code></li>
+<li><code>f64 * T</code></li>
+<li><code>f64 * &amp;T</code></li>
+<li><code>&amp;f64 * T</code></li>
+<li><code>&amp;f64 * &amp;T</code></li>
+</ul>
+<p><strong>Example</strong></p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+#[allow(clippy::op_ref)]
+fn mul_rhs&lt;T: RealField&gt;(x: T, y: f64) -&gt; T {
+    let z1: T = x * y;
+    let z2: T = x * &amp;y;
+    let z3: T = &amp;x * y;
+    let z4: T = &amp;x * &amp;y;
+
+    assert_eq!(z1, z2);
+    assert_eq!(z2, z3);
+    assert_eq!(z3, z4);
+
+    z1
+}
+
+#[allow(clippy::op_ref)]
+fn mul_lhs&lt;T: RealField&gt;(x: f64, y: T) -&gt; T {
+    let z1: T = x * y;
+    let z2: T = x * &amp;y;
+    let z3: T = &amp;x * y;
+    let z4: T = &amp;x * &amp;y;
+
+    assert_eq!(z1, z2);
+    assert_eq!(z2, z3);
+    assert_eq!(z3, z4);
+
+    z1
+}
+
+fn main() {
+    assert_eq!(mul_rhs(2_f64, 3_f64), 6_f64);
+    assert_eq!(mul_lhs(2_f64, 3_f64), 6_f64);
+}</code></pre>
+<h2 id="division-1"><a class="header" href="#division-1">Division</a></h2>
+<p>The following division operations are supported for <code>T: RealField</code>:</p>
+<ul>
+<li><code>T / f64</code></li>
+<li><code>T / &amp;f64</code></li>
+<li><code>&amp;T / f64</code></li>
+<li><code>&amp;T / &amp;f64</code></li>
+<li><code>f64 / T</code></li>
+<li><code>f64 / &amp;T</code></li>
+<li><code>&amp;f64 / T</code></li>
+<li><code>&amp;f64 / &amp;T</code></li>
+</ul>
+<p><strong>Example</strong></p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+#[allow(clippy::op_ref)]
+fn div_rhs&lt;T: RealField&gt;(x: T, y: f64) -&gt; T {
+    let z1: T = x / y;
+    let z2: T = x / &amp;y;
+    let z3: T = &amp;x / y;
+    let z4: T = &amp;x / &amp;y;
+
+    assert_eq!(z1, z2);
+    assert_eq!(z2, z3);
+    assert_eq!(z3, z4);
+
+    z1
+}
+
+#[allow(clippy::op_ref)]
+fn div_lhs&lt;T: RealField&gt;(x: f64, y: T) -&gt; T {
+    let z1: T = x / y;
+    let z2: T = x / &amp;y;
+    let z3: T = &amp;x / y;
+    let z4: T = &amp;x / &amp;y;
+
+    assert_eq!(z1, z2);
+    assert_eq!(z2, z3);
+    assert_eq!(z3, z4);
+
+    z1
+}
+
+fn main() {
+    assert_eq!(div_rhs(6_f64, 2_f64), 3_f64);
+    assert_eq!(div_lhs(6_f64, 2_f64), 3_f64);
+}</code></pre>
+<h2 id="remainder-after-division-1"><a class="header" href="#remainder-after-division-1">Remainder after division</a></h2>
+<p>The following remainder after division operations are supported for <code>T: RealField</code>:</p>
+<ul>
+<li><code>T % f64</code></li>
+<li><code>T % &amp;f64</code></li>
+<li><code>&amp;T % f64</code></li>
+<li><code>&amp;T % &amp;f64</code></li>
+<li><code>f64 % T</code></li>
+<li><code>f64 % &amp;T</code></li>
+<li><code>&amp;f64 % T</code></li>
+<li><code>&amp;f64 % &amp;T</code></li>
+</ul>
+<p><strong>Example</strong></p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+#[allow(clippy::op_ref)]
+fn rem_rhs&lt;T: RealField&gt;(x: T, y: f64) -&gt; T {
+    let z1: T = x % y;
+    let z2: T = x % &amp;y;
+    let z3: T = &amp;x % y;
+    let z4: T = &amp;x % &amp;y;
+
+    assert_eq!(z1, z2);
+    assert_eq!(z2, z3);
+    assert_eq!(z3, z4);
+
+    z1
+}
+
+#[allow(clippy::op_ref)]
+fn rem_lhs&lt;T: RealField&gt;(x: f64, y: T) -&gt; T {
+    let z1: T = x % y;
+    let z2: T = x % &amp;y;
+    let z3: T = &amp;x % y;
+    let z4: T = &amp;x % &amp;y;
+
+    assert_eq!(z1, z2);
+    assert_eq!(z2, z3);
+    assert_eq!(z3, z4);
+
+    z1
+}
+
+fn main() {
+    assert_eq!(rem_rhs(5_f64, 3_f64), 2_f64);
+    assert_eq!(rem_lhs(5_f64, 3_f64), 2_f64);
+}</code></pre>
+<h2 id="addition-assignment-1"><a class="header" href="#addition-assignment-1">Addition-assignment</a></h2>
+<p>The following addition-assignment operations are supported for <code>T: RealField</code>:</p>
+<ul>
+<li><code>T += f64</code></li>
+<li><code>T += &amp;f64</code></li>
+</ul>
+<p><strong>Example</strong></p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn add_assign&lt;T: RealField&gt;(x: T, y: f64) -&gt; T {
+    let mut z1: T = x;
+    z1 += y;
+
+    let mut z2: T = x;
+    z2 += &amp;y;
+
+    assert_eq!(z1, z2);
+
+    z1
+}
+
+fn main() {
+    assert_eq!(add_assign(1_f64, 2_f64), 3_f64);
+}</code></pre>
+<h2 id="subtraction-assignment-1"><a class="header" href="#subtraction-assignment-1">Subtraction-assignment</a></h2>
+<p>The following subtraction-assignment operations are supported for <code>T: RealField</code>:</p>
+<ul>
+<li><code>T -= f64</code></li>
+<li><code>T -= &amp;f64</code></li>
+</ul>
+<p><strong>Example</strong></p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn sub_assign&lt;T: RealField&gt;(x: T, y: f64) -&gt; T {
+    let mut z1: T = x;
+    z1 -= y;
+
+    let mut z2: T = x;
+    z2 -= &amp;y;
+
+    assert_eq!(z1, z2);
+
+    z1
+}
+
+fn main() {
+    assert_eq!(sub_assign(3_f64, 2_f64), 1_f64);
+}</code></pre>
+<h2 id="multiplication-assignment-1"><a class="header" href="#multiplication-assignment-1">Multiplication-assignment</a></h2>
+<p>The following multiplication-assignment operations are supported for <code>T: RealField</code>:</p>
+<ul>
+<li><code>T *= f64</code></li>
+<li><code>T *= &amp;f64</code></li>
+</ul>
+<p><strong>Example</strong></p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn mul_assign&lt;T: RealField&gt;(x: T, y: f64) -&gt; T {
+    let mut z1: T = x;
+    z1 *= y;
+
+    let mut z2: T = x;
+    z2 *= &amp;y;
+
+    assert_eq!(z1, z2);
+
+    z1
+}
+
+fn main() {
+    assert_eq!(mul_assign(2_f64, 3_f64), 6_f64);
+}</code></pre>
+<h2 id="division-assignment-1"><a class="header" href="#division-assignment-1">Division-assignment</a></h2>
+<p>The following division-assignment operations are supported for <code>T: RealField</code>:</p>
+<ul>
+<li><code>T /= f64</code></li>
+<li><code>T /= &amp;f64</code></li>
+</ul>
+<p><strong>Example</strong></p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn div_assign&lt;T: RealField&gt;(x: T, y: f64) -&gt; T {
+    let mut z1: T = x;
+    z1 /= y;
+
+    let mut z2: T = x;
+    z2 /= &amp;y;
+
+    assert_eq!(z1, z2);
+
+    z1
+}
+
+fn main() {
+    assert_eq!(div_assign(6_f64, 2_f64), 3_f64);
+}</code></pre>
+<h2 id="remainder-assignment-1"><a class="header" href="#remainder-assignment-1">Remainder-assignment</a></h2>
+<p>The following remainder-assignment operations are supported for <code>T: RealField</code>:</p>
+<ul>
+<li><code>T %= f64</code></li>
+<li><code>T %= &amp;f64</code></li>
+</ul>
+<p><strong>Example</strong></p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn rem_assign&lt;T: RealField&gt;(x: T, y: f64) -&gt; T {
+    let mut z1: T = x;
+    z1 %= y;
+
+    let mut z2: T = x;
+    z2 %= &amp;y;
+
+    assert_eq!(z1, z2);
+
+    z1
+}
+
+fn main() {
+    assert_eq!(rem_assign(5_f64, 3_f64), 2_f64);
+}</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
+<h1 id="methods"><a class="header" href="#methods">Methods</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
+<h1 id="zero-and-one"><a class="header" href="#zero-and-one">Zero and One</a></h1>
+<ul>
+<li><a href="#zero-additive-identity"><code>zero</code> (additive identity)</a></li>
+<li><a href="#one-multiplicative-identity"><code>one</code> (multiplicative identity)</a></li>
+</ul>
+<h2 id="zero-additive-identity"><a class="header" href="#zero-additive-identity"><code>zero</code> (additive identity)</a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.zero"><code>linalg_traits::RealField::zero</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn zero&lt;T: RealField&gt;() -&gt; T {
+    T::zero()
+}
+
+fn main() {
+    assert_eq!(zero::&lt;f64&gt;(), 0_f64);
+}</code></pre>
+<h2 id="one-multiplicative-identity"><a class="header" href="#one-multiplicative-identity"><code>one</code> (multiplicative identity)</a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.one"><code>linalg_traits::RealField::one</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn one&lt;T: RealField&gt;() -&gt; T {
+    T::one()
+}
+
+fn main() {
+    assert_eq!(one::&lt;f64&gt;(), 1_f64);
+}</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
+<h1 id="constants"><a class="header" href="#constants">Constants</a></h1>
+<ul>
+<li><a href="#e-eulers-number"><code>e</code> (Euler’s number)</a></li>
+<li><a href="#pi-π"><code>pi</code> (<code>π</code>)</a></li>
+<li><a href="#tau-τ-the-full-circle-constant"><code>tau</code> (<code>τ</code>, the full circle constant)</a></li>
+<li><a href="#two_pi-2π"><code>two_pi</code> (<code>2π</code>)</a></li>
+<li><a href="#euler_gamma-the-euler-mascheroni-constant-γ"><code>euler_gamma</code> (the Euler-Mascheroni constant, <code>γ</code>)</a></li>
+<li><a href="#golden_ratio-φ"><code>golden_ratio</code> (<code>φ</code>)</a></li>
+<li><a href="#frac_1_pi-1π"><code>frac_1_pi</code> (<code>1/π</code>)</a></li>
+<li><a href="#frac_2_pi-2π"><code>frac_2_pi</code> (<code>2/π</code>)</a></li>
+<li><a href="#frac_pi_2-π2"><code>frac_pi_2</code> (<code>π/2</code>)</a></li>
+<li><a href="#frac_pi_3-π3"><code>frac_pi_3</code> (<code>π/3</code>)</a></li>
+<li><a href="#frac_pi_4-π4"><code>frac_pi_4</code> (<code>π/4</code>)</a></li>
+<li><a href="#frac_pi_6-π6"><code>frac_pi_6</code> (<code>π/6</code>)</a></li>
+<li><a href="#frac_pi_8-π8"><code>frac_pi_8</code> (<code>π/8</code>)</a></li>
+<li><a href="#frac_2_sqrt_pi-2π"><code>frac_2_sqrt_pi</code> (<code>2/√π</code>)</a></li>
+<li><a href="#frac_1_sqrt_pi-1π"><code>frac_1_sqrt_pi</code> (<code>1/√π</code>)</a></li>
+<li><a href="#ln_2-ln2"><code>ln_2</code> (<code>ln(2)</code>)</a></li>
+<li><a href="#ln_10-ln10"><code>ln_10</code> (<code>ln(10)</code>)</a></li>
+<li><a href="#log2_e-log₂e"><code>log2_e</code> (<code>log₂(e)</code>)</a></li>
+<li><a href="#log10_e-log₁₀e"><code>log10_e</code> (<code>log₁₀(e)</code>)</a></li>
+<li><a href="#log2_10-log₂10"><code>log2_10</code> (<code>log₂(10)</code>)</a></li>
+<li><a href="#log10_2-log₁₀2"><code>log10_2</code> (<code>log₁₀(2)</code>)</a></li>
+<li><a href="#sqrt_2-2"><code>sqrt_2</code> (<code>√(2)</code>)</a></li>
+<li><a href="#sqrt_3-3"><code>sqrt_3</code> (<code>√(3)</code>)</a></li>
+<li><a href="#sqrt_5-5"><code>sqrt_5</code> (<code>√(5)</code>)</a></li>
+<li><a href="#frac_1_sqrt_2-12"><code>frac_1_sqrt_2</code> (<code>1/√(2)</code>)</a></li>
+<li><a href="#frac_1_sqrt_3-13"><code>frac_1_sqrt_3</code> (<code>1/√(3)</code>)</a></li>
+<li><a href="#frac_1_sqrt_5-15"><code>frac_1_sqrt_5</code> (<code>1/√(5)</code>)</a></li>
+<li><a href="#frac_1_sqrt_2pi-12π"><code>frac_1_sqrt_2pi</code> (<code>1/√(2π)</code>)</a></li>
+</ul>
+<h2 id="e-eulers-number"><a class="header" href="#e-eulers-number"><code>e</code> (Euler’s number)</a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.e"><code>linalg_traits::RealField::e</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn e&lt;T: RealField&gt;() -&gt; T {
+    T::e()
+}
+
+fn main() {
+    assert_eq!(e::&lt;f64&gt;(), std::f64::consts::E);
+}</code></pre>
+<h2 id="pi-π"><a class="header" href="#pi-π"><code>pi</code> (<code>π</code>)</a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.pi"><code>linalg_traits::RealField::pi</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn pi&lt;T: RealField&gt;() -&gt; T {
+    T::pi()
+}
+
+fn main() {
+    assert_eq!(pi::&lt;f64&gt;(), std::f64::consts::PI);
+}</code></pre>
+<h2 id="tau-τ-the-full-circle-constant"><a class="header" href="#tau-τ-the-full-circle-constant"><code>tau</code> (<code>τ</code>, the full circle constant)</a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.tau"><code>linalg_traits::RealField::tau</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn tau&lt;T: RealField&gt;() -&gt; T {
+    T::tau()
+}
+
+fn main() {
+    assert_eq!(tau::&lt;f64&gt;(), std::f64::consts::TAU);
+}</code></pre>
+<h2 id="two_pi-2π"><a class="header" href="#two_pi-2π"><code>two_pi</code> (<code>2π</code>)</a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.two_pi"><code>linalg_traits::RealField::two_pi</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn two_pi&lt;T: RealField&gt;() -&gt; T {
+    T::two_pi()
+}
+
+fn main() {
+    assert_eq!(two_pi::&lt;f64&gt;(), std::f64::consts::TAU);
+}</code></pre>
+<h2 id="euler_gamma-the-euler-mascheroni-constant-γ"><a class="header" href="#euler_gamma-the-euler-mascheroni-constant-γ"><code>euler_gamma</code> (the Euler-Mascheroni constant, <code>γ</code>)</a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.euler_gamma"><code>linalg_traits::RealField::euler_gamma</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn euler_gamma&lt;T: RealField&gt;() -&gt; T {
+    T::euler_gamma()
+}
+
+fn main() {
+    assert_eq!(euler_gamma::&lt;f64&gt;(), 0.577_215_664_901_532_9);
+}</code></pre>
+<h2 id="golden_ratio-φ"><a class="header" href="#golden_ratio-φ"><code>golden_ratio</code> (<code>φ</code>)</a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.golden_ratio"><code>linalg_traits::RealField::golden_ratio</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn golden_ratio&lt;T: RealField&gt;() -&gt; T {
+    T::golden_ratio()
+}
+
+#[allow(clippy::excessive_precision)]
+fn main() {
+    assert_eq!(
+        golden_ratio::&lt;f64&gt;(),
+        1.618_033_988_749_894_848_204_586_834_365_638_118
+    );
+}</code></pre>
+<h2 id="frac_1_pi-1π"><a class="header" href="#frac_1_pi-1π"><code>frac_1_pi</code> (<code>1/π</code>)</a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.frac_1_pi"><code>linalg_traits::RealField::frac_1_pi</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn frac_1_pi&lt;T: RealField&gt;() -&gt; T {
+    T::frac_1_pi()
+}
+
+fn main() {
+    assert_eq!(frac_1_pi::&lt;f64&gt;(), std::f64::consts::FRAC_1_PI);
+}</code></pre>
+<h2 id="frac_2_pi-2π"><a class="header" href="#frac_2_pi-2π"><code>frac_2_pi</code> (<code>2/π</code>)</a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.frac_2_pi"><code>linalg_traits::RealField::frac_2_pi</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn frac_2_pi&lt;T: RealField&gt;() -&gt; T {
+    T::frac_2_pi()
+}
+
+fn main() {
+    assert_eq!(frac_2_pi::&lt;f64&gt;(), std::f64::consts::FRAC_2_PI);
+}</code></pre>
+<h2 id="frac_pi_2-π2"><a class="header" href="#frac_pi_2-π2"><code>frac_pi_2</code> (<code>π/2</code>)</a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.frac_pi_2"><code>linalg_traits::RealField::frac_pi_2</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn frac_pi_2&lt;T: RealField&gt;() -&gt; T {
+    T::frac_pi_2()
+}
+
+fn main() {
+    assert_eq!(frac_pi_2::&lt;f64&gt;(), std::f64::consts::FRAC_PI_2);
+}</code></pre>
+<h2 id="frac_pi_3-π3"><a class="header" href="#frac_pi_3-π3"><code>frac_pi_3</code> (<code>π/3</code>)</a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.frac_pi_3"><code>linalg_traits::RealField::frac_pi_3</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn frac_pi_3&lt;T: RealField&gt;() -&gt; T {
+    T::frac_pi_3()
+}
+
+fn main() {
+    assert_eq!(frac_pi_3::&lt;f64&gt;(), std::f64::consts::FRAC_PI_3);
+}</code></pre>
+<h2 id="frac_pi_4-π4"><a class="header" href="#frac_pi_4-π4"><code>frac_pi_4</code> (<code>π/4</code>)</a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.frac_pi_4"><code>linalg_traits::RealField::frac_pi_4</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn frac_pi_4&lt;T: RealField&gt;() -&gt; T {
+    T::frac_pi_4()
+}
+
+fn main() {
+    assert_eq!(frac_pi_4::&lt;f64&gt;(), std::f64::consts::FRAC_PI_4);
+}</code></pre>
+<h2 id="frac_pi_6-π6"><a class="header" href="#frac_pi_6-π6"><code>frac_pi_6</code> (<code>π/6</code>)</a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.frac_pi_6"><code>linalg_traits::RealField::frac_pi_6</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn frac_pi_6&lt;T: RealField&gt;() -&gt; T {
+    T::frac_pi_6()
+}
+
+fn main() {
+    assert_eq!(frac_pi_6::&lt;f64&gt;(), std::f64::consts::FRAC_PI_6);
+}</code></pre>
+<h2 id="frac_pi_8-π8"><a class="header" href="#frac_pi_8-π8"><code>frac_pi_8</code> (<code>π/8</code>)</a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.frac_pi_8"><code>linalg_traits::RealField::frac_pi_8</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn frac_pi_8&lt;T: RealField&gt;() -&gt; T {
+    T::frac_pi_8()
+}
+
+fn main() {
+    assert_eq!(frac_pi_8::&lt;f64&gt;(), std::f64::consts::FRAC_PI_8);
+}</code></pre>
+<h2 id="frac_2_sqrt_pi-2π"><a class="header" href="#frac_2_sqrt_pi-2π"><code>frac_2_sqrt_pi</code> (<code>2/√π</code>)</a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.frac_2_sqrt_pi"><code>linalg_traits::RealField::frac_2_sqrt_pi</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn frac_2_sqrt_pi&lt;T: RealField&gt;() -&gt; T {
+    T::frac_2_sqrt_pi()
+}
+
+fn main() {
+    assert_eq!(frac_2_sqrt_pi::&lt;f64&gt;(), std::f64::consts::FRAC_2_SQRT_PI);
+}</code></pre>
+<h2 id="frac_1_sqrt_pi-1π"><a class="header" href="#frac_1_sqrt_pi-1π"><code>frac_1_sqrt_pi</code> (<code>1/√π</code>)</a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.frac_1_sqrt_pi"><code>linalg_traits::RealField::frac_1_sqrt_pi</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn frac_1_sqrt_pi&lt;T: RealField&gt;() -&gt; T {
+    T::frac_1_sqrt_pi()
+}
+
+#[allow(clippy::excessive_precision)]
+fn main() {
+    assert_eq!(
+        frac_1_sqrt_pi::&lt;f64&gt;(),
+        0.564_189_583_547_756_286_948_079_451_560_772_586
+    );
+}</code></pre>
+<h2 id="ln_2-ln2"><a class="header" href="#ln_2-ln2"><code>ln_2</code> (<code>ln(2)</code>)</a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.ln_2"><code>linalg_traits::RealField::ln_2</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn ln_2&lt;T: RealField&gt;() -&gt; T {
+    T::ln_2()
+}
+
+fn main() {
+    assert_eq!(ln_2::&lt;f64&gt;(), std::f64::consts::LN_2);
+}</code></pre>
+<h2 id="ln_10-ln10"><a class="header" href="#ln_10-ln10"><code>ln_10</code> (<code>ln(10)</code>)</a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.ln_10"><code>linalg_traits::RealField::ln_10</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn ln_10&lt;T: RealField&gt;() -&gt; T {
+    T::ln_10()
+}
+
+fn main() {
+    assert_eq!(ln_10::&lt;f64&gt;(), std::f64::consts::LN_10);
+}</code></pre>
+<h2 id="log2_e-log₂e"><a class="header" href="#log2_e-log₂e"><code>log2_e</code> (<code>log₂(e)</code>)</a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.log2_e"><code>linalg_traits::RealField::log2_e</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn log2_e&lt;T: RealField&gt;() -&gt; T {
+    T::log2_e()
+}
+
+fn main() {
+    assert_eq!(log2_e::&lt;f64&gt;(), std::f64::consts::LOG2_E);
+}</code></pre>
+<h2 id="log10_e-log₁₀e"><a class="header" href="#log10_e-log₁₀e"><code>log10_e</code> (<code>log₁₀(e)</code>)</a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.log10_e"><code>linalg_traits::RealField::log10_e</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn log10_e&lt;T: RealField&gt;() -&gt; T {
+    T::log10_e()
+}
+
+fn main() {
+    assert_eq!(log10_e::&lt;f64&gt;(), std::f64::consts::LOG10_E);
+}</code></pre>
+<h2 id="log2_10-log₂10"><a class="header" href="#log2_10-log₂10"><code>log2_10</code> (<code>log₂(10)</code>)</a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.log2_10"><code>linalg_traits::RealField::log2_10</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn log2_10&lt;T: RealField&gt;() -&gt; T {
+    T::log2_10()
+}
+
+fn main() {
+    assert_eq!(log2_10::&lt;f64&gt;(), std::f64::consts::LOG2_10);
+}</code></pre>
+<h2 id="log10_2-log₁₀2"><a class="header" href="#log10_2-log₁₀2"><code>log10_2</code> (<code>log₁₀(2)</code>)</a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.log10_2"><code>linalg_traits::RealField::log10_2</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn log10_2&lt;T: RealField&gt;() -&gt; T {
+    T::log10_2()
+}
+
+fn main() {
+    assert_eq!(log10_2::&lt;f64&gt;(), std::f64::consts::LOG10_2);
+}</code></pre>
+<h2 id="sqrt_2-2"><a class="header" href="#sqrt_2-2"><code>sqrt_2</code> (<code>√(2)</code>)</a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.sqrt_2"><code>linalg_traits::RealField::sqrt_2</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn sqrt_2&lt;T: RealField&gt;() -&gt; T {
+    T::sqrt_2()
+}
+
+fn main() {
+    assert_eq!(sqrt_2::&lt;f64&gt;(), std::f64::consts::SQRT_2);
+}</code></pre>
+<h2 id="sqrt_3-3"><a class="header" href="#sqrt_3-3"><code>sqrt_3</code> (<code>√(3)</code>)</a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.sqrt_3"><code>linalg_traits::RealField::sqrt_3</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn sqrt_3&lt;T: RealField&gt;() -&gt; T {
+    T::sqrt_3()
+}
+
+#[allow(clippy::excessive_precision)]
+fn main() {
+    assert_eq!(
+        sqrt_3::&lt;f64&gt;(),
+        1.732_050_807_568_877_293_527_446_341_505_872_367
+    );
+}</code></pre>
+<h2 id="sqrt_5-5"><a class="header" href="#sqrt_5-5"><code>sqrt_5</code> (<code>√(5)</code>)</a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.sqrt_5"><code>linalg_traits::RealField::sqrt_5</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn sqrt_5&lt;T: RealField&gt;() -&gt; T {
+    T::sqrt_5()
+}
+
+#[allow(clippy::excessive_precision)]
+fn main() {
+    assert_eq!(
+        sqrt_5::&lt;f64&gt;(),
+        2.236_067_977_499_789_696_409_173_668_731_276_23
+    );
+}</code></pre>
+<h2 id="frac_1_sqrt_2-12"><a class="header" href="#frac_1_sqrt_2-12"><code>frac_1_sqrt_2</code> (<code>1/√(2)</code>)</a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.frac_1_sqrt_2"><code>linalg_traits::RealField::frac_1_sqrt_2</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn frac_1_sqrt_2&lt;T: RealField&gt;() -&gt; T {
+    T::frac_1_sqrt_2()
+}
+
+fn main() {
+    assert_eq!(frac_1_sqrt_2::&lt;f64&gt;(), std::f64::consts::FRAC_1_SQRT_2);
+}</code></pre>
+<h2 id="frac_1_sqrt_3-13"><a class="header" href="#frac_1_sqrt_3-13"><code>frac_1_sqrt_3</code> (<code>1/√(3)</code>)</a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.frac_1_sqrt_3"><code>linalg_traits::RealField::frac_1_sqrt_3</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn frac_1_sqrt_3&lt;T: RealField&gt;() -&gt; T {
+    T::frac_1_sqrt_3()
+}
+
+#[allow(clippy::excessive_precision)]
+fn main() {
+    assert_eq!(
+        frac_1_sqrt_3::&lt;f64&gt;(),
+        0.577_350_269_189_625_764_509_148_780_501_957_456
+    );
+}</code></pre>
+<h2 id="frac_1_sqrt_5-15"><a class="header" href="#frac_1_sqrt_5-15"><code>frac_1_sqrt_5</code> (<code>1/√(5)</code>)</a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.frac_1_sqrt_5"><code>linalg_traits::RealField::frac_1_sqrt_5</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn frac_1_sqrt_5&lt;T: RealField&gt;() -&gt; T {
+    T::frac_1_sqrt_5()
+}
+
+#[allow(clippy::excessive_precision)]
+fn main() {
+    assert_eq!(
+        frac_1_sqrt_5::&lt;f64&gt;(),
+        0.447_213_595_499_957_939_281_834_733_746_255_24
+    );
+}</code></pre>
+<h2 id="frac_1_sqrt_2pi-12π"><a class="header" href="#frac_1_sqrt_2pi-12π"><code>frac_1_sqrt_2pi</code> (<code>1/√(2π)</code>)</a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.frac_1_sqrt_2pi"><code>linalg_traits::RealField::frac_1_sqrt_2pi</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn frac_1_sqrt_2pi&lt;T: RealField&gt;() -&gt; T {
+    T::frac_1_sqrt_2pi()
+}
+
+#[allow(clippy::excessive_precision)]
+fn main() {
+    assert_eq!(
+        frac_1_sqrt_2pi::&lt;f64&gt;(),
+        0.398_942_280_401_432_677_939_946_059_934_381_868
+    );
+}</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
+<h1 id="magnitude"><a class="header" href="#magnitude">Magnitude</a></h1>
+<ul>
+<li><a href="#abs-absolute-value"><code>abs</code> (absolute value)</a></li>
+<li><a href="#hypot-hypotenuse"><code>hypot</code> (hypotenuse)</a></li>
+</ul>
+<h2 id="abs-absolute-value"><a class="header" href="#abs-absolute-value"><code>abs</code> (absolute value)</a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.abs"><code>linalg_traits::RealField::abs</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+// When the `nalgebra` feature is active, the `abs` method always has to be disambiguated because
+// `num_traits::Signed` and `simba::scalar::ComplexField` (both of which are supertraits of
+// `nalgebra::RealField`) define an `abs` method.
+#[cfg(feature = "nalgebra")]
+fn abs&lt;T: RealField&gt;(x: T) -&gt; T {
+    let y1: T = x.abs();
+    let y2: T = &lt;T as num_traits::Signed&gt;::abs(&amp;x);
+
+    assert_eq!(y1, y2);
+
+    y1
+}
+
+#[cfg(not(feature = "nalgebra"))]
+fn abs&lt;T: RealField&gt;(x: T) -&gt; T {
+    let y1: T = x.abs();
+    let y2: T = T::abs(&amp;x);
+
+    assert_eq!(y1, y2);
+
+    y1
+}
+
+fn main() {
+    assert_eq!(abs(-2_f64), 2_f64);
+}</code></pre>
+<h2 id="hypot-hypotenuse"><a class="header" href="#hypot-hypotenuse"><code>hypot</code> (hypotenuse)</a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.hypot"><code>linalg_traits::RealField::hypot</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn hypot&lt;T: RealField&gt;(x: T, y: T) -&gt; T {
+    let z1: T = x.hypot(y);
+    let z2: T = T::hypot(x, y);
+
+    assert_eq!(z1, z2);
+
+    z1
+}
+
+fn main() {
+    assert_eq!(hypot(3_f64, 4_f64), 5_f64);
+}</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
+<h1 id="scaling-and-arithmetic"><a class="header" href="#scaling-and-arithmetic">Scaling and Arithmetic</a></h1>
+<ul>
+<li><a href="#scale-multiply-by-a-factor"><code>scale</code> (multiply by a factor)</a></li>
+<li><a href="#unscale-divide-by-a-factor"><code>unscale</code> (divide by a factor)</a></li>
+<li><a href="#recip-reciprocal"><code>recip</code> (reciprocal)</a></li>
+<li><a href="#mul_add-fused-multiply-add"><code>mul_add</code> (fused multiply-add)</a></li>
+</ul>
+<h2 id="scale-multiply-by-a-factor"><a class="header" href="#scale-multiply-by-a-factor"><code>scale</code> (multiply by a factor)</a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.scale"><code>linalg_traits::RealField::scale</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn scale&lt;T: RealField&gt;(x: T, factor: T) -&gt; T {
+    let y1: T = x.scale(factor);
+    let y2: T = T::scale(x, factor);
+
+    assert_eq!(y1, y2);
+
+    y1
+}
+
+fn main() {
+    assert_eq!(scale(2_f64, 3_f64), 6_f64);
+}</code></pre>
+<h2 id="unscale-divide-by-a-factor"><a class="header" href="#unscale-divide-by-a-factor"><code>unscale</code> (divide by a factor)</a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.unscale"><code>linalg_traits::RealField::unscale</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn unscale&lt;T: RealField&gt;(x: T, factor: T) -&gt; T {
+    let y1: T = x.unscale(factor);
+    let y2: T = T::unscale(x, factor);
+
+    assert_eq!(y1, y2);
+
+    y1
+}
+
+fn main() {
+    assert_eq!(unscale(6_f64, 3_f64), 2_f64);
+}</code></pre>
+<h2 id="recip-reciprocal"><a class="header" href="#recip-reciprocal"><code>recip</code> (reciprocal)</a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.recip"><code>linalg_traits::RealField::recip</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn recip&lt;T: RealField&gt;(x: T) -&gt; T {
+    let y1: T = x.recip();
+    let y2: T = T::recip(x);
+
+    assert_eq!(y1, y2);
+
+    y1
+}
+
+fn main() {
+    assert_eq!(recip(4_f64), 0.25_f64);
+}</code></pre>
+<h2 id="mul_add-fused-multiply-add"><a class="header" href="#mul_add-fused-multiply-add"><code>mul_add</code> (fused multiply-add)</a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.mul_add"><code>linalg_traits::RealField::mul_add</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn mul_add&lt;T: RealField&gt;(x: T, a: T, b: T) -&gt; T {
+    let y1: T = x.mul_add(a, b);
+    let y2: T = T::mul_add(x, a, b);
+
+    assert_eq!(y1, y2);
+
+    y1
+}
+
+fn main() {
+    assert_eq!(mul_add(2_f64, 3_f64, 4_f64), 10_f64);
+}</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
+<h1 id="roots"><a class="header" href="#roots">Roots</a></h1>
+<ul>
+<li><a href="#sqrt-square-root"><code>sqrt</code> (square root)</a></li>
+<li><a href="#try_sqrt-fallible-square-root"><code>try_sqrt</code> (fallible square root)</a></li>
+<li><a href="#cbrt-cube-root"><code>cbrt</code> (cube root)</a></li>
+</ul>
+<h2 id="sqrt-square-root"><a class="header" href="#sqrt-square-root"><code>sqrt</code> (square root)</a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.sqrt"><code>linalg_traits::RealField::sqrt</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn sqrt&lt;T: RealField&gt;(x: T) -&gt; T {
+    let y1: T = x.sqrt();
+    let y2: T = T::sqrt(x);
+
+    assert_eq!(y1, y2);
+
+    y1
+}
+
+fn main() {
+    assert_eq!(sqrt(4_f64), 2_f64);
+}</code></pre>
+<h2 id="try_sqrt-fallible-square-root"><a class="header" href="#try_sqrt-fallible-square-root"><code>try_sqrt</code> (fallible square root)</a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.try_sqrt"><code>linalg_traits::RealField::try_sqrt</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn try_sqrt&lt;T: RealField&gt;(x: T) -&gt; Option&lt;T&gt; {
+    let y1: Option&lt;T&gt; = x.try_sqrt();
+    let y2: Option&lt;T&gt; = T::try_sqrt(x);
+
+    assert_eq!(y1, y2);
+
+    y1
+}
+
+fn main() {
+    assert_eq!(try_sqrt(4_f64), Some(2_f64));
+    assert_eq!(try_sqrt(-1_f64), None);
+}</code></pre>
+<h2 id="cbrt-cube-root"><a class="header" href="#cbrt-cube-root"><code>cbrt</code> (cube root)</a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.cbrt"><code>linalg_traits::RealField::cbrt</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn cbrt&lt;T: RealField&gt;(x: T) -&gt; T {
+    let y1: T = x.cbrt();
+    let y2: T = T::cbrt(x);
+
+    assert_eq!(y1, y2);
+
+    y1
+}
+
+fn main() {
+    assert_eq!(cbrt(8_f64), 2_f64);
+}</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
+<h1 id="powers"><a class="header" href="#powers">Powers</a></h1>
+<ul>
+<li><a href="#powi-integer-power"><code>powi</code> (integer power)</a></li>
+<li><a href="#powf-floating-point-power"><code>powf</code> (floating-point power)</a></li>
+</ul>
+<h2 id="powi-integer-power"><a class="header" href="#powi-integer-power"><code>powi</code> (integer power)</a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.powi"><code>linalg_traits::RealField::powi</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn powi&lt;T: RealField&gt;(x: T, n: i32) -&gt; T {
+    let y1: T = x.powi(n);
+    let y2: T = T::powi(x, n);
+
+    assert_eq!(y1, y2);
+
+    y1
+}
+
+fn main() {
+    assert_eq!(powi(2_f64, 3), 8_f64);
+}</code></pre>
+<h2 id="powf-floating-point-power"><a class="header" href="#powf-floating-point-power"><code>powf</code> (floating-point power)</a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.powf"><code>linalg_traits::RealField::powf</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn powf&lt;T: RealField&gt;(x: T, n: T) -&gt; T {
+    let y1: T = x.powf(n);
+    let y2: T = T::powf(x, n);
+
+    assert_eq!(y1, y2);
+
+    y1
+}
+
+fn main() {
+    assert_eq!(powf(2_f64, 3_f64), 8_f64);
+}</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
+<h1 id="exponential-and-logarithmic-functions"><a class="header" href="#exponential-and-logarithmic-functions">Exponential and Logarithmic Functions</a></h1>
+<ul>
+<li><a href="#exp-exponential-function"><code>exp</code> (exponential function)</a></li>
+<li><a href="#exp2-base-2-exponential-function"><code>exp2</code> (base-2 exponential function)</a></li>
+<li><a href="#exp_m1-exponential-function-minus-1"><code>exp_m1</code> (exponential function, minus 1)</a></li>
+<li><a href="#ln-natural-logarithm"><code>ln</code> (natural logarithm)</a></li>
+<li><a href="#ln_1p-natural-logarithm-of-1-plus-the-argument"><code>ln_1p</code> (natural logarithm of 1 plus the argument)</a></li>
+<li><a href="#log-logarithm-with-respect-to-an-arbitrary-base"><code>log</code> (logarithm with respect to an arbitrary base)</a></li>
+<li><a href="#log2-base-2-logarithm"><code>log2</code> (base-2 logarithm)</a></li>
+<li><a href="#log10-base-10-logarithm"><code>log10</code> (base-10 logarithm)</a></li>
+</ul>
+<h2 id="exp-exponential-function"><a class="header" href="#exp-exponential-function"><code>exp</code> (exponential function)</a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.exp"><code>linalg_traits::RealField::exp</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn exp&lt;T: RealField&gt;(x: T) -&gt; T {
+    let y1: T = x.exp();
+    let y2: T = T::exp(x);
+
+    assert_eq!(y1, y2);
+
+    y1
+}
+
+fn main() {
+    assert_eq!(exp(0_f64), 1_f64);
+}</code></pre>
+<h2 id="exp2-base-2-exponential-function"><a class="header" href="#exp2-base-2-exponential-function"><code>exp2</code> (base-2 exponential function)</a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.exp2"><code>linalg_traits::RealField::exp2</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn exp2&lt;T: RealField&gt;(x: T) -&gt; T {
+    let y1: T = x.exp2();
+    let y2: T = T::exp2(x);
+
+    assert_eq!(y1, y2);
+
+    y1
+}
+
+fn main() {
+    assert_eq!(exp2(3_f64), 8_f64);
+}</code></pre>
+<h2 id="exp_m1-exponential-function-minus-1"><a class="header" href="#exp_m1-exponential-function-minus-1"><code>exp_m1</code> (exponential function, minus 1)</a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.exp_m1"><code>linalg_traits::RealField::exp_m1</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn exp_m1&lt;T: RealField&gt;(x: T) -&gt; T {
+    let y1: T = x.exp_m1();
+    let y2: T = T::exp_m1(x);
+
+    assert_eq!(y1, y2);
+
+    y1
+}
+
+fn main() {
+    assert_eq!(exp_m1(0_f64), 0_f64);
+}</code></pre>
+<h2 id="ln-natural-logarithm"><a class="header" href="#ln-natural-logarithm"><code>ln</code> (natural logarithm)</a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.ln"><code>linalg_traits::RealField::ln</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn ln&lt;T: RealField&gt;(x: T) -&gt; T {
+    let y1: T = x.ln();
+    let y2: T = T::ln(x);
+
+    assert_eq!(y1, y2);
+
+    y1
+}
+
+fn main() {
+    assert_eq!(ln(1_f64), 0_f64);
+}</code></pre>
+<h2 id="ln_1p-natural-logarithm-of-1-plus-the-argument"><a class="header" href="#ln_1p-natural-logarithm-of-1-plus-the-argument"><code>ln_1p</code> (natural logarithm of 1 plus the argument)</a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.ln_1p"><code>linalg_traits::RealField::ln_1p</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn ln_1p&lt;T: RealField&gt;(x: T) -&gt; T {
+    let y1: T = x.ln_1p();
+    let y2: T = T::ln_1p(x);
+
+    assert_eq!(y1, y2);
+
+    y1
+}
+
+fn main() {
+    assert_eq!(ln_1p(0_f64), 0_f64);
+}</code></pre>
+<h2 id="log-logarithm-with-respect-to-an-arbitrary-base"><a class="header" href="#log-logarithm-with-respect-to-an-arbitrary-base"><code>log</code> (logarithm with respect to an arbitrary base)</a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.log"><code>linalg_traits::RealField::log</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn log&lt;T: RealField&gt;(x: T, base: T) -&gt; T {
+    let y1: T = x.log(base);
+    let y2: T = T::log(x, base);
+
+    assert_eq!(y1, y2);
+
+    y1
+}
+
+fn main() {
+    assert_eq!(log(8_f64, 2_f64), 3_f64);
+}</code></pre>
+<h2 id="log2-base-2-logarithm"><a class="header" href="#log2-base-2-logarithm"><code>log2</code> (base-2 logarithm)</a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.log2"><code>linalg_traits::RealField::log2</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn log2&lt;T: RealField&gt;(x: T) -&gt; T {
+    let y1: T = x.log2();
+    let y2: T = T::log2(x);
+
+    assert_eq!(y1, y2);
+
+    y1
+}
+
+fn main() {
+    assert_eq!(log2(8_f64), 3_f64);
+}</code></pre>
+<h2 id="log10-base-10-logarithm"><a class="header" href="#log10-base-10-logarithm"><code>log10</code> (base-10 logarithm)</a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.log10"><code>linalg_traits::RealField::log10</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn log10&lt;T: RealField&gt;(x: T) -&gt; T {
+    let y1: T = x.log10();
+    let y2: T = T::log10(x);
+
+    assert_eq!(y1, y2);
+
+    y1
+}
+
+fn main() {
+    assert_eq!(log10(1000_f64), 3_f64);
+}</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
+<h1 id="angle-conversions"><a class="header" href="#angle-conversions">Angle Conversions</a></h1>
+<ul>
+<li><a href="#to_degrees-radians-to-degrees"><code>to_degrees</code> (radians to degrees)</a></li>
+<li><a href="#to_radians-degrees-to-radians"><code>to_radians</code> (degrees to radians)</a></li>
+</ul>
+<h2 id="to_degrees-radians-to-degrees"><a class="header" href="#to_degrees-radians-to-degrees"><code>to_degrees</code> (radians to degrees)</a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.to_degrees"><code>linalg_traits::RealField::to_degrees</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn to_degrees&lt;T: RealField&gt;(x: T) -&gt; T {
+    let y1: T = x.to_degrees();
+    let y2: T = T::to_degrees(x);
+
+    assert_eq!(y1, y2);
+
+    y1
+}
+
+fn main() {
+    assert_eq!(to_degrees(0_f64), 0_f64);
+}</code></pre>
+<h2 id="to_radians-degrees-to-radians"><a class="header" href="#to_radians-degrees-to-radians"><code>to_radians</code> (degrees to radians)</a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.to_radians"><code>linalg_traits::RealField::to_radians</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn to_radians&lt;T: RealField&gt;(x: T) -&gt; T {
+    let y1: T = x.to_radians();
+    let y2: T = T::to_radians(x);
+
+    assert_eq!(y1, y2);
+
+    y1
+}
+
+fn main() {
+    assert_eq!(to_radians(0_f64), 0_f64);
+}</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
+<h1 id="trigonometric-functions"><a class="header" href="#trigonometric-functions">Trigonometric functions</a></h1>
+<ul>
+<li><a href="#sin-sine"><code>sin</code> (sine)</a></li>
+<li><a href="#cos-cosine"><code>cos</code> (cosine)</a></li>
+<li><a href="#sin_cos-sine-and-cosine"><code>sin_cos</code> (sine and cosine)</a></li>
+<li><a href="#tan-tangent"><code>tan</code> (tangent)</a></li>
+<li><a href="#csc-cosecant"><code>csc</code> (cosecant)</a></li>
+<li><a href="#sec-secant"><code>sec</code> (secant)</a></li>
+<li><a href="#cot-cotangent"><code>cot</code> (cotangent)</a></li>
+<li><a href="#asin-arcsine"><code>asin</code> (arcsine)</a></li>
+<li><a href="#acos-arccosine"><code>acos</code> (arccosine)</a></li>
+<li><a href="#atan-arctangent"><code>atan</code> (arctangent)</a></li>
+<li><a href="#atan2-four-quadrant-arctangent"><code>atan2</code> (four-quadrant arctangent)</a></li>
+<li><a href="#acsc-arccosecant"><code>acsc</code> (arccosecant)</a></li>
+<li><a href="#asec-arcsecant"><code>asec</code> (arcsecant)</a></li>
+<li><a href="#acot-arccotangent"><code>acot</code> (arccotangent)</a></li>
+<li><a href="#sind-sine-argument-in-degrees"><code>sind</code> (sine, argument in degrees)</a></li>
+<li><a href="#cosd-cosine-argument-in-degrees"><code>cosd</code> (cosine, argument in degrees)</a></li>
+<li><a href="#sind_cosd-sine-and-cosine-argument-in-degrees"><code>sind_cosd</code> (sine and cosine, argument in degrees)</a></li>
+<li><a href="#tand-tangent-argument-in-degrees"><code>tand</code> (tangent, argument in degrees)</a></li>
+<li><a href="#cscd-cosecant-argument-in-degrees"><code>cscd</code> (cosecant, argument in degrees)</a></li>
+<li><a href="#secd-secant-argument-in-degrees"><code>secd</code> (secant, argument in degrees)</a></li>
+<li><a href="#cotd-cotangent-argument-in-degrees"><code>cotd</code> (cotangent, argument in degrees)</a></li>
+<li><a href="#asind-arcsine-return-value-in-degrees"><code>asind</code> (arcsine, return value in degrees)</a></li>
+<li><a href="#acosd-arccosine-return-value-in-degrees"><code>acosd</code> (arccosine, return value in degrees)</a></li>
+<li><a href="#atand-arctangent-return-value-in-degrees"><code>atand</code> (arctangent, return value in degrees)</a></li>
+<li><a href="#atan2d-four-quadrant-arctangent-return-value-in-degrees"><code>atan2d</code> (four-quadrant arctangent, return value in degrees)</a></li>
+<li><a href="#acscd-arccosecant-return-value-in-degrees"><code>acscd</code> (arccosecant, return value in degrees)</a></li>
+<li><a href="#asecd-arcsecant-return-value-in-degrees"><code>asecd</code> (arcsecant, return value in degrees)</a></li>
+<li><a href="#acotd-arccotangent-return-value-in-degrees"><code>acotd</code> (arccotangent, return value in degrees)</a></li>
+<li><a href="#sinh-hyperbolic-sine"><code>sinh</code> (hyperbolic sine)</a></li>
+<li><a href="#cosh-hyperbolic-cosine"><code>cosh</code> (hyperbolic cosine)</a></li>
+<li><a href="#sinh_cosh-hyperbolic-sine-and-cosine"><code>sinh_cosh</code> (hyperbolic sine and cosine)</a></li>
+<li><a href="#tanh-hyperbolic-tangent"><code>tanh</code> (hyperbolic tangent)</a></li>
+<li><a href="#csch-hyperbolic-cosecant"><code>csch</code> (hyperbolic cosecant)</a></li>
+<li><a href="#sech-hyperbolic-secant"><code>sech</code> (hyperbolic secant)</a></li>
+<li><a href="#coth-hyperbolic-cotangent"><code>coth</code> (hyperbolic cotangent)</a></li>
+<li><a href="#asinh-inverse-hyperbolic-sine"><code>asinh</code> (inverse hyperbolic sine)</a></li>
+<li><a href="#acosh-inverse-hyperbolic-cosine"><code>acosh</code> (inverse hyperbolic cosine)</a></li>
+<li><a href="#atanh-inverse-hyperbolic-tangent"><code>atanh</code> (inverse hyperbolic tangent)</a></li>
+<li><a href="#acsch-inverse-hyperbolic-cosecant"><code>acsch</code> (inverse hyperbolic cosecant)</a></li>
+<li><a href="#asech-inverse-hyperbolic-secant"><code>asech</code> (inverse hyperbolic secant)</a></li>
+<li><a href="#acoth-inverse-hyperbolic-cotangent"><code>acoth</code> (inverse hyperbolic cotangent)</a></li>
+</ul>
+<h2 id="sin-sine"><a class="header" href="#sin-sine"><code>sin</code> (sine)</a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.sin"><code>linalg_traits::RealField::sin</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn sin&lt;T: RealField&gt;(x: T) -&gt; T {
+    let y1: T = x.sin();
+    let y2: T = T::sin(x);
+
+    assert_eq!(y1, y2);
+
+    y1
+}
+
+fn main() {
+    assert_eq!(sin(0_f64), 0_f64);
+}</code></pre>
+<h2 id="cos-cosine"><a class="header" href="#cos-cosine"><code>cos</code> (cosine)</a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.cos"><code>linalg_traits::RealField::cos</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn cos&lt;T: RealField&gt;(x: T) -&gt; T {
+    let y1: T = x.cos();
+    let y2: T = T::cos(x);
+
+    assert_eq!(y1, y2);
+
+    y1
+}
+
+fn main() {
+    assert_eq!(cos(0_f64), 1_f64);
+}</code></pre>
+<h2 id="sin_cos-sine-and-cosine"><a class="header" href="#sin_cos-sine-and-cosine"><code>sin_cos</code> (sine and cosine)</a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.sin_cos"><code>linalg_traits::RealField::sin_cos</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn sin_cos&lt;T: RealField&gt;(x: T) -&gt; (T, T) {
+    let y1: (T, T) = x.sin_cos();
+    let y2: (T, T) = T::sin_cos(x);
+
+    assert_eq!(y1, y2);
+
+    y1
+}
+
+fn main() {
+    assert_eq!(sin_cos(0_f64), (0_f64, 1_f64));
+}</code></pre>
+<h2 id="tan-tangent"><a class="header" href="#tan-tangent"><code>tan</code> (tangent)</a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.tan"><code>linalg_traits::RealField::tan</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn tan&lt;T: RealField&gt;(x: T) -&gt; T {
+    let y1: T = x.tan();
+    let y2: T = T::tan(x);
+
+    assert_eq!(y1, y2);
+
+    y1
+}
+
+fn main() {
+    assert_eq!(tan(0_f64), 0_f64);
+}</code></pre>
+<h2 id="csc-cosecant"><a class="header" href="#csc-cosecant"><code>csc</code> (cosecant)</a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.csc"><code>linalg_traits::RealField::csc</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn csc&lt;T: RealField&gt;(x: T) -&gt; T {
+    let y1: T = x.csc();
+    let y2: T = T::csc(x);
+
+    assert_eq!(y1, y2);
+
+    y1
+}
+
+fn main() {
+    assert_eq!(csc(1_f64), 1_f64.sin().recip());
+}</code></pre>
+<h2 id="sec-secant"><a class="header" href="#sec-secant"><code>sec</code> (secant)</a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.sec"><code>linalg_traits::RealField::sec</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn sec&lt;T: RealField&gt;(x: T) -&gt; T {
+    let y1: T = x.sec();
+    let y2: T = T::sec(x);
+
+    assert_eq!(y1, y2);
+
+    y1
+}
+
+fn main() {
+    assert_eq!(sec(1_f64), 1_f64.cos().recip());
+}</code></pre>
+<h2 id="cot-cotangent"><a class="header" href="#cot-cotangent"><code>cot</code> (cotangent)</a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.cot"><code>linalg_traits::RealField::cot</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn cot&lt;T: RealField&gt;(x: T) -&gt; T {
+    let y1: T = x.cot();
+    let y2: T = T::cot(x);
+
+    assert_eq!(y1, y2);
+
+    y1
+}
+
+fn main() {
+    assert_eq!(cot(1_f64), 1_f64.cos() / 1_f64.sin());
+}</code></pre>
+<h2 id="asin-arcsine"><a class="header" href="#asin-arcsine"><code>asin</code> (arcsine)</a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.asin"><code>linalg_traits::RealField::asin</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn asin&lt;T: RealField&gt;(x: T) -&gt; T {
+    let y1: T = x.asin();
+    let y2: T = T::asin(x);
+
+    assert_eq!(y1, y2);
+
+    y1
+}
+
+fn main() {
+    assert_eq!(asin(0_f64), 0_f64);
+}</code></pre>
+<h2 id="acos-arccosine"><a class="header" href="#acos-arccosine"><code>acos</code> (arccosine)</a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.acos"><code>linalg_traits::RealField::acos</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn acos&lt;T: RealField&gt;(x: T) -&gt; T {
+    let y1: T = x.acos();
+    let y2: T = T::acos(x);
+
+    assert_eq!(y1, y2);
+
+    y1
+}
+
+fn main() {
+    assert_eq!(acos(1_f64), 0_f64);
+}</code></pre>
+<h2 id="atan-arctangent"><a class="header" href="#atan-arctangent"><code>atan</code> (arctangent)</a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.atan"><code>linalg_traits::RealField::atan</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn atan&lt;T: RealField&gt;(x: T) -&gt; T {
+    let y1: T = x.atan();
+    let y2: T = T::atan(x);
+
+    assert_eq!(y1, y2);
+
+    y1
+}
+
+fn main() {
+    assert_eq!(atan(0_f64), 0_f64);
+}</code></pre>
+<h2 id="atan2-four-quadrant-arctangent"><a class="header" href="#atan2-four-quadrant-arctangent"><code>atan2</code> (four-quadrant arctangent)</a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.atan2"><code>linalg_traits::RealField::atan2</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn atan2&lt;T: RealField&gt;(y: T, x: T) -&gt; T {
+    let z1: T = y.atan2(x);
+    let z2: T = T::atan2(y, x);
+
+    assert_eq!(z1, z2);
+
+    z1
+}
+
+fn main() {
+    assert_eq!(atan2(0_f64, 1_f64), 0_f64);
+}</code></pre>
+<h2 id="acsc-arccosecant"><a class="header" href="#acsc-arccosecant"><code>acsc</code> (arccosecant)</a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.acsc"><code>linalg_traits::RealField::acsc</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn acsc&lt;T: RealField&gt;(x: T) -&gt; T {
+    let y1: T = x.acsc();
+    let y2: T = T::acsc(x);
+
+    assert_eq!(y1, y2);
+
+    y1
+}
+
+fn main() {
+    assert_eq!(acsc(1_f64), 1_f64.recip().asin());
+}</code></pre>
+<h2 id="asec-arcsecant"><a class="header" href="#asec-arcsecant"><code>asec</code> (arcsecant)</a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.asec"><code>linalg_traits::RealField::asec</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn asec&lt;T: RealField&gt;(x: T) -&gt; T {
+    let y1: T = x.asec();
+    let y2: T = T::asec(x);
+
+    assert_eq!(y1, y2);
+
+    y1
+}
+
+fn main() {
+    assert_eq!(asec(1_f64), 1_f64.recip().acos());
+}</code></pre>
+<h2 id="acot-arccotangent"><a class="header" href="#acot-arccotangent"><code>acot</code> (arccotangent)</a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.acot"><code>linalg_traits::RealField::acot</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn acot&lt;T: RealField&gt;(x: T) -&gt; T {
+    let y1: T = x.acot();
+    let y2: T = T::acot(x);
+
+    assert_eq!(y1, y2);
+
+    y1
+}
+
+fn main() {
+    assert_eq!(acot(1_f64), 1_f64.recip().atan());
+}</code></pre>
+<h2 id="sind-sine-argument-in-degrees"><a class="header" href="#sind-sine-argument-in-degrees"><code>sind</code> (sine, argument in degrees)</a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.sind"><code>linalg_traits::RealField::sind</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn sind&lt;T: RealField&gt;(x: T) -&gt; T {
+    let y1: T = x.sind();
+    let y2: T = T::sind(x);
+
+    assert_eq!(y1, y2);
+
+    y1
+}
+
+fn main() {
+    assert_eq!(sind(0_f64), 0_f64);
+}</code></pre>
+<h2 id="cosd-cosine-argument-in-degrees"><a class="header" href="#cosd-cosine-argument-in-degrees"><code>cosd</code> (cosine, argument in degrees)</a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.cosd"><code>linalg_traits::RealField::cosd</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn cosd&lt;T: RealField&gt;(x: T) -&gt; T {
+    let y1: T = x.cosd();
+    let y2: T = T::cosd(x);
+
+    assert_eq!(y1, y2);
+
+    y1
+}
+
+fn main() {
+    assert_eq!(cosd(0_f64), 1_f64);
+}</code></pre>
+<h2 id="sind_cosd-sine-and-cosine-argument-in-degrees"><a class="header" href="#sind_cosd-sine-and-cosine-argument-in-degrees"><code>sind_cosd</code> (sine and cosine, argument in degrees)</a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.sind_cosd"><code>linalg_traits::RealField::sind_cosd</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn sind_cosd&lt;T: RealField&gt;(x: T) -&gt; (T, T) {
+    let y1: (T, T) = x.sind_cosd();
+    let y2: (T, T) = T::sind_cosd(x);
+
+    assert_eq!(y1, y2);
+
+    y1
+}
+
+fn main() {
+    assert_eq!(sind_cosd(0_f64), (0_f64, 1_f64));
+}</code></pre>
+<h2 id="tand-tangent-argument-in-degrees"><a class="header" href="#tand-tangent-argument-in-degrees"><code>tand</code> (tangent, argument in degrees)</a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.tand"><code>linalg_traits::RealField::tand</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn tand&lt;T: RealField&gt;(x: T) -&gt; T {
+    let y1: T = x.tand();
+    let y2: T = T::tand(x);
+
+    assert_eq!(y1, y2);
+
+    y1
+}
+
+fn main() {
+    assert_eq!(tand(0_f64), 0_f64);
+}</code></pre>
+<h2 id="cscd-cosecant-argument-in-degrees"><a class="header" href="#cscd-cosecant-argument-in-degrees"><code>cscd</code> (cosecant, argument in degrees)</a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.cscd"><code>linalg_traits::RealField::cscd</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn cscd&lt;T: RealField&gt;(x: T) -&gt; T {
+    let y1: T = x.cscd();
+    let y2: T = T::cscd(x);
+
+    assert_eq!(y1, y2);
+
+    y1
+}
+
+fn main() {
+    assert_eq!(cscd(30_f64), 30_f64.to_radians().csc());
+}</code></pre>
+<h2 id="secd-secant-argument-in-degrees"><a class="header" href="#secd-secant-argument-in-degrees"><code>secd</code> (secant, argument in degrees)</a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.secd"><code>linalg_traits::RealField::secd</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn secd&lt;T: RealField&gt;(x: T) -&gt; T {
+    let y1: T = x.secd();
+    let y2: T = T::secd(x);
+
+    assert_eq!(y1, y2);
+
+    y1
+}
+
+fn main() {
+    assert_eq!(secd(30_f64), 30_f64.to_radians().sec());
+}</code></pre>
+<h2 id="cotd-cotangent-argument-in-degrees"><a class="header" href="#cotd-cotangent-argument-in-degrees"><code>cotd</code> (cotangent, argument in degrees)</a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.cotd"><code>linalg_traits::RealField::cotd</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn cotd&lt;T: RealField&gt;(x: T) -&gt; T {
+    let y1: T = x.cotd();
+    let y2: T = T::cotd(x);
+
+    assert_eq!(y1, y2);
+
+    y1
+}
+
+fn main() {
+    assert_eq!(cotd(30_f64), 30_f64.to_radians().cot());
+}</code></pre>
+<h2 id="asind-arcsine-return-value-in-degrees"><a class="header" href="#asind-arcsine-return-value-in-degrees"><code>asind</code> (arcsine, return value in degrees)</a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.asind"><code>linalg_traits::RealField::asind</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn asind&lt;T: RealField&gt;(x: T) -&gt; T {
+    let y1: T = x.asind();
+    let y2: T = T::asind(x);
+
+    assert_eq!(y1, y2);
+
+    y1
+}
+
+fn main() {
+    assert_eq!(asind(0_f64), 0_f64);
+}</code></pre>
+<h2 id="acosd-arccosine-return-value-in-degrees"><a class="header" href="#acosd-arccosine-return-value-in-degrees"><code>acosd</code> (arccosine, return value in degrees)</a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.acosd"><code>linalg_traits::RealField::acosd</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn acosd&lt;T: RealField&gt;(x: T) -&gt; T {
+    let y1: T = x.acosd();
+    let y2: T = T::acosd(x);
+
+    assert_eq!(y1, y2);
+
+    y1
+}
+
+fn main() {
+    assert_eq!(acosd(1_f64), 0_f64);
+}</code></pre>
+<h2 id="atand-arctangent-return-value-in-degrees"><a class="header" href="#atand-arctangent-return-value-in-degrees"><code>atand</code> (arctangent, return value in degrees)</a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.atand"><code>linalg_traits::RealField::atand</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn atand&lt;T: RealField&gt;(x: T) -&gt; T {
+    let y1: T = x.atand();
+    let y2: T = T::atand(x);
+
+    assert_eq!(y1, y2);
+
+    y1
+}
+
+fn main() {
+    assert_eq!(atand(0_f64), 0_f64);
+}</code></pre>
+<h2 id="atan2d-four-quadrant-arctangent-return-value-in-degrees"><a class="header" href="#atan2d-four-quadrant-arctangent-return-value-in-degrees"><code>atan2d</code> (four-quadrant arctangent, return value in degrees)</a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.atan2d"><code>linalg_traits::RealField::atan2d</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn atan2d&lt;T: RealField&gt;(y: T, x: T) -&gt; T {
+    let z1: T = y.atan2d(x);
+    let z2: T = T::atan2d(y, x);
+
+    assert_eq!(z1, z2);
+
+    z1
+}
+
+fn main() {
+    assert_eq!(atan2d(0_f64, 1_f64), 0_f64);
+}</code></pre>
+<h2 id="acscd-arccosecant-return-value-in-degrees"><a class="header" href="#acscd-arccosecant-return-value-in-degrees"><code>acscd</code> (arccosecant, return value in degrees)</a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.acscd"><code>linalg_traits::RealField::acscd</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn acscd&lt;T: RealField&gt;(x: T) -&gt; T {
+    let y1: T = x.acscd();
+    let y2: T = T::acscd(x);
+
+    assert_eq!(y1, y2);
+
+    y1
+}
+
+fn main() {
+    assert_eq!(acscd(2_f64), 2_f64.acsc().to_degrees());
+}</code></pre>
+<h2 id="asecd-arcsecant-return-value-in-degrees"><a class="header" href="#asecd-arcsecant-return-value-in-degrees"><code>asecd</code> (arcsecant, return value in degrees)</a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.asecd"><code>linalg_traits::RealField::asecd</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn asecd&lt;T: RealField&gt;(x: T) -&gt; T {
+    let y1: T = x.asecd();
+    let y2: T = T::asecd(x);
+
+    assert_eq!(y1, y2);
+
+    y1
+}
+
+fn main() {
+    assert_eq!(asecd(2_f64), 2_f64.asec().to_degrees());
+}</code></pre>
+<h2 id="acotd-arccotangent-return-value-in-degrees"><a class="header" href="#acotd-arccotangent-return-value-in-degrees"><code>acotd</code> (arccotangent, return value in degrees)</a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.acotd"><code>linalg_traits::RealField::acotd</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn acotd&lt;T: RealField&gt;(x: T) -&gt; T {
+    let y1: T = x.acotd();
+    let y2: T = T::acotd(x);
+
+    assert_eq!(y1, y2);
+
+    y1
+}
+
+fn main() {
+    assert_eq!(acotd(2_f64), 2_f64.acot().to_degrees());
+}</code></pre>
+<h2 id="sinh-hyperbolic-sine"><a class="header" href="#sinh-hyperbolic-sine"><code>sinh</code> (hyperbolic sine)</a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.sinh"><code>linalg_traits::RealField::sinh</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn sinh&lt;T: RealField&gt;(x: T) -&gt; T {
+    let y1: T = x.sinh();
+    let y2: T = T::sinh(x);
+
+    assert_eq!(y1, y2);
+
+    y1
+}
+
+fn main() {
+    assert_eq!(sinh(0_f64), 0_f64);
+}</code></pre>
+<h2 id="cosh-hyperbolic-cosine"><a class="header" href="#cosh-hyperbolic-cosine"><code>cosh</code> (hyperbolic cosine)</a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.cosh"><code>linalg_traits::RealField::cosh</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn cosh&lt;T: RealField&gt;(x: T) -&gt; T {
+    let y1: T = x.cosh();
+    let y2: T = T::cosh(x);
+
+    assert_eq!(y1, y2);
+
+    y1
+}
+
+fn main() {
+    assert_eq!(cosh(0_f64), 1_f64);
+}</code></pre>
+<h2 id="sinh_cosh-hyperbolic-sine-and-cosine"><a class="header" href="#sinh_cosh-hyperbolic-sine-and-cosine"><code>sinh_cosh</code> (hyperbolic sine and cosine)</a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.sinh_cosh"><code>linalg_traits::RealField::sinh_cosh</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn sinh_cosh&lt;T: RealField&gt;(x: T) -&gt; (T, T) {
+    let y1: (T, T) = x.sinh_cosh();
+    let y2: (T, T) = T::sinh_cosh(x);
+
+    assert_eq!(y1, y2);
+
+    y1
+}
+
+fn main() {
+    assert_eq!(sinh_cosh(0_f64), (0_f64, 1_f64));
+}</code></pre>
+<h2 id="tanh-hyperbolic-tangent"><a class="header" href="#tanh-hyperbolic-tangent"><code>tanh</code> (hyperbolic tangent)</a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.tanh"><code>linalg_traits::RealField::tanh</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn tanh&lt;T: RealField&gt;(x: T) -&gt; T {
+    let y1: T = x.tanh();
+    let y2: T = T::tanh(x);
+
+    assert_eq!(y1, y2);
+
+    y1
+}
+
+fn main() {
+    assert_eq!(tanh(0_f64), 0_f64);
+}</code></pre>
+<h2 id="csch-hyperbolic-cosecant"><a class="header" href="#csch-hyperbolic-cosecant"><code>csch</code> (hyperbolic cosecant)</a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.csch"><code>linalg_traits::RealField::csch</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn csch&lt;T: RealField&gt;(x: T) -&gt; T {
+    let y1: T = x.csch();
+    let y2: T = T::csch(x);
+
+    assert_eq!(y1, y2);
+
+    y1
+}
+
+fn main() {
+    assert_eq!(csch(1_f64), 1_f64.sinh().recip());
+}</code></pre>
+<h2 id="sech-hyperbolic-secant"><a class="header" href="#sech-hyperbolic-secant"><code>sech</code> (hyperbolic secant)</a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.sech"><code>linalg_traits::RealField::sech</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn sech&lt;T: RealField&gt;(x: T) -&gt; T {
+    let y1: T = x.sech();
+    let y2: T = T::sech(x);
+
+    assert_eq!(y1, y2);
+
+    y1
+}
+
+fn main() {
+    assert_eq!(sech(1_f64), 1_f64.cosh().recip());
+}</code></pre>
+<h2 id="coth-hyperbolic-cotangent"><a class="header" href="#coth-hyperbolic-cotangent"><code>coth</code> (hyperbolic cotangent)</a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.coth"><code>linalg_traits::RealField::coth</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn coth&lt;T: RealField&gt;(x: T) -&gt; T {
+    let y1: T = x.coth();
+    let y2: T = T::coth(x);
+
+    assert_eq!(y1, y2);
+
+    y1
+}
+
+fn main() {
+    assert_eq!(coth(1_f64), 1_f64.cosh() / 1_f64.sinh());
+}</code></pre>
+<h2 id="asinh-inverse-hyperbolic-sine"><a class="header" href="#asinh-inverse-hyperbolic-sine"><code>asinh</code> (inverse hyperbolic sine)</a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.asinh"><code>linalg_traits::RealField::asinh</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn asinh&lt;T: RealField&gt;(x: T) -&gt; T {
+    let y1: T = x.asinh();
+    let y2: T = T::asinh(x);
+
+    assert_eq!(y1, y2);
+
+    y1
+}
+
+fn main() {
+    assert_eq!(asinh(0_f64), 0_f64);
+}</code></pre>
+<h2 id="acosh-inverse-hyperbolic-cosine"><a class="header" href="#acosh-inverse-hyperbolic-cosine"><code>acosh</code> (inverse hyperbolic cosine)</a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.acosh"><code>linalg_traits::RealField::acosh</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn acosh&lt;T: RealField&gt;(x: T) -&gt; T {
+    let y1: T = x.acosh();
+    let y2: T = T::acosh(x);
+
+    assert_eq!(y1, y2);
+
+    y1
+}
+
+fn main() {
+    assert_eq!(acosh(1_f64), 0_f64);
+}</code></pre>
+<h2 id="atanh-inverse-hyperbolic-tangent"><a class="header" href="#atanh-inverse-hyperbolic-tangent"><code>atanh</code> (inverse hyperbolic tangent)</a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.atanh"><code>linalg_traits::RealField::atanh</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn atanh&lt;T: RealField&gt;(x: T) -&gt; T {
+    let y1: T = x.atanh();
+    let y2: T = T::atanh(x);
+
+    assert_eq!(y1, y2);
+
+    y1
+}
+
+fn main() {
+    assert_eq!(atanh(0_f64), 0_f64);
+}</code></pre>
+<h2 id="acsch-inverse-hyperbolic-cosecant"><a class="header" href="#acsch-inverse-hyperbolic-cosecant"><code>acsch</code> (inverse hyperbolic cosecant)</a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.acsch"><code>linalg_traits::RealField::acsch</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn acsch&lt;T: RealField&gt;(x: T) -&gt; T {
+    let y1: T = x.acsch();
+    let y2: T = T::acsch(x);
+
+    assert_eq!(y1, y2);
+
+    y1
+}
+
+fn main() {
+    assert_eq!(acsch(1_f64), 1_f64.recip().asinh());
+}</code></pre>
+<h2 id="asech-inverse-hyperbolic-secant"><a class="header" href="#asech-inverse-hyperbolic-secant"><code>asech</code> (inverse hyperbolic secant)</a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.asech"><code>linalg_traits::RealField::asech</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn asech&lt;T: RealField&gt;(x: T) -&gt; T {
+    let y1: T = x.asech();
+    let y2: T = T::asech(x);
+
+    assert_eq!(y1, y2);
+
+    y1
+}
+
+fn main() {
+    assert_eq!(asech(1_f64), 0_f64);
+}</code></pre>
+<h2 id="acoth-inverse-hyperbolic-cotangent"><a class="header" href="#acoth-inverse-hyperbolic-cotangent"><code>acoth</code> (inverse hyperbolic cotangent)</a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.acoth"><code>linalg_traits::RealField::acoth</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn acoth&lt;T: RealField&gt;(x: T) -&gt; T {
+    let y1: T = x.acoth();
+    let y2: T = T::acoth(x);
+
+    assert_eq!(y1, y2);
+
+    y1
+}
+
+fn main() {
+    assert_eq!(acoth(2_f64), 2_f64.recip().atanh());
+}</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
+<h1 id="rounding"><a class="header" href="#rounding">Rounding</a></h1>
+<ul>
+<li><a href="#floor-round-down"><code>floor</code> (round down)</a></li>
+<li><a href="#ceil-round-up"><code>ceil</code> (round up)</a></li>
+<li><a href="#round-round-to-nearest"><code>round</code> (round to nearest)</a></li>
+<li><a href="#trunc-truncate-towards-zero"><code>trunc</code> (truncate towards zero)</a></li>
+<li><a href="#fract-fractional-part"><code>fract</code> (fractional part)</a></li>
+</ul>
+<h2 id="floor-round-down"><a class="header" href="#floor-round-down"><code>floor</code> (round down)</a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.floor"><code>linalg_traits::RealField::floor</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn floor&lt;T: RealField&gt;(x: T) -&gt; T {
+    let y1: T = x.floor();
+    let y2: T = T::floor(x);
+
+    assert_eq!(y1, y2);
+
+    y1
+}
+
+fn main() {
+    assert_eq!(floor(1.7_f64), 1_f64);
+}</code></pre>
+<h2 id="ceil-round-up"><a class="header" href="#ceil-round-up"><code>ceil</code> (round up)</a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.ceil"><code>linalg_traits::RealField::ceil</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn ceil&lt;T: RealField&gt;(x: T) -&gt; T {
+    let y1: T = x.ceil();
+    let y2: T = T::ceil(x);
+
+    assert_eq!(y1, y2);
+
+    y1
+}
+
+fn main() {
+    assert_eq!(ceil(1.2_f64), 2_f64);
+}</code></pre>
+<h2 id="round-round-to-nearest"><a class="header" href="#round-round-to-nearest"><code>round</code> (round to nearest)</a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.round"><code>linalg_traits::RealField::round</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn round&lt;T: RealField&gt;(x: T) -&gt; T {
+    let y1: T = x.round();
+    let y2: T = T::round(x);
+
+    assert_eq!(y1, y2);
+
+    y1
+}
+
+fn main() {
+    assert_eq!(round(1.5_f64), 2_f64);
+}</code></pre>
+<h2 id="trunc-truncate-towards-zero"><a class="header" href="#trunc-truncate-towards-zero"><code>trunc</code> (truncate towards zero)</a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.trunc"><code>linalg_traits::RealField::trunc</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn trunc&lt;T: RealField&gt;(x: T) -&gt; T {
+    let y1: T = x.trunc();
+    let y2: T = T::trunc(x);
+
+    assert_eq!(y1, y2);
+
+    y1
+}
+
+fn main() {
+    assert_eq!(trunc(1.7_f64), 1_f64);
+}</code></pre>
+<h2 id="fract-fractional-part"><a class="header" href="#fract-fractional-part"><code>fract</code> (fractional part)</a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.fract"><code>linalg_traits::RealField::fract</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn fract&lt;T: RealField&gt;(x: T) -&gt; T {
+    let y1: T = x.fract();
+    let y2: T = T::fract(x);
+
+    assert_eq!(y1, y2);
+
+    y1
+}
+
+fn main() {
+    assert_eq!(fract(1.25_f64), 0.25_f64);
+}</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
+<h1 id="magnitude-specific-operations"><a class="header" href="#magnitude-specific-operations">Magnitude-Specific Operations</a></h1>
+<ul>
+<li><a href="#copysign-copy-the-sign-of-another-number"><code>copysign</code> (copy the sign of another number)</a></li>
+<li><a href="#min-minimum-ignoring-nan"><code>min</code> (minimum, ignoring NaN)</a></li>
+<li><a href="#max-maximum-ignoring-nan"><code>max</code> (maximum, ignoring NaN)</a></li>
+<li><a href="#clamp-restrict-to-an-interval"><code>clamp</code> (restrict to an interval)</a></li>
+</ul>
+<h2 id="copysign-copy-the-sign-of-another-number"><a class="header" href="#copysign-copy-the-sign-of-another-number"><code>copysign</code> (copy the sign of another number)</a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.copysign"><code>linalg_traits::RealField::copysign</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn copysign&lt;T: RealField&gt;(x: T, sign: T) -&gt; T {
+    let y1: T = x.copysign(sign);
+    let y2: T = T::copysign(x, sign);
+
+    assert_eq!(y1, y2);
+
+    y1
+}
+
+fn main() {
+    assert_eq!(copysign(3_f64, -1_f64), -3_f64);
+}</code></pre>
+<h2 id="min-minimum-ignoring-nan"><a class="header" href="#min-minimum-ignoring-nan"><code>min</code> (minimum, ignoring NaN)</a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.min"><code>linalg_traits::RealField::min</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn min&lt;T: RealField&gt;(x: T, y: T) -&gt; T {
+    let z1: T = x.min(y);
+    let z2: T = T::min(x, y);
+
+    assert_eq!(z1, z2);
+
+    z1
+}
+
+fn main() {
+    assert_eq!(min(1_f64, 2_f64), 1_f64);
+}</code></pre>
+<h2 id="max-maximum-ignoring-nan"><a class="header" href="#max-maximum-ignoring-nan"><code>max</code> (maximum, ignoring NaN)</a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.max"><code>linalg_traits::RealField::max</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn max&lt;T: RealField&gt;(x: T, y: T) -&gt; T {
+    let z1: T = x.max(y);
+    let z2: T = T::max(x, y);
+
+    assert_eq!(z1, z2);
+
+    z1
+}
+
+fn main() {
+    assert_eq!(max(1_f64, 2_f64), 2_f64);
+}</code></pre>
+<h2 id="clamp-restrict-to-an-interval"><a class="header" href="#clamp-restrict-to-an-interval"><code>clamp</code> (restrict to an interval)</a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.clamp"><code>linalg_traits::RealField::clamp</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn clamp&lt;T: RealField&gt;(x: T, min: T, max: T) -&gt; T {
+    let y1: T = x.clamp(min, max);
+    let y2: T = T::clamp(x, min, max);
+
+    assert_eq!(y1, y2);
+
+    y1
+}
+
+fn main() {
+    assert_eq!(clamp(5_f64, 0_f64, 3_f64), 3_f64);
+}</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
+<h1 id="floating-point-properties"><a class="header" href="#floating-point-properties">Floating-Point Properties</a></h1>
+<ul>
+<li><a href="#is_nan"><code>is_nan</code></a></li>
+<li><a href="#is_infinite"><code>is_infinite</code></a></li>
+<li><a href="#is_finite"><code>is_finite</code></a></li>
+<li><a href="#is_subnormal"><code>is_subnormal</code></a></li>
+<li><a href="#is_normal"><code>is_normal</code></a></li>
+<li><a href="#classify"><code>classify</code></a></li>
+<li><a href="#is_sign_positive"><code>is_sign_positive</code></a></li>
+<li><a href="#is_sign_negative"><code>is_sign_negative</code></a></li>
+<li><a href="#next_up"><code>next_up</code></a></li>
+<li><a href="#next_down"><code>next_down</code></a></li>
+</ul>
+<h2 id="is_nan"><a class="header" href="#is_nan"><code>is_nan</code></a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.is_nan"><code>linalg_traits::RealField::is_nan</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn is_nan&lt;T: RealField&gt;(x: T) -&gt; bool {
+    let y1: bool = x.is_nan();
+    let y2: bool = T::is_nan(x);
+
+    assert_eq!(y1, y2);
+
+    y1
+}
+
+fn main() {
+    assert!(is_nan(f64::NAN));
+    assert!(!is_nan(1_f64));
+}</code></pre>
+<h2 id="is_infinite"><a class="header" href="#is_infinite"><code>is_infinite</code></a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.is_infinite"><code>linalg_traits::RealField::is_infinite</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn is_infinite&lt;T: RealField&gt;(x: T) -&gt; bool {
+    let y1: bool = x.is_infinite();
+    let y2: bool = T::is_infinite(x);
+
+    assert_eq!(y1, y2);
+
+    y1
+}
+
+fn main() {
+    assert!(is_infinite(f64::INFINITY));
+    assert!(!is_infinite(1_f64));
+}</code></pre>
+<h2 id="is_finite"><a class="header" href="#is_finite"><code>is_finite</code></a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.is_finite"><code>linalg_traits::RealField::is_finite</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn is_finite&lt;T: RealField&gt;(x: T) -&gt; bool {
+    let y1: bool = x.is_finite();
+    let y2: bool = T::is_finite(&amp;x);
+
+    assert_eq!(y1, y2);
+
+    y1
+}
+
+fn main() {
+    assert!(is_finite(1_f64));
+    assert!(!is_finite(f64::INFINITY));
+}</code></pre>
+<h2 id="is_subnormal"><a class="header" href="#is_subnormal"><code>is_subnormal</code></a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.is_subnormal"><code>linalg_traits::RealField::is_subnormal</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn is_subnormal&lt;T: RealField&gt;(x: T) -&gt; bool {
+    let y1: bool = x.is_subnormal();
+    let y2: bool = T::is_subnormal(x);
+
+    assert_eq!(y1, y2);
+
+    y1
+}
+
+fn main() {
+    assert!(is_subnormal(f64::MIN_POSITIVE / 2_f64));
+    assert!(!is_subnormal(1_f64));
+}</code></pre>
+<h2 id="is_normal"><a class="header" href="#is_normal"><code>is_normal</code></a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.is_normal"><code>linalg_traits::RealField::is_normal</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn is_normal&lt;T: RealField&gt;(x: T) -&gt; bool {
+    let y1: bool = x.is_normal();
+    let y2: bool = T::is_normal(x);
+
+    assert_eq!(y1, y2);
+
+    y1
+}
+
+fn main() {
+    assert!(is_normal(1_f64));
+    assert!(!is_normal(f64::MIN_POSITIVE / 2_f64));
+}</code></pre>
+<h2 id="classify"><a class="header" href="#classify"><code>classify</code></a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.classify"><code>linalg_traits::RealField::classify</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+use std::num::FpCategory;
+
+fn classify&lt;T: RealField&gt;(x: T) -&gt; FpCategory {
+    let y1: FpCategory = x.classify();
+    let y2: FpCategory = T::classify(x);
+
+    assert_eq!(y1, y2);
+
+    y1
+}
+
+fn main() {
+    assert_eq!(classify(0_f64), FpCategory::Zero);
+    assert_eq!(classify(1_f64), FpCategory::Normal);
+    assert_eq!(classify(f64::MIN_POSITIVE / 2_f64), FpCategory::Subnormal);
+    assert_eq!(classify(f64::INFINITY), FpCategory::Infinite);
+    assert_eq!(classify(f64::NAN), FpCategory::Nan);
+}</code></pre>
+<h2 id="is_sign_positive"><a class="header" href="#is_sign_positive"><code>is_sign_positive</code></a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.is_sign_positive"><code>linalg_traits::RealField::is_sign_positive</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn is_sign_positive&lt;T: RealField&gt;(x: T) -&gt; bool {
+    let y1: bool = x.is_sign_positive();
+    let y2: bool = T::is_sign_positive(&amp;x);
+
+    assert_eq!(y1, y2);
+
+    y1
+}
+
+fn main() {
+    assert!(is_sign_positive(1_f64));
+    assert!(!is_sign_positive(-1_f64));
+}</code></pre>
+<h2 id="is_sign_negative"><a class="header" href="#is_sign_negative"><code>is_sign_negative</code></a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.is_sign_negative"><code>linalg_traits::RealField::is_sign_negative</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn is_sign_negative&lt;T: RealField&gt;(x: T) -&gt; bool {
+    let y1: bool = x.is_sign_negative();
+    let y2: bool = T::is_sign_negative(&amp;x);
+
+    assert_eq!(y1, y2);
+
+    y1
+}
+
+fn main() {
+    assert!(is_sign_negative(-1_f64));
+    assert!(!is_sign_negative(1_f64));
+}</code></pre>
+<h2 id="next_up"><a class="header" href="#next_up"><code>next_up</code></a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.next_up"><code>linalg_traits::RealField::next_up</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn next_up&lt;T: RealField&gt;(x: T) -&gt; T {
+    let y1: T = x.next_up();
+    let y2: T = T::next_up(x);
+
+    assert_eq!(y1, y2);
+
+    y1
+}
+
+fn main() {
+    assert_eq!(next_up(1_f64), 1_f64.next_up());
+}</code></pre>
+<h2 id="next_down"><a class="header" href="#next_down"><code>next_down</code></a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.next_down"><code>linalg_traits::RealField::next_down</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn next_down&lt;T: RealField&gt;(x: T) -&gt; T {
+    let y1: T = x.next_down();
+    let y2: T = T::next_down(x);
+
+    assert_eq!(y1, y2);
+
+    y1
+}
+
+fn main() {
+    assert_eq!(next_down(1_f64), 1_f64.next_down());
+}</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
+<h1 id="floating-point-constants"><a class="header" href="#floating-point-constants">Floating-Point Constants</a></h1>
+<ul>
+<li><a href="#epsilon"><code>epsilon</code></a></li>
+<li><a href="#bits"><code>bits</code></a></li>
+<li><a href="#min_positive"><code>min_positive</code></a></li>
+<li><a href="#max_positive"><code>max_positive</code></a></li>
+<li><a href="#sqrt_min_positive"><code>sqrt_min_positive</code></a></li>
+<li><a href="#sqrt_max_positive"><code>sqrt_max_positive</code></a></li>
+<li><a href="#min_value"><code>min_value</code></a></li>
+<li><a href="#max_value"><code>max_value</code></a></li>
+<li><a href="#nan"><code>nan</code></a></li>
+<li><a href="#infinity"><code>infinity</code></a></li>
+</ul>
+<h2 id="epsilon"><a class="header" href="#epsilon"><code>epsilon</code></a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.epsilon"><code>linalg_traits::RealField::epsilon</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn epsilon&lt;T: RealField&gt;() -&gt; T {
+    T::epsilon()
+}
+
+fn main() {
+    assert_eq!(epsilon::&lt;f64&gt;(), f64::EPSILON);
+}</code></pre>
+<h2 id="bits"><a class="header" href="#bits"><code>bits</code></a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.bits"><code>linalg_traits::RealField::bits</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn bits&lt;T: RealField&gt;() -&gt; usize {
+    T::bits()
+}
+
+fn main() {
+    assert_eq!(bits::&lt;f64&gt;(), 64);
+}</code></pre>
+<h2 id="min_positive"><a class="header" href="#min_positive"><code>min_positive</code></a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.min_positive"><code>linalg_traits::RealField::min_positive</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn min_positive&lt;T: RealField&gt;() -&gt; T {
+    T::min_positive()
+}
+
+fn main() {
+    assert_eq!(min_positive::&lt;f64&gt;(), f64::MIN_POSITIVE);
+}</code></pre>
+<h2 id="max_positive"><a class="header" href="#max_positive"><code>max_positive</code></a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.max_positive"><code>linalg_traits::RealField::max_positive</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn max_positive&lt;T: RealField&gt;() -&gt; T {
+    T::max_positive()
+}
+
+fn main() {
+    assert_eq!(max_positive::&lt;f64&gt;(), f64::MAX);
+}</code></pre>
+<h2 id="sqrt_min_positive"><a class="header" href="#sqrt_min_positive"><code>sqrt_min_positive</code></a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.sqrt_min_positive"><code>linalg_traits::RealField::sqrt_min_positive</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn sqrt_min_positive&lt;T: RealField&gt;() -&gt; T {
+    T::sqrt_min_positive()
+}
+
+fn main() {
+    assert_eq!(sqrt_min_positive::&lt;f64&gt;(), f64::MIN_POSITIVE.sqrt());
+}</code></pre>
+<h2 id="sqrt_max_positive"><a class="header" href="#sqrt_max_positive"><code>sqrt_max_positive</code></a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.sqrt_max_positive"><code>linalg_traits::RealField::sqrt_max_positive</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn sqrt_max_positive&lt;T: RealField&gt;() -&gt; T {
+    T::sqrt_max_positive()
+}
+
+fn main() {
+    assert_eq!(sqrt_max_positive::&lt;f64&gt;(), f64::MAX.sqrt());
+}</code></pre>
+<h2 id="min_value"><a class="header" href="#min_value"><code>min_value</code></a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.min_value"><code>linalg_traits::RealField::min_value</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn min_value&lt;T: RealField&gt;() -&gt; Option&lt;T&gt; {
+    T::min_value()
+}
+
+fn main() {
+    assert_eq!(min_value::&lt;f64&gt;(), Some(f64::MIN));
+}</code></pre>
+<h2 id="max_value"><a class="header" href="#max_value"><code>max_value</code></a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.max_value"><code>linalg_traits::RealField::max_value</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn max_value&lt;T: RealField&gt;() -&gt; Option&lt;T&gt; {
+    T::max_value()
+}
+
+fn main() {
+    assert_eq!(max_value::&lt;f64&gt;(), Some(f64::MAX));
+}</code></pre>
+<h2 id="nan"><a class="header" href="#nan"><code>nan</code></a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.nan"><code>linalg_traits::RealField::nan</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn nan&lt;T: RealField&gt;() -&gt; T {
+    T::nan()
+}
+
+fn main() {
+    assert!(nan::&lt;f64&gt;().is_nan());
+}</code></pre>
+<h2 id="infinity"><a class="header" href="#infinity"><code>infinity</code></a></h2>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.infinity"><code>linalg_traits::RealField::infinity</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn infinity&lt;T: RealField&gt;() -&gt; T {
+    T::infinity()
+}
+
+fn main() {
+    assert_eq!(infinity::&lt;f64&gt;(), f64::INFINITY);
+}</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
+<h1 id="interface-methods"><a class="header" href="#interface-methods">Interface Methods</a></h1>
+<ul>
+<li><a href="#as_slice-view-as-a-slice-of-f64"><code>as_slice</code> (view as a slice of <code>f64</code>)</a></li>
+</ul>
+<h2 id="as_slice-view-as-a-slice-of-f64"><a class="header" href="#as_slice-view-as-a-slice-of-f64"><code>as_slice</code> (view as a slice of <code>f64</code>)</a></h2>
+<blockquote class="blockquote-tag blockquote-tag-note">
+<p class="blockquote-tag-title"><svg viewbox="0 0 16 16" width="18" height="18"><path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8Zm8-6.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13ZM6.5 7.75A.75.75 0 0 1 7.25 7h1a.75.75 0 0 1 .75.75v2.75h.25a.75.75 0 0 1 0 1.5h-2a.75.75 0 0 1 0-1.5h.25v-2h-.25a.75.75 0 0 1-.75-.75ZM8 6a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"></path></svg>Note</p>
+<p>This method is primarily used for deriving <a href="https://docs.rs/approx/latest/approx/trait.UlpsEq.html"><code>approx::UlpsEq</code></a> for types with multiple components that are implementing <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html"><code>linalg_traits::RealField</code></a> (for example, this would be used for something like a <a href="https://docs.rs/numdiff/latest/numdiff/struct.Dual.html">dual number</a> that is substituted in place of a single real number for forward mode automatic differentiation).</p>
+</blockquote>
+<p>See <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html#method.as_slice"><code>linalg_traits::RealField::as_slice</code></a>.</p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn as_slice&lt;T: RealField&gt;(x: &amp;T) -&gt; &amp;[f64] {
+    let y1: &amp;[f64] = x.as_slice();
+    let y2: &amp;[f64] = T::as_slice(x);
+
+    assert_eq!(y1, y2);
+
+    y1
+}
+
+fn main() {
+    let x = 2_f64;
+    assert_eq!(as_slice(&amp;x), &amp;[2_f64]);
+}</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
+<h1 id="implementation"><a class="header" href="#implementation">Implementation</a></h1>
+<ul>
+<li><a href="#background-1">Background</a></li>
+<li><a href="#implementation-approaches">Implementation approaches</a>
+<ul>
+<li><a href="#recommended-implementation">Recommended implementation</a></li>
+<li><a href="#alternative-manual-implementation">Alternative (manual) implementation</a></li>
+</ul>
+</li>
+<li><a href="#testing-the-implementation">Testing the implementation</a>
+<ul>
+<li><a href="#checking-that-the-trait-is-implemented">Checking that the trait is implemented</a></li>
+<li><a href="#checking-disambiguation">Checking disambiguation</a></li>
+<li><a href="#testing-operator-overloads-and-conversions">Testing operator overloads and conversions</a></li>
+<li><a href="#testing-realfieldbase-implementation">Testing <code>RealFieldBase</code> implementation</a></li>
+<li><a href="#other-useful-tests">Other useful tests</a></li>
+<li><a href="#checking-simd-behavior">Checking SIMD behavior</a></li>
+</ul>
+</li>
+</ul>
+<h2 id="background-1"><a class="header" href="#background-1">Background</a></h2>
+<p><a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html"><code>linalg_traits::RealField</code></a> is a collection of a complicated and nuanced set of supertraits where different implementations of the same methods are conditionally compiled based on what features are enabled.</p>
+<p>There are two ways one could implement it:</p>
+<ol>
+<li>Figure out the full set of traits needed from the complex <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html"><code>linalg_traits::RealField</code></a> definition and manually implement them one by one (<strong><em>not</em> recommended</strong>).</li>
+<li>Manually implement <a href="https://docs.rs/linalg-traits/latest/linalg_traits/real_field/trait.Base.html"><code>linalg_traits::real_field::Base</code></a> and <a href="https://docs.rs/linalg-traits/latest/linalg_traits/real_field/trait.RealFieldBase.html"><code>linalg_traits::real_field::RealFieldBase</code></a>, and let <a href="https://docs.rs/linalg-traits/latest/linalg_traits/macro.impl_real_field.html"><code>linalg_traits::impl_real_field!</code></a> take care of the rest (<strong>recommended approach</strong>).</li>
+</ol>
+<h2 id="implementation-approaches"><a class="header" href="#implementation-approaches">Implementation approaches</a></h2>
+<h3 id="recommended-implementation"><a class="header" href="#recommended-implementation">Recommended implementation</a></h3>
+<ol>
+<li>Implement <a href="https://docs.rs/linalg-traits/latest/linalg_traits/real_field/trait.Base.html"><code>linalg_traits::real_field::Base</code></a>.</li>
+<li>Implement <a href="https://docs.rs/linalg-traits/latest/linalg_traits/real_field/trait.RealFieldBase.html"><code>linalg_traits::real_field::RealFieldBase</code></a>.</li>
+<li>Call <a href="https://docs.rs/linalg-traits/latest/linalg_traits/macro.impl_real_field.html"><code>linalg_traits::impl_real_field!</code></a> on your type.</li>
+</ol>
+<ul>
+<li><em>Based on what you’ve defined for <a href="https://docs.rs/linalg-traits/latest/linalg_traits/real_field/trait.Base.html"><code>linalg_traits::real_field::Base</code></a> and <a href="https://docs.rs/linalg-traits/latest/linalg_traits/macro.impl_real_field.html"><code>linalg_traits::impl_real_field!</code></a>, this will take care of implementing everything else needed for <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html"><code>linalg_traits::RealField</code></a>.</em></li>
+</ul>
+<blockquote class="blockquote-tag blockquote-tag-tip">
+<p class="blockquote-tag-title"><svg viewbox="0 0 16 16" width="18" height="18"><path d="M8 1.5c-2.363 0-4 1.69-4 3.75 0 .984.424 1.625.984 2.304l.214.253c.223.264.47.556.673.848.284.411.537.896.621 1.49a.75.75 0 0 1-1.484.211c-.04-.282-.163-.547-.37-.847a8.456 8.456 0 0 0-.542-.68c-.084-.1-.173-.205-.268-.32C3.201 7.75 2.5 6.766 2.5 5.25 2.5 2.31 4.863 0 8 0s5.5 2.31 5.5 5.25c0 1.516-.701 2.5-1.328 3.259-.095.115-.184.22-.268.319-.207.245-.383.453-.541.681-.208.3-.33.565-.37.847a.751.751 0 0 1-1.485-.212c.084-.593.337-1.078.621-1.489.203-.292.45-.584.673-.848.075-.088.147-.173.213-.253.561-.679.985-1.32.985-2.304 0-2.06-1.637-3.75-4-3.75ZM5.75 12h4.5a.75.75 0 0 1 0 1.5h-4.5a.75.75 0 0 1 0-1.5ZM6 15.25a.75.75 0 0 1 .75-.75h2.5a.75.75 0 0 1 0 1.5h-2.5a.75.75 0 0 1-.75-.75Z"></path></svg>Tip</p>
+<p><a href="https://docs.rs/linalg-traits/latest/linalg_traits_example/"><code>linalg-traits-example</code></a> has an example implementation of <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html"><code>linalg_traits::RealField</code></a> for <a href="https://docs.rs/linalg-traits/latest/linalg_traits_example/my_real/struct.MyReal.html"><code>MyReal {x: f64}</code></a> using this approach (you can also browse the source code <a href="https://github.com/tamaskis/linalg_traits/tree/main/linalg_traits_example/example/src/">here</a>).</p>
+</blockquote>
+<h3 id="alternative-manual-implementation"><a class="header" href="#alternative-manual-implementation">Alternative (manual) implementation</a></h3>
+<p>One <em>could</em> check out the <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html"><code>linalg_traits::RealField</code> docs</a> and trace through all the required traits and implement them one-by-one, but this would be a difficult endeavour.</p>
+<blockquote class="blockquote-tag blockquote-tag-caution">
+<p class="blockquote-tag-title"><svg viewbox="0 0 16 16" width="18" height="18"><path d="M4.47.22A.749.749 0 0 1 5 0h6c.199 0 .389.079.53.22l4.25 4.25c.141.14.22.331.22.53v6a.749.749 0 0 1-.22.53l-4.25 4.25A.749.749 0 0 1 11 16H5a.749.749 0 0 1-.53-.22L.22 11.53A.749.749 0 0 1 0 11V5c0-.199.079-.389.22-.53Zm.84 1.28L1.5 5.31v5.38l3.81 3.81h5.38l3.81-3.81V5.31L10.69 1.5ZM8 4a.75.75 0 0 1 .75.75v3.5a.75.75 0 0 1-1.5 0v-3.5A.75.75 0 0 1 8 4Zm0 8a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"></path></svg>Caution</p>
+<p>The <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html"><code>linalg_traits::RealField</code> docs</a> are generated with <strong>all</strong> features enabled, so you may not even be able to correctly trace through the traits that are required for your specific setup.
+Furthermore, a very rich set of arithmetic operators is required, and how this is defined via trait bounds is also quite complex and difficult to manually read and reason about. Even if you were able to figure out every single operator that has to be implemented, it would be arduous to manually implement every single variation.</p>
+</blockquote>
+<h2 id="testing-the-implementation"><a class="header" href="#testing-the-implementation">Testing the implementation</a></h2>
+<blockquote class="blockquote-tag blockquote-tag-tip">
+<p class="blockquote-tag-title"><svg viewbox="0 0 16 16" width="18" height="18"><path d="M8 1.5c-2.363 0-4 1.69-4 3.75 0 .984.424 1.625.984 2.304l.214.253c.223.264.47.556.673.848.284.411.537.896.621 1.49a.75.75 0 0 1-1.484.211c-.04-.282-.163-.547-.37-.847a8.456 8.456 0 0 0-.542-.68c-.084-.1-.173-.205-.268-.32C3.201 7.75 2.5 6.766 2.5 5.25 2.5 2.31 4.863 0 8 0s5.5 2.31 5.5 5.25c0 1.516-.701 2.5-1.328 3.259-.095.115-.184.22-.268.319-.207.245-.383.453-.541.681-.208.3-.33.565-.37.847a.751.751 0 0 1-1.485-.212c.084-.593.337-1.078.621-1.489.203-.292.45-.584.673-.848.075-.088.147-.173.213-.253.561-.679.985-1.32.985-2.304 0-2.06-1.637-3.75-4-3.75ZM5.75 12h4.5a.75.75 0 0 1 0 1.5h-4.5a.75.75 0 0 1 0-1.5ZM6 15.25a.75.75 0 0 1 .75-.75h2.5a.75.75 0 0 1 0 1.5h-2.5a.75.75 0 0 1-.75-.75Z"></path></svg>Tip</p>
+<p>Use the example crate as the main reference for validating your own implementation:</p>
+<ul>
+<li><a href="https://docs.rs/linalg-traits/latest/linalg_traits_example/"><code>linalg_traits_example</code></a> provides a custom scalar, <a href="https://docs.rs/linalg-traits/latest/linalg_traits_example/my_real/struct.MyReal.html"><code>MyReal</code></a>, that forwards each method to its wrapped <code>f64</code> value.</li>
+<li>The runtime validation lives in <a href="https://github.com/tamaskis/linalg_traits/blob/main/linalg_traits_example/src/real_field_base.rs"><code>linalg_traits_example/src/real_field_base.rs</code></a> and is the clearest model for behavior checks on <code>RealFieldBase</code>.</li>
+<li>The generic no-disambiguation check is in <a href="https://github.com/tamaskis/linalg_traits/blob/main/tests/real_field_methods_no_disambiguation.rs"><code>tests/real_field_methods_no_disambiguation.rs</code></a>, and the <code>nalgebra</code>-specific qualified-call example is in <a href="https://github.com/tamaskis/linalg_traits/blob/main/examples/real_field_abs.rs"><code>examples/real_field_abs.rs</code></a>.</li>
+<li>Backend sanity checks live in <a href="https://github.com/tamaskis/linalg_traits/blob/main/tests/faer_complex_field.rs"><code>tests/faer_complex_field.rs</code></a> and <a href="https://github.com/tamaskis/linalg_traits/blob/main/tests/nalgebra_complex_field.rs"><code>tests/nalgebra_complex_field.rs</code></a>.</li>
+</ul>
+</blockquote>
+<h3 id="checking-that-the-trait-is-implemented"><a class="header" href="#checking-that-the-trait-is-implemented">Checking that the trait is implemented</a></h3>
+<p>We can check that the <a href="https://docs.rs/linalg-traits/latest/linalg_traits/trait.RealField.html"><code>linalg_traits::RealField</code></a> trait is even implemented in the first place using the <a href="https://docs.rs/linalg-traits/latest/linalg_traits/macro.verify_trait_implemented.html"><code>linalg_traits::verify_trait_implemented!</code> macro</a>.</p>
+<p>For example, the example crate checks both layers of the recommended implementation:</p>
+<pre><code class="language-rust ignore">use linalg_traits::{RealField, verify_trait_implemented};
+use linalg_traits::real_field::RealFieldBase;
+
+const _: bool = verify_trait_implemented!(MyReal: RealFieldBase);
+
+// After calling `impl_real_field!`:
+const _: bool = verify_trait_implemented!(MyReal: RealField);</code></pre>
+<p>These checks are compile-time checks. They do not execute at runtime, so a successful
+<code>cargo check</code> or <code>cargo test</code> is enough to verify that the required trait bounds are
+satisfied.</p>
+<h3 id="checking-disambiguation"><a class="header" href="#checking-disambiguation">Checking disambiguation</a></h3>
+<p>When a backend feature is enabled, some methods may also be provided by a backend
+trait. The <code>RealField</code> definition omits its own colliding methods where necessary, so
+normal generic calls should remain unambiguous:</p>
+<pre><code class="language-rust ignore">fn abs&lt;T: linalg_traits::RealField&gt;(value: T) -&gt; T {
+  value.abs()
+}</code></pre>
+<p>The <code>nalgebra</code> feature is an intentional exception for <code>abs</code>: <code>num_traits::Signed</code>
+and <code>simba::scalar::ComplexField</code> both provide a method with that name. If code needs
+to select a particular implementation, use fully qualified syntax:</p>
+<pre><code class="language-rust ignore">let a = value.abs();
+let b = &lt;T as num_traits::Signed&gt;::abs(&amp;value);
+assert_eq!(a, b);</code></pre>
+<p>The <a href="https://docs.rs/linalg-traits/latest/linalg_traits/real_field/fn.assert_no_trait_disambiguation_needed.html"><code>assert_no_trait_disambiguation_needed</code></a>
+helper calls the complete <code>RealField</code> method surface on a generic <code>T: RealField</code> to ensure no
+backend trait method needs explicit qualification. The crate also includes the integration test
+that exercises the same check:</p>
+<pre><code class="language-rust ignore">use linalg_traits::RealField;
+use linalg_traits::real_field::assert_no_trait_disambiguation_needed;
+
+assert_no_trait_disambiguation_needed::&lt;f64&gt;(1.0, 2.0, 3.0);</code></pre>
+<p>The <a href="https://github.com/tamaskis/linalg_traits/blob/main/examples/real_field_abs.rs"><code>real_field_abs.rs</code></a>
+example shows the corresponding qualified call for the <code>nalgebra</code> case.</p>
+<h3 id="testing-operator-overloads-and-conversions"><a class="header" href="#testing-operator-overloads-and-conversions">Testing operator overloads and conversions</a></h3>
+<p>Once the trait implementation compiles, the next step is to validate the runtime behavior delegated through the trait. The crate provides reusable helpers for this in <code>linalg_traits::real_field</code>:</p>
+<ul>
+<li><a href="https://docs.rs/linalg-traits/latest/linalg_traits/real_field/fn.assert_base.html"><code>assert_base</code></a> checks the semantics of the base scalar API: <code>Default</code>, <code>Debug</code>, <code>Display</code>, <code>Copy</code>/<code>Clone</code>, and the expected default value.</li>
+<li><a href="https://docs.rs/linalg-traits/latest/linalg_traits/real_field/fn.assert_real_field_operations.html"><code>assert_real_field_operations</code></a> checks the core arithmetic, comparison, and assignment surface for <code>T</code> and <code>&amp;T</code> operands.</li>
+<li><a href="https://docs.rs/linalg-traits/latest/linalg_traits/real_field/fn.assert_f64_conversions.html"><code>assert_f64_conversions</code></a> checks conversions to and from <code>f64</code>.</li>
+<li><a href="https://docs.rs/linalg-traits/latest/linalg_traits/real_field/fn.assert_f64_lhs_ops.html"><code>assert_f64_lhs_ops</code></a> checks operations where the <code>f64</code> operand appears on the left-hand side.</li>
+<li><a href="https://docs.rs/linalg-traits/latest/linalg_traits/real_field/fn.assert_f64_rhs_ops.html"><code>assert_f64_rhs_ops</code></a> checks operations where the <code>f64</code> operand appears on the right-hand side.</li>
+</ul>
+<p>These helpers are useful for both <code>f64</code> and custom scalar types because they exercise the same generic dispatch patterns that downstream code will use. For example:</p>
+<pre><code class="language-rust ignore">use linalg_traits::real_field::{
+    assert_base,
+    assert_f64_conversions,
+    assert_f64_lhs_ops,
+    assert_f64_rhs_ops,
+    assert_real_field_operations,
+};
+
+assert_base(MyReal::new(1.5), MyReal::new(0.0), "1.5", "1.5");
+
+assert_real_field_operations(
+    MyReal::new(7.0),
+    MyReal::new(2.0),
+    MyReal::new(-7.0),
+    MyReal::new(9.0),
+    MyReal::new(5.0),
+    MyReal::new(14.0),
+    MyReal::new(3.5),
+    MyReal::new(1.0),
+    false,
+    false,
+    false,
+    true,
+    true,
+);
+
+assert_f64_conversions(MyReal::new(2.0), 2.0, 2.0, MyReal::new(2.0));
+
+assert_f64_rhs_ops(
+    MyReal::new(3.0),
+    2.0,
+    false,
+    false,
+    false,
+    true,
+    true,
+    MyReal::new(5.0),
+    MyReal::new(1.0),
+    MyReal::new(6.0),
+    MyReal::new(1.5),
+    MyReal::new(1.0),
+);
+
+assert_f64_lhs_ops(
+    3.0,
+    MyReal::new(2.0),
+    false,
+    false,
+    false,
+    true,
+    true,
+    MyReal::new(5.0),
+    MyReal::new(1.0),
+    MyReal::new(6.0),
+    MyReal::new(1.5),
+    MyReal::new(1.0),
+);</code></pre>
+<p>The exact numeric values should match your implementation’s semantics, but the point is to exercise every overload family rather than checking just a single operation in isolation.</p>
+<h3 id="testing-realfieldbase-implementation"><a class="header" href="#testing-realfieldbase-implementation">Testing <code>RealFieldBase</code> implementation</a></h3>
+<p>This is the part you should test manually. After you have written the generic behavior checks above for your custom type, you should also exercise every custom method implemented in your <code>RealFieldBase</code> implementation. That is the code you own, and its semantics are specific to your type.</p>
+<h3 id="other-useful-tests"><a class="header" href="#other-useful-tests">Other useful tests</a></h3>
+<p>For backend (e.g. <code>nalgebra</code>, <code>faer</code>) integrations, you do not need to hand-write exhaustive tests for every method generated by <code>impl_real_field!</code>. Those backend trait implementations are generated automatically from your <code>RealFieldBase</code> implementation and should be treated as library-supplied machinery.</p>
+<p>The repository already includes a few backend sanity checks for the generated adapters, confirming that the forwarded methods agree with the base implementation:</p>
+<ul>
+<li><a href="https://github.com/tamaskis/linalg_traits/blob/main/tests/faer_complex_field.rs"><code>tests/faer_complex_field.rs</code></a></li>
+<li><a href="https://github.com/tamaskis/linalg_traits/blob/main/tests/nalgebra_complex_field.rs"><code>tests/nalgebra_complex_field.rs</code></a></li>
+</ul>
+<p>These are useful validation checks, but they are not a substitute for testing the custom <code>RealFieldBase</code> behavior you wrote yourself.</p>
+<h3 id="checking-simd-behavior"><a class="header" href="#checking-simd-behavior">Checking SIMD behavior</a></h3>
+<p><code>impl_real_field!</code> gives custom scalar types a scalar-only backend implementation. It
+does not reinterpret a custom type as <code>f64</code>, because doing so could discard state such
+as derivatives carried by a dual number. With the <code>faer</code> feature, the generated
+<code>faer_traits::ComplexField</code> implementation therefore sets
+<code>SIMD_CAPABILITIES</code> to <code>faer_traits::SimdCapabilities::Copy</code>, which makes <code>faer</code> use
+scalar kernels.</p>
+<p>This is not a claim that the type has vectorized arithmetic. SIMD entry points are
+provided only to satisfy the backend trait and should not be reached when scalar
+kernels are selected. Verify the contract directly:</p>
+<pre><code class="language-rust ignore">assert_eq!(
+  &lt;MyReal as faer_traits::ComplexField&gt;::SIMD_CAPABILITIES,
+  faer_traits::SimdCapabilities::Copy,
+);</code></pre>
+<p>The <code>nalgebra</code> implementation similarly provides a one-lane
+<code>simba::simd::SimdValue</code>; it is a scalar representation, not a promise of hardware
+SIMD.</p>
 
                     </main>
 

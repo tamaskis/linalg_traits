@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Page 2 - linalg-traits</title>
+        <title>Operators - linalg-traits</title>
 
 
         <!-- Custom HTML head -->
@@ -35,10 +35,10 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-1b4aa0d7.js";
+            window.path_to_searchindex_js = "searchindex-4a5b5d19.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc-e797efad.js"></script>
+        <script src="toc-062049a9.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -174,17 +174,331 @@
 
                 <div id="mdbook-content" class="content">
                     <main>
-                        <h1 id="page-2"><a class="header" href="#page-2">Page 2</a></h1>
-<p>TODO #2.</p>
+                        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
+<h1 id="operators"><a class="header" href="#operators">Operators</a></h1>
+<ul>
+<li><a href="#addition">Addition</a></li>
+<li><a href="#subtraction">Subtraction</a></li>
+<li><a href="#multiplication">Multiplication</a></li>
+<li><a href="#division">Division</a></li>
+<li><a href="#remainder-after-division">Remainder after division</a></li>
+<li><a href="#addition-assignment">Addition-assignment</a></li>
+<li><a href="#subtraction-assignment">Subtraction-assignment</a></li>
+<li><a href="#multiplication-assignment">Multiplication-assignment</a></li>
+<li><a href="#division-assignment">Division-assignment</a></li>
+<li><a href="#remainder-assignment">Remainder-assignment</a></li>
+<li><a href="#equality-and-inequality">Equality and Inequality</a></li>
+<li><a href="#ordering">Ordering</a></li>
+</ul>
+<h2 id="addition"><a class="header" href="#addition">Addition</a></h2>
+<p>The following addition operations are supported for <code>T: RealField</code>:</p>
+<ul>
+<li><code>T + T</code></li>
+<li><code>T + &amp;T</code></li>
+<li><code>&amp;T + T</code></li>
+<li><code>&amp;T + &amp;T</code></li>
+</ul>
+<p><strong>Example</strong></p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+#[allow(clippy::op_ref)]
+fn add&lt;T: RealField&gt;(x: T, y: T) -&gt; T {
+    let z1: T = x + y;
+    let z2: T = x + &amp;y;
+    let z3: T = &amp;x + y;
+    let z4: T = &amp;x + &amp;y;
+
+    assert_eq!(z1, z2);
+    assert_eq!(z2, z3);
+    assert_eq!(z3, z4);
+
+    z1
+}
+
+fn main() {
+    assert_eq!(add(1_f64, 2_f64), 3_f64);
+}</code></pre>
+<h2 id="subtraction"><a class="header" href="#subtraction">Subtraction</a></h2>
+<p>The following subtraction operations are supported for <code>T: RealField</code>:</p>
+<ul>
+<li><code>T - T</code></li>
+<li><code>T - &amp;T</code></li>
+<li><code>&amp;T - T</code></li>
+<li><code>&amp;T - &amp;T</code></li>
+</ul>
+<p><strong>Example</strong></p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+#[allow(clippy::op_ref)]
+fn sub&lt;T: RealField&gt;(x: T, y: T) -&gt; T {
+    let z1: T = x - y;
+    let z2: T = x - &amp;y;
+    let z3: T = &amp;x - y;
+    let z4: T = &amp;x - &amp;y;
+
+    assert_eq!(z1, z2);
+    assert_eq!(z2, z3);
+    assert_eq!(z3, z4);
+
+    z1
+}
+
+fn main() {
+    assert_eq!(sub(3_f64, 2_f64), 1_f64);
+}</code></pre>
+<h2 id="multiplication"><a class="header" href="#multiplication">Multiplication</a></h2>
+<p>The following multiplication operations are supported for <code>T: RealField</code>:</p>
+<ul>
+<li><code>T * T</code></li>
+<li><code>T * &amp;T</code></li>
+<li><code>&amp;T * T</code></li>
+<li><code>&amp;T * &amp;T</code></li>
+</ul>
+<p><strong>Example</strong></p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+#[allow(clippy::op_ref)]
+fn mul&lt;T: RealField&gt;(x: T, y: T) -&gt; T {
+    let z1: T = x * y;
+    let z2: T = x * &amp;y;
+    let z3: T = &amp;x * y;
+    let z4: T = &amp;x * &amp;y;
+
+    assert_eq!(z1, z2);
+    assert_eq!(z2, z3);
+    assert_eq!(z3, z4);
+
+    z1
+}
+
+fn main() {
+    assert_eq!(mul(2_f64, 3_f64), 6_f64);
+}</code></pre>
+<h2 id="division"><a class="header" href="#division">Division</a></h2>
+<p>The following division operations are supported for <code>T: RealField</code>:</p>
+<ul>
+<li><code>T / T</code></li>
+<li><code>T / &amp;T</code></li>
+<li><code>&amp;T / T</code></li>
+<li><code>&amp;T / &amp;T</code></li>
+</ul>
+<p><strong>Example</strong></p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+#[allow(clippy::op_ref)]
+fn div&lt;T: RealField&gt;(x: T, y: T) -&gt; T {
+    let z1: T = x / y;
+    let z2: T = x / &amp;y;
+    let z3: T = &amp;x / y;
+    let z4: T = &amp;x / &amp;y;
+
+    assert_eq!(z1, z2);
+    assert_eq!(z2, z3);
+    assert_eq!(z3, z4);
+
+    z1
+}
+
+fn main() {
+    assert_eq!(div(6_f64, 2_f64), 3_f64);
+}</code></pre>
+<h2 id="remainder-after-division"><a class="header" href="#remainder-after-division">Remainder after division</a></h2>
+<p>The following remainder after division operations are supported for <code>T: RealField</code>:</p>
+<ul>
+<li><code>T % T</code></li>
+<li><code>T % &amp;T</code></li>
+<li><code>&amp;T % T</code></li>
+<li><code>&amp;T % &amp;T</code></li>
+</ul>
+<p><strong>Example</strong></p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+#[allow(clippy::op_ref)]
+fn rem&lt;T: RealField&gt;(x: T, y: T) -&gt; T {
+    let z1: T = x % y;
+    let z2: T = x % &amp;y;
+    let z3: T = &amp;x % y;
+    let z4: T = &amp;x % &amp;y;
+
+    assert_eq!(z1, z2);
+    assert_eq!(z2, z3);
+    assert_eq!(z3, z4);
+
+    z1
+}
+
+fn main() {
+    assert_eq!(rem(5_f64, 3_f64), 2_f64);
+}</code></pre>
+<h2 id="addition-assignment"><a class="header" href="#addition-assignment">Addition-assignment</a></h2>
+<p>The following addition-assignment operations are supported for <code>T: RealField</code>:</p>
+<ul>
+<li><code>T += T</code></li>
+<li><code>T += &amp;T</code></li>
+</ul>
+<p><strong>Example</strong></p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn add_assign&lt;T: RealField&gt;(x: T, y: T) -&gt; T {
+    let mut z1: T = x;
+    z1 += y;
+
+    let mut z2: T = x;
+    z2 += &amp;y;
+
+    assert_eq!(z1, z2);
+
+    z1
+}
+
+fn main() {
+    assert_eq!(add_assign(1_f64, 2_f64), 3_f64);
+}</code></pre>
+<h2 id="subtraction-assignment"><a class="header" href="#subtraction-assignment">Subtraction-assignment</a></h2>
+<p>The following subtraction-assignment operations are supported for <code>T: RealField</code>:</p>
+<ul>
+<li><code>T -= T</code></li>
+<li><code>T -= &amp;T</code></li>
+</ul>
+<p><strong>Example</strong></p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn sub_assign&lt;T: RealField&gt;(x: T, y: T) -&gt; T {
+    let mut z1: T = x;
+    z1 -= y;
+
+    let mut z2: T = x;
+    z2 -= &amp;y;
+
+    assert_eq!(z1, z2);
+
+    z1
+}
+
+fn main() {
+    assert_eq!(sub_assign(3_f64, 2_f64), 1_f64);
+}</code></pre>
+<h2 id="multiplication-assignment"><a class="header" href="#multiplication-assignment">Multiplication-assignment</a></h2>
+<p>The following multiplication-assignment operations are supported for <code>T: RealField</code>:</p>
+<ul>
+<li><code>T *= T</code></li>
+<li><code>T *= &amp;T</code></li>
+</ul>
+<p><strong>Example</strong></p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn mul_assign&lt;T: RealField&gt;(x: T, y: T) -&gt; T {
+    let mut z1: T = x;
+    z1 *= y;
+
+    let mut z2: T = x;
+    z2 *= &amp;y;
+
+    assert_eq!(z1, z2);
+
+    z1
+}
+
+fn main() {
+    assert_eq!(mul_assign(2_f64, 3_f64), 6_f64);
+}</code></pre>
+<h2 id="division-assignment"><a class="header" href="#division-assignment">Division-assignment</a></h2>
+<p>The following division-assignment operations are supported for <code>T: RealField</code>:</p>
+<ul>
+<li><code>T /= T</code></li>
+<li><code>T /= &amp;T</code></li>
+</ul>
+<p><strong>Example</strong></p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn div_assign&lt;T: RealField&gt;(x: T, y: T) -&gt; T {
+    let mut z1: T = x;
+    z1 /= y;
+
+    let mut z2: T = x;
+    z2 /= &amp;y;
+
+    assert_eq!(z1, z2);
+
+    z1
+}
+
+fn main() {
+    assert_eq!(div_assign(6_f64, 2_f64), 3_f64);
+}</code></pre>
+<h2 id="remainder-assignment"><a class="header" href="#remainder-assignment">Remainder-assignment</a></h2>
+<p>The following remainder-assignment operations are supported for <code>T: RealField</code>:</p>
+<ul>
+<li><code>T %= T</code></li>
+<li><code>T %= &amp;T</code></li>
+</ul>
+<p><strong>Example</strong></p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn rem_assign&lt;T: RealField&gt;(x: T, y: T) -&gt; T {
+    let mut z1: T = x;
+    z1 %= y;
+
+    let mut z2: T = x;
+    z2 %= &amp;y;
+
+    assert_eq!(z1, z2);
+
+    z1
+}
+
+fn main() {
+    assert_eq!(rem_assign(5_f64, 3_f64), 2_f64);
+}</code></pre>
+<h2 id="equality-and-inequality"><a class="header" href="#equality-and-inequality">Equality and Inequality</a></h2>
+<p>The following equality/inequality operations are supported for <code>T: RealField</code>:</p>
+<ul>
+<li><code>T == T</code></li>
+<li><code>T != T</code></li>
+</ul>
+<p><strong>Example</strong></p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn eq&lt;T: RealField&gt;(x: T, y: T) -&gt; (bool, bool) {
+    (x == y, x != y)
+}
+
+fn main() {
+    assert_eq!(eq(1_f64, 1_f64), (true, false));
+    assert_eq!(eq(1_f64, 2_f64), (false, true));
+}</code></pre>
+<h2 id="ordering"><a class="header" href="#ordering">Ordering</a></h2>
+<p>The following ordering operations are supported for <code>T: RealField</code>:</p>
+<ul>
+<li><code>T &lt; T</code></li>
+<li><code>T &lt;= T</code></li>
+<li><code>T &gt; T</code></li>
+<li><code>T &gt;= T</code></li>
+</ul>
+<p><strong>Example</strong></p>
+<pre class="playground"><code class="language-rust">use linalg_traits::RealField;
+
+fn ord&lt;T: RealField&gt;(x: T, y: T) -&gt; (bool, bool, bool, bool) {
+    (x &lt; y, x &lt;= y, x &gt; y, x &gt;= y)
+}
+
+fn main() {
+    assert_eq!(ord(1_f64, 2_f64), (true, true, false, false));
+    assert_eq!(ord(2_f64, 2_f64), (false, true, false, true));
+    assert_eq!(ord(3_f64, 2_f64), (false, false, true, true));
+}</code></pre>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="introduction.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="real_field.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                             </a>
 
+                            <a rel="next prefetch" href="interoperability_with_f64.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                            </a>
 
                         <div style="clear: both"></div>
                     </nav>
@@ -192,10 +506,13 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="introduction.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="real_field.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                     </a>
 
+                    <a rel="next prefetch" href="interoperability_with_f64.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                    </a>
             </nav>
 
         </div>
